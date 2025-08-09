@@ -12,5 +12,6 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__Password: password123
       ConnectionStrings__PostgresConnection: Server=postgres;Port=5432;Database=poke_game;User ID=postgres;Password=postgres;SslMode=Disable
       PokedexJsonFilePath: ./Data/Pokedex.json
+      Logging__LogLevel__Default: Debug
     volumes:
       - ./certs:/https:ro
