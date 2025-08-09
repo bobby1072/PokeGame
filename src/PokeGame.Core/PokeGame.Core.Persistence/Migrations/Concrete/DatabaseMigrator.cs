@@ -1,4 +1,5 @@
-﻿using EvolveDb;
+﻿using BT.Common.Polly.Extensions;
+using EvolveDb;
 using EvolveDb.Migration;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -10,27 +11,29 @@ namespace PokeGame.Core.Persistence.Migrations.Concrete
     internal sealed class DatabaseMigrator : IMigrator
     {
         private readonly ILogger<DatabaseMigrator> _logger;
+        private readonly DbMigrationSettings _settings;
         private readonly string _connectionString;
-        private readonly string _startVersion;
         public DatabaseMigrator(ILogger<DatabaseMigrator> logger, DbMigrationSettings migrationSettings, string connectionString)
         {
             _logger = logger;
-            _startVersion = migrationSettings.StartVersion;
             _connectionString = connectionString;
+            _settings = migrationSettings;
         }
         public Task Migrate()
         {
             using var connection = new NpgsqlConnection(_connectionString);
             var evolve = new Evolve(connection, msg => _logger.LogInformation(msg))
             {
-                EmbeddedResourceAssemblies = new[] { typeof(DatabaseMigrator).Assembly },
+                EmbeddedResourceAssemblies = [typeof(DatabaseMigrator).Assembly],
                 EnableClusterMode = true,
-                StartVersion = new MigrationVersion(_startVersion),
+                StartVersion = new MigrationVersion(_settings.StartVersion),
                 IsEraseDisabled = true,
                 MetadataTableName = "migrations_changelog",
                 OutOfOrder = true
             };
-            evolve.Migrate();
+
+            _settings.ToPipeline().Execute(() => evolve.Migrate());
+
             return Task.CompletedTask;
         }
     }
