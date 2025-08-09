@@ -1,0 +1,17 @@
+services:
+  webapi:
+    build:
+      context: .
+      dockerfile: src/PokeGame.Core/dockerfile.api
+    ports:
+      - 7244:443
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: password123
+      ConnectionStrings__PostgresConnection: Server=postgres;Port=5432;Database=poke_game;User ID=postgres;Password=postgres;SslMode=Disable
+      PokedexJsonFilePath: ./Data/Pokedex.json
+      Logging__LogLevel__Default: Debug
+    volumes:
+      - ./certs:/https:ro

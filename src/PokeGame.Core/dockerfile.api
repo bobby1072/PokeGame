@@ -1,0 +1,56 @@
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS base
+
+RUN apk add --no-cache icu-libs
+RUN apk add --no-cache icu-data-full
+
+RUN adduser --uid 10000 runner --disabled-password
+USER 10000
+
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS publish
+ARG CONF=Release
+
+WORKDIR /src
+
+COPY src/PokeGame.Core/PokeGame.Core.Api/*.csproj ./PokeGame.Core/PokeGame.Core.Api/
+COPY src/PokeGame.Core/PokeGame.Core.Common/*.csproj ./PokeGame.Core/PokeGame.Core.Common/
+COPY src/PokeGame.Core/PokeGame.Core.Common.Services/*.csproj ./PokeGame.Core/PokeGame.Core.Common.Services/
+COPY src/PokeGame.Core/PokeGame.Core.Domain.Services/*.csproj ./PokeGame.Core/PokeGame.Core.Domain.Services/
+COPY src/PokeGame.Core/PokeGame.Core.Persistence/*.csproj ./PokeGame.Core/PokeGame.Core.Persistence/
+COPY src/PokeGame.Core/PokeGame.Core.Persistence.Entities/*.csproj ./PokeGame.Core/PokeGame.Core.Persistence.Entities/
+COPY src/PokeGame.Core/PokeGame.Core.Schemas/*.csproj ./PokeGame.Core/PokeGame.Core.Schemas/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.FastArray/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.FastArray/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.OperationTimer/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.OperationTimer/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Helpers/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Helpers/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Polly/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Polly/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Persistence.Shared/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Persistence.Shared/
+
+RUN dotnet restore PokeGame.Core/PokeGame.Core.Api/PokeGame.Core.Api.csproj 
+
+COPY src/PokeGame.Core/PokeGame.Core.Api/ ./PokeGame.Core/PokeGame.Core.Api/
+COPY src/PokeGame.Core/PokeGame.Core.Common/ ./PokeGame.Core/PokeGame.Core.Common/
+COPY src/PokeGame.Core/PokeGame.Core.Common.Services/ ./PokeGame.Core/PokeGame.Core.Common.Services/
+COPY src/PokeGame.Core/PokeGame.Core.Domain.Services/ ./PokeGame.Core/PokeGame.Core.Domain.Services/
+COPY src/PokeGame.Core/PokeGame.Core.Persistence/ ./PokeGame.Core/PokeGame.Core.Persistence/
+COPY src/PokeGame.Core/PokeGame.Core.Persistence.Entities/ ./PokeGame.Core/PokeGame.Core.Persistence.Entities/
+COPY src/PokeGame.Core/PokeGame.Core.Schemas/ ./PokeGame.Core/PokeGame.Core.Schemas/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.FastArray/ ./Submodules/BT/src/BT.Common/BT.Common.FastArray/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.OperationTimer/ ./Submodules/BT/src/BT.Common/BT.Common.OperationTimer/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Helpers/ ./Submodules/BT/src/BT.Common/BT.Common.Helpers/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Polly/ ./Submodules/BT/src/BT.Common/BT.Common.Polly/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/ ./Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Persistence.Shared/ ./Submodules/BT/src/BT.Common/BT.Common.Persistence.Shared/
+
+
+WORKDIR /src/PokeGame.Core/PokeGame.Core.Api 
+ARG CONF=Release
+RUN dotnet publish PokeGame.Core.Api.csproj -c ${CONF} -o /app
+
+FROM base AS final
+ARG CONF=Release
+WORKDIR /app
+COPY --from=publish /app .
+
+ENTRYPOINT ["dotnet", "PokeGame.Core.Api.dll"]

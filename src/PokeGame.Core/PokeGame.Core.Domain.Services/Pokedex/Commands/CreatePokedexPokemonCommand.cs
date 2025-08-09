@@ -27,8 +27,6 @@ internal sealed class CreatePokedexPokemonCommand: IDomainCommand<IReadOnlyColle
     {
         _logger.LogInformation("About to create {PokedexPokemonSaveCount} pokedex pokemon records...", input.Count);
         
-        _logger.LogDebug("Pokedex pokemon records to be created: {@CreationArray}", input);
-
         var existingPokedex = await EntityFrameworkUtils.TryDbOperation(() => _pokedexPokemonRepository.GetAll(), _logger) ?? throw new PokeGameApiServerException("Failed to get existing pokedex count");
 
         var pokemonToCreate = input.FastArrayWhere(x => !existingPokedex.Data.Any(y => y.Equals(x))).ToArray();
