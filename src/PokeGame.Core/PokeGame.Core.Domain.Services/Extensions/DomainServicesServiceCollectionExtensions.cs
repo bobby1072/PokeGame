@@ -36,9 +36,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddDomainModelValidators()
             .AddPokeGamePersistence(configuration, environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
-
-        await services
-            .AddPokedexJson();
+        
         
         services
             .AddScoped<CreatePokedexPokemonCommand>()
