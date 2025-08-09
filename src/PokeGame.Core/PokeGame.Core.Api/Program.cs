@@ -31,6 +31,7 @@ try
         opts.AddJsonConsole(ctx =>
         {
             ctx.IncludeScopes = true;
+            ctx.UseUtcTimestamp = true;
         });
     });
 
@@ -61,6 +62,9 @@ try
         );
     });
 
+    
+    localLogger.LogInformation("About to build application with {NumberOfServices} services", builder.Services.Count);
+    
     var app = builder.Build();
 
     if (app.Environment.IsDevelopment())

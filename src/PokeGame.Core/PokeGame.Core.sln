@@ -3,39 +3,41 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.Api", "PokeGame.Core.Api\PokeGame.Core.Api.csproj", "{62F53818-F8C3-473C-BB5A-28DF70382245}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokeGame.Core.Api", "PokeGame.Core.Api\PokeGame.Core.Api.csproj", "{62F53818-F8C3-473C-BB5A-28DF70382245}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.Common", "PokeGame.Core.Common\PokeGame.Core.Common.csproj", "{CA1E6BFB-7529-44DE-B6A3-088BD4689B92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokeGame.Core.Common", "PokeGame.Core.Common\PokeGame.Core.Common.csproj", "{CA1E6BFB-7529-44DE-B6A3-088BD4689B92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.Domain.Services", "PokeGame.Core.Domain.Services\PokeGame.Core.Domain.Services.csproj", "{EE8C7C35-3E7D-4A4A-95EB-3C59428D3915}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokeGame.Core.Domain.Services", "PokeGame.Core.Domain.Services\PokeGame.Core.Domain.Services.csproj", "{EE8C7C35-3E7D-4A4A-95EB-3C59428D3915}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.Common.Services", "PokeGame.Core.Common.Services\PokeGame.Core.Common.Services.csproj", "{51424F76-35C6-432E-9A42-4DC41C0E2B23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokeGame.Core.Common.Services", "PokeGame.Core.Common.Services\PokeGame.Core.Common.Services.csproj", "{51424F76-35C6-432E-9A42-4DC41C0E2B23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.Schemas", "PokeGame.Core.Schemas\PokeGame.Core.Schemas.csproj", "{FF28FA29-1CAF-4465-AAE0-2222FF608912}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokeGame.Core.Schemas", "PokeGame.Core.Schemas\PokeGame.Core.Schemas.csproj", "{FF28FA29-1CAF-4465-AAE0-2222FF608912}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.Persistence", "PokeGame.Core.Persistence\PokeGame.Core.Persistence.csproj", "{7278FB6B-F645-42B4-AEA9-114E7005CAC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokeGame.Core.Persistence", "PokeGame.Core.Persistence\PokeGame.Core.Persistence.csproj", "{7278FB6B-F645-42B4-AEA9-114E7005CAC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.Persistence.Entities", "PokeGame.Core.Persistence.Entities\PokeGame.Core.Persistence.Entities.csproj", "{098EB28F-7DE8-4C77-AB47-7331A46783C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokeGame.Core.Persistence.Entities", "PokeGame.Core.Persistence.Entities\PokeGame.Core.Persistence.Entities.csproj", "{098EB28F-7DE8-4C77-AB47-7331A46783C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules", "Submodules", "{7870B4D1-9D51-4166-AE81-C3AF7571C815}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.Polly", "..\Submodules\BT\src\BT.Common\BT.Common.Polly\BT.Common.Polly.csproj", "{43BE26FC-164A-458B-BF32-DB23719B033E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.Polly", "..\Submodules\BT\src\BT.Common\BT.Common.Polly\BT.Common.Polly.csproj", "{43BE26FC-164A-458B-BF32-DB23719B033E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.Persistence.Shared", "..\Submodules\BT\src\BT.Common\BT.Common.Persistence.Shared\BT.Common.Persistence.Shared.csproj", "{0E10AB0E-982B-4488-9206-6094C11B8DEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.Persistence.Shared", "..\Submodules\BT\src\BT.Common\BT.Common.Persistence.Shared\BT.Common.Persistence.Shared.csproj", "{0E10AB0E-982B-4488-9206-6094C11B8DEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.FastArray", "..\Submodules\BT\src\BT.Common\BT.Common.FastArray\BT.Common.FastArray.csproj", "{E2129431-1483-49F5-BAE3-0C0E919085E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.FastArray", "..\Submodules\BT\src\BT.Common\BT.Common.FastArray\BT.Common.FastArray.csproj", "{E2129431-1483-49F5-BAE3-0C0E919085E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.OperationTimer", "..\Submodules\BT\src\BT.Common\BT.Common.OperationTimer\BT.Common.OperationTimer.csproj", "{83F18EFF-FEE1-47AB-9EAA-4F2FBBB0F505}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.OperationTimer", "..\Submodules\BT\src\BT.Common\BT.Common.OperationTimer\BT.Common.OperationTimer.csproj", "{83F18EFF-FEE1-47AB-9EAA-4F2FBBB0F505}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.Helpers", "..\Submodules\BT\src\BT.Common\BT.Common.Helpers\BT.Common.Helpers.csproj", "{E9760AD8-95E6-4249-8D70-53E5AB10054A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.Helpers", "..\Submodules\BT\src\BT.Common\BT.Common.Helpers\BT.Common.Helpers.csproj", "{E9760AD8-95E6-4249-8D70-53E5AB10054A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.Aspire", "PokeGame.Core.Aspire\PokeGame.Core.Aspire.csproj", "{912E2A50-737A-47CE-8729-563F463900AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokeGame.Core.Aspire", "PokeGame.Core.Aspire\PokeGame.Core.Aspire.csproj", "{912E2A50-737A-47CE-8729-563F463900AB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E9125AD7-F72B-49AF-A6DA-4D69D0465F2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.Tests", "PokeGame.Core.Tests\PokeGame.Core.Tests.csproj", "{64F1D581-15DA-4B44-A74A-137375F924D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokeGame.Core.Tests", "PokeGame.Core.Tests\PokeGame.Core.Tests.csproj", "{64F1D581-15DA-4B44-A74A-137375F924D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.Api.Helpers", "..\Submodules\BT\src\BT.Common\BT.Common.Api.Helpers\BT.Common.Api.Helpers.csproj", "{E560F3A9-D978-45A0-96A2-8991F7B3BEAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BT.Common.Api.Helpers", "..\Submodules\BT\src\BT.Common\BT.Common.Api.Helpers\BT.Common.Api.Helpers.csproj", "{E560F3A9-D978-45A0-96A2-8991F7B3BEAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.React.Server", "PokeGame.Core.React.Server\PokeGame.Core.React.Server.csproj", "{3219F066-ACB1-4942-A9D6-7B4BC73BC034}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +105,10 @@ Global
 		{E560F3A9-D978-45A0-96A2-8991F7B3BEAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E560F3A9-D978-45A0-96A2-8991F7B3BEAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E560F3A9-D978-45A0-96A2-8991F7B3BEAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3219F066-ACB1-4942-A9D6-7B4BC73BC034}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3219F066-ACB1-4942-A9D6-7B4BC73BC034}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3219F066-ACB1-4942-A9D6-7B4BC73BC034}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3219F066-ACB1-4942-A9D6-7B4BC73BC034}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

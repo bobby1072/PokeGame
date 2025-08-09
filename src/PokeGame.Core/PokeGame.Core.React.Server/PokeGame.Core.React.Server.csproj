@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Api.Helpers\BT.Common.Api.Helpers.csproj" />
+    <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Helpers\BT.Common.Helpers.csproj" />
+    <ProjectReference Include="..\PokeGame.Core.Common\PokeGame.Core.Common.csproj" />
+    <ProjectReference Include="..\PokeGame.Core.Schemas\PokeGame.Core.Schemas.csproj" />
+  </ItemGroup>
+
+</Project>
