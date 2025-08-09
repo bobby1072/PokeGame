@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Services.Abstract;
 
@@ -9,16 +10,25 @@ internal sealed class PokedexJsonFileControllerService: IPokedexJsonFileControll
     private readonly string _jsonFilePath;
     private readonly ILogger<PokedexJsonFileControllerService> _logger;
 
-    public PokedexJsonFileControllerService(string jsonFilePath, ILogger<PokedexJsonFileControllerService> logger)
+    public PokedexJsonFileControllerService(
+        [FromKeyedServices(Constants.ServiceKeys.PokedexJsonFilePath)]string jsonFilePath,
+        ILogger<PokedexJsonFileControllerService> logger
+    )
     {
         _jsonFilePath = jsonFilePath;
         _logger = logger;
     }
 
 
-    public async Task<JsonDocument> GetPokedexAsync()
+    public async Task<JsonDocument> GetPokedexJsonDocAsync()
     {
-        var readJson = await File.ReadAllTextAsync(Path.GetFullPath(_jsonFilePath));
+        var fullJsonPath = Path.GetFullPath(_jsonFilePath);
+        
+        _logger.LogInformation("Getting Pokedex from file path: {FilePath}", fullJsonPath);
+        
+        var readJson = await File.ReadAllTextAsync(fullJsonPath);
+        
+        _logger.LogDebug("Found this pokedex json: {PokedexStringJson}", readJson);
         
         return JsonDocument.Parse(readJson);
     }

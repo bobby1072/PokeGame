@@ -32,7 +32,7 @@ public static class DomainServicesServiceCollectionExtensions
         services
             .AddHttpClient()
             .AddLogging()
-            .AddCommonServices()
+            .AddCommonServices(configuration)
             .AddDomainModelValidators()
             .AddPokeGamePersistence(configuration, environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);

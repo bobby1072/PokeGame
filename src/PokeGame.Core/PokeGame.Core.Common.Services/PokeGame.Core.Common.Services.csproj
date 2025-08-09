@@ -15,4 +15,10 @@
       <ProjectReference Include="..\PokeGame.Core.Common\PokeGame.Core.Common.csproj" />
     </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\Pokedex.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

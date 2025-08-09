@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Services.Abstract;
@@ -8,25 +9,30 @@ namespace PokeGame.Core.Common.Services.Extensions;
 
 public static class CommonServicesServiceCollectionExtensions
 {
-    public static IServiceCollection AddCommonServices(this IServiceCollection services)
+    public static IServiceCollection AddCommonServices(this IServiceCollection services, IConfiguration config)
     {
+        var foundFilePath = config.GetValue<string>("PokedexJsonFilePath")?.Replace("/", Path.DirectorySeparatorChar.ToString());
 
-        services
-            .AddSingleton<IPokedexJsonFileControllerService, PokedexJsonFileControllerService>(sp =>
-            {
-                return new PokedexJsonFileControllerService(
-                    $"..{Path.DirectorySeparatorChar}PokeGame.Core.Common.Services{Path.DirectorySeparatorChar}Data{Path.DirectorySeparatorChar}Pokedex.json",
-                    sp.GetRequiredService<ILoggerFactory>().CreateLogger<PokedexJsonFileControllerService>()
-                );
-            });
-
-        services.AddKeyedSingleton<JsonDocument>(Constants.ServiceKeys.PokedexJsonFile, (sp, ob) =>
+        if (string.IsNullOrEmpty(foundFilePath))
         {
-           var pokedexFileControllerService = sp.GetRequiredService<IPokedexJsonFileControllerService>();
-           
-           return pokedexFileControllerService.GetPokedexAsync().GetAwaiter().GetResult(); 
-        });
+            throw new ArgumentNullException(nameof(foundFilePath));
+        }
         
+        services.AddKeyedSingleton(Constants.ServiceKeys.PokedexJsonFilePath, foundFilePath);
+        
+        services.AddSingleton<IPokedexJsonFileControllerService, PokedexJsonFileControllerService>();
+
+        services.AddKeyedSingleton(
+            Constants.ServiceKeys.PokedexJsonFile,
+            (sp, _) =>
+            {
+                var pokedexFileControllerService =
+                    sp.GetRequiredService<IPokedexJsonFileControllerService>();
+
+                return pokedexFileControllerService.GetPokedexJsonDocAsync().GetAwaiter().GetResult();
+            }
+        );
+
         return services;
     }
 }
