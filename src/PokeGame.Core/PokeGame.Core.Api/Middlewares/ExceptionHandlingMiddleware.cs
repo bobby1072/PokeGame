@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mime;
+using BT.Common.Api.Helpers;
 using BT.Common.Api.Helpers.Models;
 using BT.Common.OperationTimer.Common;
 using PokeGame.Core.Common;
@@ -65,9 +66,17 @@ internal sealed class ExceptionHandlingMiddleware
 
     private static async Task SendExceptionResponseAsync(HttpContext context, string message, int statusCode)
     {
+        var foundCorrelationId = context.Response.Headers[ApiConstants.CorrelationIdHeader].ToString();
         context.Response.Clear();
         context.Response.ContentType = MediaTypeNames.Application.Json;
         context.Response.StatusCode = statusCode;
+
+
+        if (!string.IsNullOrEmpty(foundCorrelationId))
+        {
+            context.Response.Headers.TryAdd(ApiConstants.CorrelationIdHeader, foundCorrelationId);
+        }
+        
         await context.Response.WriteAsJsonAsync(new WebOutcome { ExceptionMessage = message });
     }
 }

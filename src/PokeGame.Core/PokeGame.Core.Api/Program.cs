@@ -33,20 +33,10 @@ try
     builder.Services
         .AddLogging(opts =>
         {
-            if (builder.Environment.IsDevelopment())
+            opts.AddJsonConsole(ctx =>
             {
-                opts.AddSimpleConsole(ctx =>
-                {
-                    ctx.IncludeScopes = true;
-                });
-            }
-            else
-            {
-                opts.AddJsonConsole(ctx =>
-                {
-                    ctx.IncludeScopes = true;
-                });
-            }
+                ctx.IncludeScopes = true;
+            });
         });
     
     builder.Services
