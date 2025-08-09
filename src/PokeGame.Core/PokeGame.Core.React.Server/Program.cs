@@ -1,5 +1,6 @@
 using BT.Common.Api.Helpers.Extensions;
 using BT.Common.Helpers;
+using Microsoft.Net.Http.Headers;
 using PokeGame.Core.Common.Configurations;
 
 var localLogger = LoggingHelper.CreateLogger();
@@ -29,6 +30,8 @@ try
 
     var app = builder.Build();
 
+    app.UseRouting();
+    
     app.UseHttpsRedirection();
 
     app.UseAuthorization();
@@ -36,8 +39,47 @@ try
     app.UseCorrelationIdMiddleware();
 
     app.MapControllers();
-
-    app.Run();
+    
+    #pragma warning disable ASP0014
+    app.UseEndpoints(endpoint =>
+    {
+        endpoint.MapFallbackToFile("index.html");
+    });
+    #pragma warning restore ASP0014
+    app.UseStaticFiles();
+    app.UseSpa(spa =>
+    {
+        spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
+        {
+            OnPrepareResponse = context =>
+            {
+                var headers = context.Context.Response.GetTypedHeaders();
+                if (context.File.Name.EndsWith(".html"))
+                {
+                    headers.CacheControl = new CacheControlHeaderValue
+                    {
+                        NoCache = true,
+                        NoStore = true,
+                        MustRevalidate = true,
+                        MaxAge = TimeSpan.Zero,
+                    };
+                }
+                else
+                {
+                    headers.CacheControl = new CacheControlHeaderValue
+                    {
+                        Public = true,
+                        Private = false,
+                        NoCache = false,
+                        NoStore = false,
+                        MaxAge = TimeSpan.FromDays(365),
+                    };
+                }
+            },
+        };
+    });
+    
+    await app.RunAsync();
 }
 catch (Exception ex)
 {
