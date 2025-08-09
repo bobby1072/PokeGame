@@ -16,20 +16,22 @@ namespace PokeGame.Core.Persistence.Extensions;
 
 public static class PersistenceServiceCollectionExtensions
 {
-    public static IServiceCollection AddPokeGamePersistence(this IServiceCollection services, IConfiguration configuration, bool isDevelopment = true)
+    public static IServiceCollection AddPokeGamePersistence(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        bool isDevelopment = true
+    )
     {
         var connectionString = configuration.GetConnectionString("PostgresConnection");
         var migrationConfigSection = configuration.GetSection(DbMigrationSettings.Key);
         if (!migrationConfigSection.Exists())
         {
-            throw new InvalidDataException(Constants.ExceptionConstants.MissingEnvVars);
+            throw new ArgumentNullException(DbMigrationSettings.Key);
         }
 
-        services
-            .ConfigureSingletonOptions<DbMigrationSettings>(migrationConfigSection);
-        
-        var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
+        services.ConfigureSingletonOptions<DbMigrationSettings>(migrationConfigSection);
 
+        var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
 
         services
             .AddSingleton<IDatabaseMigratorHealthCheck, DatabaseMigratorHealthCheck>()
@@ -38,44 +40,35 @@ public static class PersistenceServiceCollectionExtensions
                 DatabaseMigratorHealthCheck.Name,
                 tags: ["Ready"]
             );
-        
-        
+
         services
             .AddSingleton<IMigrator, DatabaseMigrator>(sp => new DatabaseMigrator(
-                    sp.GetRequiredService<ILoggerFactory>().CreateLogger<DatabaseMigrator>(),
-                    sp.GetRequiredService<DbMigrationSettings>(),
-                    connectionStringBuilder.ConnectionString
-                ))
+                sp.GetRequiredService<ILoggerFactory>().CreateLogger<DatabaseMigrator>(),
+                sp.GetRequiredService<DbMigrationSettings>(),
+                connectionStringBuilder.ConnectionString
+            ))
             .AddHostedService<DatabaseMigratorHostedService>()
             .AddPooledDbContextFactory<PokeGameContext>(options =>
+            {
+                if (isDevelopment)
                 {
-                    if (isDevelopment)
-                    {
-                        options
-                            .EnableDetailedErrors()
-                            .EnableSensitiveDataLogging();
-                    }
-                    options
-                        .UseSnakeCaseNamingConvention()
-                        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-                        .UseNpgsql(
-                            connectionStringBuilder.ConnectionString,
-                            npgOpts =>
-                            {
-                                npgOpts.UseQuerySplittingBehavior(
-                                    QuerySplittingBehavior.SingleQuery
-                                );
-                            }
-                        );
+                    options.EnableDetailedErrors().EnableSensitiveDataLogging();
                 }
-            );
-
-
+                options
+                    .UseSnakeCaseNamingConvention()
+                    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                    .UseNpgsql(
+                        connectionStringBuilder.ConnectionString,
+                        npgOpts =>
+                        {
+                            npgOpts.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery);
+                        }
+                    );
+            });
 
         services
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IPokedexPokemonRepository, PokedexPokemonRepository>();
-        
 
         return services;
     }

@@ -10,57 +10,57 @@ var localLogger = LoggingHelper.CreateLogger();
 try
 {
     localLogger.LogInformation("Application starting...");
-    
+
     var builder = WebApplication.CreateBuilder(args);
     builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
-    
-    await builder.Services
-        .AddPokeGameApplicationServices(builder.Configuration, builder.Environment);
 
-    
+    builder.Services.AddPokeGameApplicationServices(builder.Configuration, builder.Environment);
+
     var requestTimeout = builder.Configuration.GetValue<int>("RequestTimeout");
 
-    builder.Services
-        .AddRequestTimeouts(opts =>
+    builder.Services.AddRequestTimeouts(opts =>
+    {
+        opts.DefaultPolicy = new RequestTimeoutPolicy
         {
-            opts.DefaultPolicy = new RequestTimeoutPolicy
-                { Timeout = TimeSpan.FromSeconds(requestTimeout > 0 ? requestTimeout : 10) };
-        });
-    
-    
-    builder.Services
-        .AddLogging(opts =>
+            Timeout = TimeSpan.FromSeconds(requestTimeout > 0 ? requestTimeout : 30),
+        };
+    });
+
+    builder.Services.AddLogging(opts =>
+    {
+        opts.AddJsonConsole(ctx =>
         {
-            opts.AddJsonConsole(ctx =>
-            {
-                ctx.IncludeScopes = true;
-            });
+            ctx.IncludeScopes = true;
         });
-    
-    builder.Services
-        .AddControllers()
+    });
+
+    builder
+        .Services.AddControllers()
         .AddJsonOptions(opts =>
         {
             opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
-    
+
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddResponseCompression();
 
     const string developmentCorsPolicy = "DevelopmentCorsPolicy";
-    
+
     builder.Services.AddCors(p =>
     {
-        p.AddPolicy(developmentCorsPolicy, opts =>
-        {
-            opts.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-            
-            opts.WithOrigins("http://localhost:3000").AllowCredentials();
-            opts.WithOrigins("http://localhost:8080").AllowCredentials();
-        });
+        p.AddPolicy(
+            developmentCorsPolicy,
+            opts =>
+            {
+                opts.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+
+                opts.WithOrigins("http://localhost:3000").AllowCredentials();
+                opts.WithOrigins("http://localhost:8080").AllowCredentials();
+            }
+        );
     });
-    
+
     var app = builder.Build();
 
     if (app.Environment.IsDevelopment())
@@ -72,22 +72,24 @@ try
     app.UseRouting();
 
     app.UseResponseCompression();
-    
+
     app.UseHttpsRedirection();
 
     app.UseAuthorization();
 
-    app
-        .UseMiddleware<ExceptionHandlingMiddleware>()
-        .UseCorrelationIdMiddleware();
-    
+    app.UseMiddleware<ExceptionHandlingMiddleware>().UseCorrelationIdMiddleware();
+
     app.MapControllers();
 
     await app.RunAsync();
 }
 catch (Exception ex)
 {
-    localLogger.LogCritical(ex, "Unhandled exception in application with message: {ExMessage}", ex.Message);
+    localLogger.LogCritical(
+        ex,
+        "Unhandled exception in application with message: {ExMessage}",
+        ex.Message
+    );
 }
 finally
 {
