@@ -1,0 +1,11 @@
+services:
+  webapi:
+    build:
+      context: .
+      dockerfile: src/PokeGame.Core/dockerfile.api
+    ports:
+      - 5222:80
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+80
+      ConnectionStrings__PostgresConnection: Server=postgres;Port=5432;Database=poke_game;User ID=postgres;Password=postgres;SslMode=Disable
