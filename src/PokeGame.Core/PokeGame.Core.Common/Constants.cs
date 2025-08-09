@@ -12,6 +12,6 @@ public struct Constants
     public struct ServiceKeys
     {
         public const string PokedexJsonFile = "PokedexJsonFile";
+        public const string PokedexJsonFilePath = "PokedexJsonFilePath";
     }
-    
 }

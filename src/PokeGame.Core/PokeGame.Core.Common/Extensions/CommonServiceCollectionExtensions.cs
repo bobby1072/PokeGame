@@ -1,23 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using PokeGame.Core.Common.Helpers;
+
 namespace PokeGame.Core.Common.Extensions;
 
 public static class CommonServiceCollectionExtensions
 {
-    public static async Task<IServiceCollection> AddPokedexJson(this IServiceCollection services)
-    {
-        var pokedexJson = await PokedexJsonFileHelper.GetFromDataFolder();
-        
-        
-        services
-            .AddKeyedSingleton(Constants.ServiceKeys.PokedexJsonFile, pokedexJson);
-        
-
-        return services;
-    }
-    
     
     
     public static IServiceCollection ConfigureSingletonOptions<TOptions>(this IServiceCollection services,

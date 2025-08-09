@@ -12,8 +12,6 @@ try
     localLogger.LogInformation("Application starting...");
     
     var builder = WebApplication.CreateBuilder(args);
-    
-    
     builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
     
     await builder.Services
