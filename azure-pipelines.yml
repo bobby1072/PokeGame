@@ -51,9 +51,6 @@ stages:
 
       - job: build_phaser_frontend
         displayName: "Build phaser frontend"
-        variables:
-          - name: version
-            value: $(Build.BuildNumber)
         steps:
           - task: NodeTool@0
             inputs:
@@ -75,6 +72,7 @@ stages:
 
           - task: FileTransform@2
             displayName: "Transform react app settings"
+            condition: eq(variables.isMain, true)
             inputs:
               folderPath: "$(Build.SourcesDirectory)/src/phaser-client/src/common/utils"
               fileType: "json"
@@ -157,7 +155,7 @@ stages:
               password: $(dockerHubPassword)
 
           - task: FileTransform@2
-            displayName: "Transform api app settings"
+            displayName: "Transform react server app settings"
             inputs:
               folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core/PokeGame.Core.React.Server"
               fileType: "json"
@@ -166,7 +164,7 @@ stages:
 
 
           - task: Docker@2
-            displayName: Build Core Image
+            displayName: Build React Server Image
             inputs:
               command: build
               repository: $(ReactServerDockerRepository)
@@ -178,7 +176,7 @@ stages:
               arguments: --build-arg WEB_APP_CLIENT_PATH=src/phaser-client/dist/          
           
           - task: Docker@2
-            displayName: Push Core Image
+            displayName: Push React Server Image
             inputs:
               command: push
               repository: $(ReactServerDockerRepository)
