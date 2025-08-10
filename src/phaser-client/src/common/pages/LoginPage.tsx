@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-    Container,
     Paper,
     TextField,
     Button,
@@ -18,7 +17,7 @@ import { PokeGameUser } from "../../models/PokeGameUser";
 import { SaveUserInput } from "../../models/SaveUserInput";
 import { useGetUserMutation } from "../hooks/useGetUserMutation";
 import { useSaveUserMutation } from "../hooks/useSaveUserMutation";
-import { ErrorComponent } from "../components/ErrorComponent";
+import { ErrorComponent, PageBase } from "../components";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -142,135 +141,137 @@ export const LoginPage: React.FC<{
     const isRegisterLoading = saveUserMutation.isPending;
 
     return (
-        <Container maxWidth="sm" sx={{ mt: 8 }}>
-            <Paper elevation={6} sx={{ p: 4 }}>
-                <Typography
-                    variant="h4"
-                    component="h1"
-                    align="center"
-                    gutterBottom
-                >
-                    PokeGame
-                </Typography>
-
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    <Tabs
-                        value={tabValue}
-                        onChange={handleTabChange}
-                        aria-label="login register tabs"
-                        variant="fullWidth"
+        <PageBase maxWidth="sm">
+            <Box sx={{ mt: 8 }}>
+                <Paper elevation={6} sx={{ p: 4 }}>
+                    <Typography
+                        variant="h4"
+                        component="h1"
+                        align="center"
+                        gutterBottom
                     >
-                        <Tab
-                            label="Login"
-                            id="login-tab-0"
-                            aria-controls="login-tabpanel-0"
-                        />
-                        <Tab
-                            label="Register"
-                            id="login-tab-1"
-                            aria-controls="login-tabpanel-1"
-                        />
-                    </Tabs>
-                </Box>
+                        PokeGame
+                    </Typography>
 
-                <TabPanel value={tabValue} index={0}>
-                    <Box
-                        component="form"
-                        onSubmit={handleLoginSubmit(onLoginSubmit)}
-                        sx={{ mt: 2 }}
-                    >
-                        <TextField
-                            fullWidth
-                            label="Email"
-                            type="email"
-                            {...loginRegister("email")}
-                            margin="normal"
-                            disabled={isLoginLoading}
-                            autoComplete="email"
-                            error={!!loginErrors.email}
-                            helperText={loginErrors.email?.message}
-                        />
-
-                        <ErrorComponent error={loginErrors} />
-                        <ErrorComponent error={getUserMutation.error} />
-
-                        {successMessage && (
-                            <Alert severity="success" sx={{ mt: 2 }}>
-                                {successMessage}
-                            </Alert>
-                        )}
-
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                            disabled={!loginIsDirty || isLoginLoading}
+                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                        <Tabs
+                            value={tabValue}
+                            onChange={handleTabChange}
+                            aria-label="login register tabs"
+                            variant="fullWidth"
                         >
-                            {isLoginLoading ? (
-                                <CircularProgress size={24} />
-                            ) : (
-                                "Login"
-                            )}
-                        </Button>
+                            <Tab
+                                label="Login"
+                                id="login-tab-0"
+                                aria-controls="login-tabpanel-0"
+                            />
+                            <Tab
+                                label="Register"
+                                id="login-tab-1"
+                                aria-controls="login-tabpanel-1"
+                            />
+                        </Tabs>
                     </Box>
-                </TabPanel>
 
-                <TabPanel value={tabValue} index={1}>
-                    <Box
-                        component="form"
-                        onSubmit={handleRegisterSubmit(onRegisterSubmit)}
-                        sx={{ mt: 2 }}
-                    >
-                        <TextField
-                            fullWidth
-                            label="Email"
-                            type="email"
-                            {...registerRegister("email")}
-                            margin="normal"
-                            disabled={isRegisterLoading}
-                            autoComplete="email"
-                            error={!!registerErrors.email}
-                            helperText={registerErrors.email?.message}
-                        />
-
-                        <TextField
-                            fullWidth
-                            label="Name"
-                            type="text"
-                            {...registerRegister("name")}
-                            margin="normal"
-                            disabled={isRegisterLoading}
-                            autoComplete="name"
-                            error={!!registerErrors.name}
-                            helperText={registerErrors.name?.message}
-                        />
-
-                        <ErrorComponent error={registerErrors} />
-                        <ErrorComponent error={saveUserMutation.error} />
-
-                        {successMessage && (
-                            <Alert severity="success" sx={{ mt: 2 }}>
-                                {successMessage}
-                            </Alert>
-                        )}
-
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                            disabled={!registerIsDirty || isRegisterLoading}
+                    <TabPanel value={tabValue} index={0}>
+                        <Box
+                            component="form"
+                            onSubmit={handleLoginSubmit(onLoginSubmit)}
+                            sx={{ mt: 2 }}
                         >
-                            {isRegisterLoading ? (
-                                <CircularProgress size={24} />
-                            ) : (
-                                "Register"
+                            <TextField
+                                fullWidth
+                                label="Email"
+                                type="email"
+                                {...loginRegister("email")}
+                                margin="normal"
+                                disabled={isLoginLoading}
+                                autoComplete="email"
+                                error={!!loginErrors.email}
+                                helperText={loginErrors.email?.message}
+                            />
+
+                            <ErrorComponent error={loginErrors} />
+                            <ErrorComponent error={getUserMutation.error} />
+
+                            {successMessage && (
+                                <Alert severity="success" sx={{ mt: 2 }}>
+                                    {successMessage}
+                                </Alert>
                             )}
-                        </Button>
-                    </Box>
-                </TabPanel>
-            </Paper>
-        </Container>
+
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                sx={{ mt: 3, mb: 2 }}
+                                disabled={!loginIsDirty || isLoginLoading}
+                            >
+                                {isLoginLoading ? (
+                                    <CircularProgress size={24} />
+                                ) : (
+                                    "Login"
+                                )}
+                            </Button>
+                        </Box>
+                    </TabPanel>
+
+                    <TabPanel value={tabValue} index={1}>
+                        <Box
+                            component="form"
+                            onSubmit={handleRegisterSubmit(onRegisterSubmit)}
+                            sx={{ mt: 2 }}
+                        >
+                            <TextField
+                                fullWidth
+                                label="Email"
+                                type="email"
+                                {...registerRegister("email")}
+                                margin="normal"
+                                disabled={isRegisterLoading}
+                                autoComplete="email"
+                                error={!!registerErrors.email}
+                                helperText={registerErrors.email?.message}
+                            />
+
+                            <TextField
+                                fullWidth
+                                label="Name"
+                                type="text"
+                                {...registerRegister("name")}
+                                margin="normal"
+                                disabled={isRegisterLoading}
+                                autoComplete="name"
+                                error={!!registerErrors.name}
+                                helperText={registerErrors.name?.message}
+                            />
+
+                            <ErrorComponent error={registerErrors} />
+                            <ErrorComponent error={saveUserMutation.error} />
+
+                            {successMessage && (
+                                <Alert severity="success" sx={{ mt: 2 }}>
+                                    {successMessage}
+                                </Alert>
+                            )}
+
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                sx={{ mt: 3, mb: 2 }}
+                                disabled={!registerIsDirty || isRegisterLoading}
+                            >
+                                {isRegisterLoading ? (
+                                    <CircularProgress size={24} />
+                                ) : (
+                                    "Register"
+                                )}
+                            </Button>
+                        </Box>
+                    </TabPanel>
+                </Paper>
+            </Box>
+        </PageBase>
     );
 };
