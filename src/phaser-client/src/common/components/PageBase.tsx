@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Container, Typography, Divider } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import { useGetAppSettingsContext } from "../contexts/AppSettingsContext";
 
 interface PageBaseProps {
@@ -36,14 +36,13 @@ export const PageBase: React.FC<PageBaseProps> = ({
                     component="footer"
                     sx={{
                         mt: "auto",
-                        py: 2,
+                        py: 1,
                         backgroundColor: "background.paper",
                         borderTop: 1,
                         borderColor: "divider",
                     }}
                 >
                     <Container maxWidth={maxWidth}>
-                        <Divider sx={{ mb: 2 }} />
                         <Box
                             sx={{
                                 display: "flex",
@@ -54,18 +53,18 @@ export const PageBase: React.FC<PageBaseProps> = ({
                             }}
                         >
                             <Typography
-                                variant="body2"
+                                variant="caption"
                                 color="text.secondary"
-                                sx={{ fontSize: "0.875rem" }}
+                                sx={{ fontSize: "0.75rem" }}
                             >
                                 {appSettings.serviceName || "PokeGame"}
                             </Typography>
                             <Typography
-                                variant="body2"
+                                variant="caption"
                                 color="text.secondary"
-                                sx={{ fontSize: "0.875rem" }}
+                                sx={{ fontSize: "0.75rem" }}
                             >
-                                Version {appSettings.releaseVersion || "1.0"}
+                                v{appSettings.releaseVersion || "1.0"}
                             </Typography>
                         </Box>
                     </Container>

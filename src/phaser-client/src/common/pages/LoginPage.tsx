@@ -17,7 +17,8 @@ import { PokeGameUser } from "../../models/PokeGameUser";
 import { SaveUserInput } from "../../models/SaveUserInput";
 import { useGetUserMutation } from "../hooks/useGetUserMutation";
 import { useSaveUserMutation } from "../hooks/useSaveUserMutation";
-import { ErrorComponent, PageBase } from "../components";
+import { PageBase } from "../components/PageBase";
+import { ErrorComponent } from "../components/ErrorComponent";
 
 interface TabPanelProps {
     children?: React.ReactNode;
