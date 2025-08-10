@@ -27,10 +27,13 @@ try
     });
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
-
+    builder.Services.AddResponseCompression();
+    
     var app = builder.Build();
 
     app.UseRouting();
+
+    app.UseResponseCompression();
     
     app.UseHttpsRedirection();
 

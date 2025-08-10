@@ -39,7 +39,7 @@ internal sealed class ExceptionHandlingMiddleware
                     nameof(PokeGameApiUserException),
                     exception.StatusCode);
 
-                await SendExceptionResponseAsync(context, exception.Message, (int)exception.StatusCode);
+                await SendExceptionResponseAsync(context, exception.Message, (int)exception.StatusCode, logger);
             }
             catch (PokeGameApiServerException exception)
             {
@@ -48,14 +48,14 @@ internal sealed class ExceptionHandlingMiddleware
                     nameof(PokeGameApiServerException),
                     exception.StatusCode);
 
-                await SendExceptionResponseAsync(context, Constants.ExceptionConstants.InternalError, (int)exception.StatusCode);
+                await SendExceptionResponseAsync(context, Constants.ExceptionConstants.InternalError, (int)exception.StatusCode, logger);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Unhandled exception occured during request");
 
                 await SendExceptionResponseAsync(context, Constants.ExceptionConstants.InternalError,
-                    (int)HttpStatusCode.InternalServerError);
+                    (int)HttpStatusCode.InternalServerError, logger);
             }
         }
         catch
@@ -64,7 +64,7 @@ internal sealed class ExceptionHandlingMiddleware
         }
     }
 
-    private static async Task SendExceptionResponseAsync(HttpContext context, string message, int statusCode)
+    private static async Task SendExceptionResponseAsync(HttpContext context, string message, int statusCode, ILogger<ExceptionHandlingMiddleware> logger)
     {
         var foundCorrelationId = context.Response.Headers[ApiConstants.CorrelationIdHeader].ToString();
         context.Response.Clear();
@@ -74,7 +74,14 @@ internal sealed class ExceptionHandlingMiddleware
 
         if (!string.IsNullOrEmpty(foundCorrelationId))
         {
-            context.Response.Headers.TryAdd(ApiConstants.CorrelationIdHeader, foundCorrelationId);
+            if (!context.Response.Headers.TryAdd(ApiConstants.CorrelationIdHeader, foundCorrelationId))
+            {
+                logger.LogWarning("Failed to add correlationId: {CorrelationId} to http response headers", foundCorrelationId);
+            }
+            else
+            {
+                logger.LogInformation("CorrelationId: {CorrelationId} added to response headers successfully", foundCorrelationId);
+            }
         }
         
         await context.Response.WriteAsJsonAsync(new WebOutcome { ExceptionMessage = message });
