@@ -1,0 +1,45 @@
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS base
+
+RUN apk add --no-cache icu-libs
+RUN apk add --no-cache icu-data-full
+
+RUN adduser --uid 10000 runner --disabled-password
+USER 10000
+
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS publish
+ARG CONF=Release
+
+WORKDIR /src
+
+COPY src/PokeGame.Core/PokeGame.Core.React.Server/*.csproj ./PokeGame.Core/PokeGame.Core.React.Server/
+COPY src/PokeGame.Core/PokeGame.Core.Common/*.csproj ./PokeGame.Core/PokeGame.Core.Common/
+COPY src/PokeGame.Core/PokeGame.Core.Schemas/*.csproj ./PokeGame.Core/PokeGame.Core.Schemas/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Helpers/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Helpers/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.FastArray/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.FastArray/
+
+ARG WEB_APP_CLIENT_PATH
+COPY ${WEB_APP_CLIENT_PATH} ./PokeGame.Core/PokeGame.Core.React.Server/wwwroot/
+
+RUN dotnet restore PokeGame.Core/PokeGame.Core.React.Server/PokeGame.Core.React.Server.csproj 
+
+COPY src/PokeGame.Core/PokeGame.Core.React.Server/ ./PokeGame.Core/PokeGame.Core.React.Server/
+COPY src/PokeGame.Core/PokeGame.Core.Common/ ./PokeGame.Core/PokeGame.Core.Common/
+COPY src/PokeGame.Core/PokeGame.Core.Schemas/ ./PokeGame.Core/PokeGame.Core.Schemas/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Helpers/ ./Submodules/BT/src/BT.Common/BT.Common.Helpers/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/ ./Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.FastArray/ ./Submodules/BT/src/BT.Common/BT.Common.FastArray/
+
+
+WORKDIR /src/PokeGame.Core/PokeGame.Core.React.Server 
+ARG CONF=Release
+RUN dotnet publish PokeGame.Core.React.Server.csproj -c ${CONF} -o /app
+
+FROM base AS final
+ARG CONF=Release
+WORKDIR /app
+COPY --from=publish /app .
+
+ENTRYPOINT ["dotnet", "PokeGame.Core.React.Server.dll"]

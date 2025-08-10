@@ -58,13 +58,16 @@ try
 
                 opts.WithOrigins("http://localhost:3000").AllowCredentials();
                 opts.WithOrigins("http://localhost:8080").AllowCredentials();
+                opts.WithOrigins("http://localhost:7070").AllowCredentials();
             }
         );
     });
 
-    
-    localLogger.LogInformation("About to build application with {NumberOfServices} services", builder.Services.Count);
-    
+    localLogger.LogInformation(
+        "About to build application with {NumberOfServices} services",
+        builder.Services.Count
+    );
+
     var app = builder.Build();
 
     if (app.Environment.IsDevelopment())
