@@ -1,4 +1,4 @@
-import appSettingsJson from "./appsettings.json";
+import appSettingsJson from "./reactappsettings.json";
 
 enum AppSettingsKeys {
     serviceName = "serviceName",

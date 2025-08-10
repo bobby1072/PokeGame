@@ -13,6 +13,11 @@ try
     var builder = WebApplication.CreateBuilder(args);
     builder.WebHost.ConfigureKestrel(server => server.AddServerHeader = false);
 
+    builder.Configuration
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("reactserversettings.json", optional: false, reloadOnChange: true)
+        .AddEnvironmentVariables();
+    
     var serviceInfo = builder.Configuration.GetSection(ServiceInfo.Key);
 
     if (!serviceInfo.Exists())

@@ -72,12 +72,11 @@ stages:
 
           - task: FileTransform@2
             displayName: "Transform react app settings"
-            condition: eq(variables.isMain, true)
             inputs:
               folderPath: "$(Build.SourcesDirectory)/src/phaser-client/src/common/utils"
               fileType: "json"
               xmlTransformationRules:
-              jsonTargetFiles: "appsettings.json"
+              jsonTargetFiles: "reactappsettings.json"
 
           - task: Npm@1
             displayName: "Build"
@@ -160,7 +159,7 @@ stages:
               folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core/PokeGame.Core.React.Server"
               fileType: "json"
               xmlTransformationRules:
-              jsonTargetFiles: "appsettings.json"
+              jsonTargetFiles: "reactserversettings.json"
 
 
           - task: Docker@2
