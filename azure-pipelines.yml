@@ -50,6 +50,8 @@ stages:
               arguments: "-c Release"
 
       - job: build_phaser_frontend
+        workspace:
+          clean: all      
         displayName: "Build phaser frontend"
         steps:
           - task: NodeTool@0
@@ -95,6 +97,8 @@ stages:
     condition: and(eq(variables.isMain, true), succeeded())
     jobs:
       - job: push_api_image
+        workspace:
+          clean: all      
         steps:
           - checkout: self
             submodules: recursive
@@ -136,6 +140,8 @@ stages:
                 $(Build.BuildNumber)             
 
       - job: push_react_server_image
+        workspace:
+          clean: all      
         steps:
           - checkout: self
             submodules: recursive
