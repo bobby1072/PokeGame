@@ -15,6 +15,7 @@ else {
 if ($useReactServer -eq $true) {
     docker compose -f docker-compose.reactserver.yml up -d --build
 }
+else{
+    npm run dev --prefix src/phaser-client
+}
 
-
-npm run dev --prefix src/phaser-client

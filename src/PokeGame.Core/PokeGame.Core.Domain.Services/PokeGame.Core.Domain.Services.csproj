@@ -18,4 +18,8 @@
       <ProjectReference Include="..\PokeGame.Core.Persistence\PokeGame.Core.Persistence.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="Pokedex\Data\Pokedex.json" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>
