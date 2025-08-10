@@ -14,7 +14,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Helpers\BT.Common.Helpers.csproj" />
-      <ProjectReference Include="..\PokeGame.Core.Common.Services\PokeGame.Core.Common.Services.csproj" />
       <ProjectReference Include="..\PokeGame.Core.Common\PokeGame.Core.Common.csproj" />
       <ProjectReference Include="..\PokeGame.Core.Persistence\PokeGame.Core.Persistence.csproj" />
     </ItemGroup>

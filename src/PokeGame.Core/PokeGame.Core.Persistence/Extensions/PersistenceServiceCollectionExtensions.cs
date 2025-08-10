@@ -1,10 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BT.Common.Helpers.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Npgsql;
-using PokeGame.Core.Common;
-using PokeGame.Core.Common.Extensions;
 using PokeGame.Core.Persistence.Configurations;
 using PokeGame.Core.Persistence.Contexts;
 using PokeGame.Core.Persistence.Migrations.Abstract;

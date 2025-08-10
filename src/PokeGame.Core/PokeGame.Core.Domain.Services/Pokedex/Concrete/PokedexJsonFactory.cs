@@ -1,18 +1,19 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using PokeGame.Core.Common.Services.Abstract;
+using PokeGame.Core.Common;
+using PokeGame.Core.Domain.Services.Pokedex.Abstract;
 
-namespace PokeGame.Core.Common.Services.Concrete;
+namespace PokeGame.Core.Domain.Services.Pokedex.Concrete;
 
-internal sealed class PokedexJsonFileControllerService: IPokedexJsonFileControllerService
+internal sealed class PokedexJsonFactory: IPokedexJsonFactory
 {
     private readonly string _jsonFilePath;
-    private readonly ILogger<PokedexJsonFileControllerService> _logger;
+    private readonly ILogger<PokedexJsonFactory> _logger;
 
-    public PokedexJsonFileControllerService(
+    public PokedexJsonFactory(
         [FromKeyedServices(Constants.ServiceKeys.PokedexJsonFilePath)]string jsonFilePath,
-        ILogger<PokedexJsonFileControllerService> logger
+        ILogger<PokedexJsonFactory> logger
     )
     {
         _jsonFilePath = jsonFilePath;

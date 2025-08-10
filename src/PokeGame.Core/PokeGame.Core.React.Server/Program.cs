@@ -1,5 +1,8 @@
+using System.Text.Json;
 using BT.Common.Api.Helpers.Extensions;
 using BT.Common.Helpers;
+using BT.Common.Helpers.Extensions;
+using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.Net.Http.Headers;
 using PokeGame.Core.Common.Configurations;
 
@@ -17,6 +20,8 @@ try
         throw new ArgumentNullException(ServiceInfo.Key);
     }
 
+    builder.Services.ConfigureSingletonOptions<ServiceInfo>(serviceInfo);
+    
     builder.Services.AddLogging(opts =>
     {
         opts.AddJsonConsole(ctx =>
@@ -25,7 +30,24 @@ try
             ctx.UseUtcTimestamp = true;
         });
     });
-    builder.Services.AddControllers();
+    
+    var requestTimeout = builder.Configuration.GetValue<int>("RequestTimeout");
+
+    builder.Services.AddRequestTimeouts(opts =>
+    {
+        opts.DefaultPolicy = new RequestTimeoutPolicy
+        {
+            Timeout = TimeSpan.FromSeconds(requestTimeout > 0 ? requestTimeout : 30),
+        };
+    });
+    
+    builder.Services
+        .AddControllers()
+        .AddJsonOptions(opts =>
+        {
+            opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        });
+    
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddResponseCompression();
     

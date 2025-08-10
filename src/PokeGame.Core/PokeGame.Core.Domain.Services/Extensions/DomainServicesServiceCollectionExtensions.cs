@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using BT.Common.Helpers.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PokeGame.Core.Common;
 using PokeGame.Core.Common.Configurations;
-using PokeGame.Core.Common.Extensions;
-using PokeGame.Core.Common.Services.Extensions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
+using PokeGame.Core.Domain.Services.Pokedex.Abstract;
 using PokeGame.Core.Domain.Services.Pokedex.Commands;
 using PokeGame.Core.Domain.Services.Pokedex.Concrete;
 using PokeGame.Core.Domain.Services.User.Abstract;
@@ -34,12 +35,12 @@ public static class DomainServicesServiceCollectionExtensions
         services
             .AddHttpClient()
             .AddLogging()
-            .AddCommonServices(configuration)
             .AddDomainModelValidators()
             .AddPokeGamePersistence(configuration, environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
 
         services
+            .AddPokedexJsonDoc(configuration)
             .AddScoped<CreatePokedexPokemonCommand>()
             .AddScoped<SaveUserCommand>()
             .AddScoped<GetUserByEmailCommand>()
@@ -47,6 +48,33 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<IUserProcessingManager, UserProcessingManager>()
             .AddHostedService<PokedexDataMigratorHostedService>();
 
+        return services;
+    }
+
+    private static IServiceCollection AddPokedexJsonDoc(this IServiceCollection services, IConfiguration configuration)
+    {
+        var foundFilePath = configuration.GetValue<string>("PokedexJsonFilePath")?.Replace("/", Path.DirectorySeparatorChar.ToString());
+
+        if (string.IsNullOrEmpty(foundFilePath))
+        {
+            throw new ArgumentNullException(nameof(foundFilePath));
+        }
+        
+        services.AddKeyedSingleton(Constants.ServiceKeys.PokedexJsonFilePath, foundFilePath);
+        
+        services.AddSingleton<IPokedexJsonFactory, PokedexJsonFactory>();
+
+        services.AddKeyedSingleton(
+            Constants.ServiceKeys.PokedexJsonFile,
+            (sp, _) =>
+            {
+                var pokedexFileControllerService =
+                    sp.GetRequiredService<IPokedexJsonFactory>();
+
+                return pokedexFileControllerService.GetPokedexJsonDocAsync().GetAwaiter().GetResult();
+            }
+        );
+        
         return services;
     }
 }
