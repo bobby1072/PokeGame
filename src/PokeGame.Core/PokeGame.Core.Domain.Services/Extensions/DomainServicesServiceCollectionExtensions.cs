@@ -12,21 +12,23 @@ using PokeGame.Core.Domain.Services.User.Abstract;
 using PokeGame.Core.Domain.Services.User.Commands;
 using PokeGame.Core.Domain.Services.User.Concrete;
 using PokeGame.Core.Persistence.Extensions;
-using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Extensions;
-using PokeGame.Core.Schemas.Input;
 
 namespace PokeGame.Core.Domain.Services.Extensions;
 
 public static class DomainServicesServiceCollectionExtensions
 {
-    public static async Task<IServiceCollection> AddPokeGameApplicationServices(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+    public static IServiceCollection AddPokeGameApplicationServices(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment
+    )
     {
         var serviceInfoSection = configuration.GetSection(ServiceInfo.Key);
 
         if (!serviceInfoSection.Exists())
         {
-            throw new ArgumentException("Service info section not found");
+            throw new ArgumentNullException(ServiceInfo.Key);
         }
 
         services
@@ -36,8 +38,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddDomainModelValidators()
             .AddPokeGamePersistence(configuration, environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
-        
-        
+
         services
             .AddScoped<CreatePokedexPokemonCommand>()
             .AddScoped<SaveUserCommand>()

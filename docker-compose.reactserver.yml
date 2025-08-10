@@ -1,0 +1,15 @@
+services:
+  reactserver:
+    build:
+      context: .
+      dockerfile: src/PokeGame.Core/dockerfile.react.server.local
+    ports:
+      - 7070:443
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/reactserverapp.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: password123
+      Logging__LogLevel__Default: Debug
+    volumes:
+      - ./certs:/https:ro

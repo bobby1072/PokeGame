@@ -10,7 +10,6 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-*.local
 
 # Editor directories and files
 .vscode/*
@@ -30,3 +29,7 @@ obj/
 *.sln.DotSettings.user
 
 certs/
+
+wwwroot/
+
+*.csproj.user

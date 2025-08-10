@@ -16,6 +16,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\PokeGame.Core.Api\PokeGame.Core.Api.csproj" />
+      <ProjectReference Include="..\PokeGame.Core.React.Server\PokeGame.Core.React.Server.csproj" />
     </ItemGroup>
 
 </Project>
