@@ -15,7 +15,6 @@ WORKDIR /src
 
 COPY src/PokeGame.Core/PokeGame.Core.Api/*.csproj ./PokeGame.Core/PokeGame.Core.Api/
 COPY src/PokeGame.Core/PokeGame.Core.Common/*.csproj ./PokeGame.Core/PokeGame.Core.Common/
-COPY src/PokeGame.Core/PokeGame.Core.Common.Services/*.csproj ./PokeGame.Core/PokeGame.Core.Common.Services/
 COPY src/PokeGame.Core/PokeGame.Core.Domain.Services/*.csproj ./PokeGame.Core/PokeGame.Core.Domain.Services/
 COPY src/PokeGame.Core/PokeGame.Core.Persistence/*.csproj ./PokeGame.Core/PokeGame.Core.Persistence/
 COPY src/PokeGame.Core/PokeGame.Core.Persistence.Entities/*.csproj ./PokeGame.Core/PokeGame.Core.Persistence.Entities/
@@ -31,7 +30,6 @@ RUN dotnet restore PokeGame.Core/PokeGame.Core.Api/PokeGame.Core.Api.csproj
 
 COPY src/PokeGame.Core/PokeGame.Core.Api/ ./PokeGame.Core/PokeGame.Core.Api/
 COPY src/PokeGame.Core/PokeGame.Core.Common/ ./PokeGame.Core/PokeGame.Core.Common/
-COPY src/PokeGame.Core/PokeGame.Core.Common.Services/ ./PokeGame.Core/PokeGame.Core.Common.Services/
 COPY src/PokeGame.Core/PokeGame.Core.Domain.Services/ ./PokeGame.Core/PokeGame.Core.Domain.Services/
 COPY src/PokeGame.Core/PokeGame.Core.Persistence/ ./PokeGame.Core/PokeGame.Core.Persistence/
 COPY src/PokeGame.Core/PokeGame.Core.Persistence.Entities/ ./PokeGame.Core/PokeGame.Core.Persistence.Entities/
