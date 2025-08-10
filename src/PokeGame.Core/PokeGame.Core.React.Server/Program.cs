@@ -1,6 +1,7 @@
 using System.Text.Json;
 using BT.Common.Api.Helpers.Extensions;
 using BT.Common.Helpers;
+using BT.Common.Helpers.Extensions;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.Net.Http.Headers;
 using PokeGame.Core.Common.Configurations;
@@ -18,6 +19,9 @@ try
     {
         throw new ArgumentNullException(ServiceInfo.Key);
     }
+
+    builder.Services.ConfigureSingletonOptions<ServiceInfo>(serviceInfo);
+    
     builder.Services.AddLogging(opts =>
     {
         opts.AddJsonConsole(ctx =>
