@@ -1,4 +1,5 @@
-﻿using BT.Common.Helpers.Extensions;
+﻿using System.Reflection;
+using BT.Common.Helpers.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -53,7 +54,8 @@ public static class DomainServicesServiceCollectionExtensions
 
     private static IServiceCollection AddPokedexJsonDoc(this IServiceCollection services, IConfiguration configuration)
     {
-        var foundFilePath = configuration.GetValue<string>("PokedexJsonFilePath")?.Replace("/", Path.DirectorySeparatorChar.ToString());
+        var baseServicesDomain = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+        var foundFilePath = Path.Combine(baseServicesDomain, "Pokedex", "Data", "Pokedex.json");;
 
         if (string.IsNullOrEmpty(foundFilePath))
         {
