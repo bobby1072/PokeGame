@@ -106,13 +106,12 @@ stages:
               username: $(dockerHubUsername)
               password: $(dockerHubPassword)
 
-          - task: FileTransform@2
+          - task: FileTransform@1
             displayName: "Transform api app settings"
             inputs:
               folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core/PokeGame.Core.Api"
               fileType: "json"
-              xmlTransformationRules:
-              jsonTargetFiles: "appsettings.json"
+              targetFiles: "appsettings.json"
 
           - task: Docker@2
             displayName: Build Web Image
@@ -152,12 +151,11 @@ stages:
               username: $(dockerHubUsername)
               password: $(dockerHubPassword)
 
-          - task: FileTransform@2
+          - task: FileTransform@1
             displayName: "Transform react server app settings"
             inputs:
               folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core/PokeGame.Core.React.Server"
               fileType: "json"
-              xmlTransformationRules:
               jsonTargetFiles: "reactserversettings.json"
 
 
