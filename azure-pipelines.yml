@@ -107,8 +107,8 @@ stages:
             inputs:
               command: login
               containerRegistry: DockerHub
-              username: $(pipeline.dockerHubUsername)
-              password: $(pipeline.dockerHubPassword)
+              username: $(dockerHubUsername)
+              password: $(dockerHubPassword)
 
           - task: FileTransform@2
             displayName: "Transform api app settings"
@@ -138,7 +138,7 @@ stages:
                 latest
                 $(Build.BuildNumber)             
 
-      - job: push_api_image
+      - job: push_react_server_image
         steps:
           - checkout: self
             submodules: recursive
@@ -153,8 +153,8 @@ stages:
             inputs:
               command: login
               containerRegistry: DockerHub
-              username: $(pipeline.dockerHubUsername)
-              password: $(pipeline.dockerHubPassword)
+              username: $(dockerHubUsername)
+              password: $(dockerHubPassword)
 
           - task: FileTransform@2
             displayName: "Transform api app settings"
@@ -169,7 +169,7 @@ stages:
             displayName: Build Core Image
             inputs:
               command: build
-              repository: $(core-dockerRepository)
+              repository: $(ReactServerDockerRepository)
               tags: |
                 latest
                 $(Build.BuildNumber)
@@ -177,5 +177,13 @@ stages:
               buildContext: "$(Build.SourcesDirectory)"
               arguments: --build-arg WEB_APP_CLIENT_PATH=src/phaser-client/dist/          
           
+          - task: Docker@2
+            displayName: Push Core Image
+            inputs:
+              command: push
+              repository: $(ReactServerDockerRepository)
+              tags: |
+                latest
+                $(Build.BuildNumber)
 
        
