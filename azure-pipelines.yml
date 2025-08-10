@@ -50,8 +50,6 @@ stages:
               arguments: "-c Release"
 
       - job: build_phaser_frontend
-        workspace:
-          clean: all      
         displayName: "Build phaser frontend"
         steps:
           - task: NodeTool@0
@@ -72,14 +70,6 @@ stages:
               customCommand: "run check-types"
               workingDir: $(Build.SourcesDirectory)/src/phaser-client
 
-          - task: FileTransform@2
-            displayName: "Transform react app settings"
-            inputs:
-              folderPath: "$(Build.SourcesDirectory)/src/phaser-client/src/common/utils"
-              fileType: "json"
-              xmlTransformationRules:
-              jsonTargetFiles: "reactappsettings.json"
-
           - task: Npm@1
             displayName: "Build"
             inputs:
@@ -87,29 +77,18 @@ stages:
               customCommand: "run build"
               workingDir: $(Build.SourcesDirectory)/src/phaser-client
 
-          - publish: "$(Build.SourcesDirectory)/src/phaser-client/dist"
-            condition: eq(variables.isMain, true)
-            displayName: "Publish client files"
-            artifact: client
-
-  
-  - stage: Publish
-    condition: and(eq(variables.isMain, true), succeeded())
-    jobs:
-      - job: push_api_image
-        workspace:
-          clean: all      
+      - job: publish_service_artifacts
         steps:
           - checkout: self
             submodules: recursive
 
-          - task: Docker@2
-            displayName: Login to Docker Hub
+          - task: FileTransform@2
+            displayName: "Transform react server app settings"
             inputs:
-              command: login
-              containerRegistry: DockerHub
-              username: $(dockerHubUsername)
-              password: $(dockerHubPassword)
+              folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core/PokeGame.Core.React.Server"
+              fileType: "json"
+              xmlTransformationRules:
+              jsonTargetFiles: "reactserversettings.json"
 
           - task: FileTransform@2
             displayName: "Transform api app settings"
@@ -118,6 +97,46 @@ stages:
               fileType: "json"
               xmlTransformationRules:
               jsonTargetFiles: "appsettings.json"
+
+          - task: FileTransform@2
+            displayName: "Transform react app settings"
+            inputs:
+              folderPath: "$(Build.SourcesDirectory)/src/phaser-client/src/common/utils"
+              fileType: "json"
+              xmlTransformationRules:
+              jsonTargetFiles: "reactappsettings.json"              
+
+          - publish: "$(Build.SourcesDirectory)/src/phaser-client/dist"
+            # condition: eq(variables.isMain, true)
+            displayName: "Publish client files"
+            artifact: client
+
+          - publish: "$(Build.SourcesDirectory)/src/PokeGame.Core"
+            displayName: "Publish dotnet solution files"
+            artifact: core              
+
+
+
+  - stage: Publish
+    condition: and(eq(variables.isMain, true), succeeded())
+    jobs:
+      - job: push_api_image
+        steps:
+          - checkout: self
+            submodules: recursive
+
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: core
+              path: $(Build.SourcesDirectory)/src/PokeGame.Core
+
+          - task: Docker@2
+            displayName: Login to Docker Hub
+            inputs:
+              command: login
+              containerRegistry: DockerHub
+              username: $(dockerHubUsername)
+              password: $(dockerHubPassword)
 
           - task: Docker@2
             displayName: Build Web Image
@@ -140,11 +159,14 @@ stages:
                 $(Build.BuildNumber)             
 
       - job: push_react_server_image
-        workspace:
-          clean: all      
         steps:
           - checkout: self
             submodules: recursive
+
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: core
+              path: $(Build.SourcesDirectory)/src/PokeGame.Core
 
           - task: DownloadPipelineArtifact@2
             inputs:
@@ -158,15 +180,6 @@ stages:
               containerRegistry: DockerHub
               username: $(dockerHubUsername)
               password: $(dockerHubPassword)
-
-          - task: FileTransform@2
-            displayName: "Transform react server app settings"
-            inputs:
-              folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core/PokeGame.Core.React.Server"
-              fileType: "json"
-              xmlTransformationRules:
-              jsonTargetFiles: "reactserversettings.json"
-
 
           - task: Docker@2
             displayName: Build React Server Image
