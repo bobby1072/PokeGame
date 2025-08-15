@@ -13,8 +13,8 @@ import {
     Tab,
     CircularProgress,
 } from "@mui/material";
-import { PokeGameUser } from "../../models/PokeGameUser";
-import { SaveUserInput } from "../../models/SaveUserInput";
+import { PokeGameUser } from "../models/PokeGameUser";
+import { SaveUserInput } from "../models/SaveUserInput";
 import { useGetUserMutation } from "../hooks/useGetUserMutation";
 import { useSaveUserMutation } from "../hooks/useSaveUserMutation";
 import { PageBase } from "../components/PageBase";

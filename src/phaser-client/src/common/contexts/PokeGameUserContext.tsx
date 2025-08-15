@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { PokeGameUser } from "../../models/PokeGameUser";
+import { PokeGameUser } from "../models/PokeGameUser";
 import { LoginPage } from "../pages/LoginPage";
 
 export const PokeGameUserContext = createContext<PokeGameUser | undefined>(

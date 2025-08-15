@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { PokeGameUser } from "../../models/PokeGameUser";
+import { PokeGameUser } from "../models/PokeGameUser";
 import { useGetPokeGameHttpClientContext } from "../contexts/PokeGameCoreHttpClientContext";
 
 export const useGetUserMutation = () => {
