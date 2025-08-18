@@ -4,16 +4,16 @@ import { EventBus } from "../EventBus";
 import { Game } from "./Game";
 
 export class MainMenu extends Scene {
-    background: GameObjects.Image;
-    logo: GameObjects.Image;
-    title: GameObjects.Text;
-    logoTween: Phaser.Tweens.Tween | null;
+    public background: GameObjects.Image;
+    public logo: GameObjects.Image;
+    public title: GameObjects.Text;
+    public logoTween: Phaser.Tweens.Tween | null;
 
-    constructor() {
+    public constructor() {
         super(MainMenu.name);
     }
 
-    create() {
+    public create() {
         this.background = this.add.image(512, 384, "background");
 
         this.logo = this.add.image(512, 300, "logo").setDepth(100);
@@ -33,7 +33,7 @@ export class MainMenu extends Scene {
         EventBus.emit("current-scene-ready", this);
     }
 
-    changeScene() {
+    public changeScene() {
         if (this.logoTween) {
             this.logoTween.stop();
             this.logoTween = null;
@@ -42,7 +42,7 @@ export class MainMenu extends Scene {
         this.scene.start(Game.name);
     }
 
-    moveLogo(vueCallback: ({ x, y }: { x: number; y: number }) => void) {
+    public moveLogo(vueCallback: ({ x, y }: { x: number; y: number }) => void) {
         if (this.logoTween) {
             if (this.logoTween.isPlaying()) {
                 this.logoTween.pause();

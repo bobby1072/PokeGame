@@ -3,15 +3,15 @@ import { Scene } from "phaser";
 import { GameOver } from "./GameOver";
 
 export class Game extends Scene {
-    camera: Phaser.Cameras.Scene2D.Camera;
-    background: Phaser.GameObjects.Image;
-    gameText: Phaser.GameObjects.Text;
+    public camera: Phaser.Cameras.Scene2D.Camera;
+    public background: Phaser.GameObjects.Image;
+    public gameText: Phaser.GameObjects.Text;
 
-    constructor() {
+    public constructor() {
         super(Game.name);
     }
 
-    create() {
+    public create() {
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
 
@@ -38,7 +38,7 @@ export class Game extends Scene {
         EventBus.emit("current-scene-ready", this);
     }
 
-    changeScene() {
+    public changeScene() {
         this.scene.start(GameOver.name);
     }
 }

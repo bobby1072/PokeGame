@@ -2,18 +2,18 @@ import { Scene } from "phaser";
 import { PokePreloader } from "./PokePreloader.ts";
 
 export class PokeBoot extends Scene {
-    constructor() {
+    public constructor() {
         super(PokeBoot.name);
     }
 
-    preload() {
+    public preload() {
         this.load.setPath("assets");
         this.load.image("basiliaTown", "BasiliaTown.png");
         this.load.image("myPlayer", "myPlayer.png");
         this.load.image("background", "bg.png");
     }
 
-    create() {
+    public create() {
         this.scene.start(PokePreloader.name);
     }
 }

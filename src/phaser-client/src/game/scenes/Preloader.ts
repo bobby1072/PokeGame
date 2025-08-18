@@ -2,11 +2,11 @@ import { Scene } from "phaser";
 import { MainMenu } from "./MainMenu";
 
 export class Preloader extends Scene {
-    constructor() {
+    public constructor() {
         super(Preloader.name);
     }
 
-    init() {
+    public init() {
         //  We loaded this image in our Boot Scene, so we can display it here
         this.add.image(512, 384, "background");
 
@@ -23,7 +23,7 @@ export class Preloader extends Scene {
         });
     }
 
-    preload() {
+    public preload() {
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath("assets");
 
@@ -31,7 +31,7 @@ export class Preloader extends Scene {
         this.load.image("star", "star.png");
     }
 
-    create() {
+    public create() {
         //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
         //  For example, you can define global animations here, so we can use them in other scenes.
 
