@@ -7,4 +7,5 @@ public sealed record GetPokedexPokemonInput
     public string? FrenchName { get; init; }
     public string? JapaneseName { get; init; }
     public string? ChineseName { get; init; }
+    public bool FetchMultiple { get; init; }
 }
