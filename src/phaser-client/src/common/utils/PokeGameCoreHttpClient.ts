@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
-import { SaveUserInput } from "../../models/SaveUserInput";
-import { PokeGameUser } from "../../models/PokeGameUser";
-import { WebOutcome } from "../../models/WebOutcome";
+import { SaveUserInput } from "../models/SaveUserInput";
+import { PokeGameUser } from "../models/PokeGameUser";
+import { WebOutcome } from "../models/WebOutcome";
 
 export default class PokeGameCoreHttpClient {
     private readonly _axiosClient: AxiosInstance;

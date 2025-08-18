@@ -69,6 +69,9 @@ export const App = () => {
             <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
             <div>
                 <div>
+                    <a className="button" href="/pokemon">Play Pokemon (new)</a>
+                </div>
+                <div>
                     <button className="button" onClick={changeScene}>
                         Change Scene
                     </button>

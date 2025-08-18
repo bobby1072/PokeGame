@@ -25,7 +25,7 @@ internal sealed class CreatePokedexPokemonCommand: IDomainCommand<IReadOnlyColle
 
     public async Task<IReadOnlyCollection<PokedexPokemon>> ExecuteAsync(IReadOnlyCollection<PokedexPokemon> input)
     {
-        _logger.LogInformation("About to create {PokedexPokemonSaveCount} pokedex pokemon records...", input.Count);
+        _logger.LogInformation("Input contains {PokedexPokemonSaveCount} pokedex pokemon records...", input.Count);
         
         var existingPokedex = await EntityFrameworkUtils.TryDbOperation(() => _pokedexPokemonRepository.GetAll(), _logger) ?? throw new PokeGameApiServerException("Failed to get existing pokedex count");
 

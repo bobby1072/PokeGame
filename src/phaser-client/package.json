@@ -6,13 +6,12 @@
         "phaser3",
         "react",
         "vite",
-        "typescript"
+        "typescript",
+        "poke"
     ],
     "scripts": {
         "dev": "node log.js dev & vite --config vite/config.dev.mjs",
         "build": "node log.js build & vite build --config vite/config.prod.mjs",
-        "dev-nolog": "vite --config vite/config.dev.mjs",
-        "build-nolog": "vite build --config vite/config.prod.mjs",
         "check-types": "tsc --noemit --p tsconfig.json"
     },
     "dependencies": {
