@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { App } from "./App.tsx";
 import { AppSettingsContextProvider } from "./common/contexts/AppSettingsContext.tsx";
 import { PokeGameCoreHttpClientContextProvider } from "./common/contexts/PokeGameCoreHttpClientContext.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -18,9 +17,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                         <PokeGameUserContextProvider>
                             <BrowserRouter>
                                 <Routes>
-                                    <Route path="/" element={<App />} />
-                                    <Route path="/game" element={<App />} />
-                                    <Route path="/pokemon" element={<PokemonPage />} />
+                                    <Route path="/" element={<PokemonPage />} />
+                                    <Route
+                                        path="/pokemon"
+                                        element={<PokemonPage />}
+                                    />
                                 </Routes>
                             </BrowserRouter>
                         </PokeGameUserContextProvider>
