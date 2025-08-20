@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: src/PokeGame.Core/dockerfile.react.server.local
     ports:
-      - 7070:443
+      - 8080:443
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80

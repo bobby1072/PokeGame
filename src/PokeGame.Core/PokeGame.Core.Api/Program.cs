@@ -58,7 +58,7 @@ try
 
                 opts.WithOrigins("http://localhost:3000").AllowCredentials();
                 opts.WithOrigins("http://localhost:8080").AllowCredentials();
-                opts.WithOrigins("http://localhost:7070").AllowCredentials();
+                opts.WithOrigins("https://localhost:7070").AllowCredentials();
             }
         );
     });

@@ -1,24 +1,13 @@
-import Phaser, { GameObjects, Scene, Types } from "phaser";
+import Phaser, { Types } from "phaser";
 import { EventBus } from "../../game/EventBus";
+import { BasePlayablePokemonScene } from "./BasePlayablePokemonScene";
 
-export class BasiliaTownScene extends Scene {
+export class BasiliaTownScene extends BasePlayablePokemonScene {
     private player!: Types.Physics.Arcade.SpriteWithDynamicBody;
     private cursors!: Types.Input.Keyboard.CursorKeys;
-    private mapImage!: GameObjects.Image;
-    // We'll sample pixel colors from the source texture to approximate path-only movement
-
-    // Grid config/state
-    private tileSize = 32; // adjust to taste (16/24/32)
-    private cols = 0;
-    private rows = 0;
-    private walkable: boolean[][] = [];
     private isMoving = false;
     private targetPos?: Phaser.Math.Vector2;
     private moveSpeed = 180; // px/sec toward next cell center
-
-    private gridGraphics?: Phaser.GameObjects.Graphics;
-    private showGrid = true;
-    private gridToggleKey?: Phaser.Input.Keyboard.Key;
     private debugText?: Phaser.GameObjects.Text;
 
     public constructor() {
@@ -72,7 +61,7 @@ export class BasiliaTownScene extends Scene {
         const startCenter = this.gridToWorldCenter(startCell.ix, startCell.iy);
         this.player.setPosition(startCenter.x, startCenter.y);
 
-        // Draw overlay
+        // Draw overlay (visibility controlled by base boolean)
         this.drawGridOverlay();
 
         // Debug HUD and authoring helpers
@@ -106,110 +95,7 @@ export class BasiliaTownScene extends Scene {
     }
 
     // --- Grid helpers ---
-    private worldToGrid(x: number, y: number) {
-        const topLeft = this.mapImage.getTopLeft();
-        const lx = x - topLeft.x;
-        const ly = y - topLeft.y;
-        const ix = Phaser.Math.Clamp(
-            Math.floor(lx / this.tileSize),
-            0,
-            Math.max(0, this.cols - 1)
-        );
-        const iy = Phaser.Math.Clamp(
-            Math.floor(ly / this.tileSize),
-            0,
-            Math.max(0, this.rows - 1)
-        );
-        return { ix, iy };
-    }
-
-    private gridToWorldCenter(ix: number, iy: number) {
-        const topLeft = this.mapImage.getTopLeft();
-        const x = topLeft.x + ix * this.tileSize + this.tileSize / 2;
-        const y = topLeft.y + iy * this.tileSize + this.tileSize / 2;
-        return new Phaser.Math.Vector2(x, y);
-    }
-
-    private inGrid(ix: number, iy: number) {
-        return ix >= 0 && iy >= 0 && ix < this.cols && iy < this.rows;
-    }
-
-    private setBlockedRect(
-        x1: number,
-        y1: number,
-        x2: number,
-        y2: number,
-        blocked = true
-    ) {
-        if (!this.walkable.length) return;
-        const minX = Phaser.Math.Clamp(Math.min(x1, x2), 0, this.cols - 1);
-        const maxX = Phaser.Math.Clamp(Math.max(x1, x2), 0, this.cols - 1);
-        const minY = Phaser.Math.Clamp(Math.min(y1, y2), 0, this.rows - 1);
-        const maxY = Phaser.Math.Clamp(Math.max(y1, y2), 0, this.rows - 1);
-        for (let y = minY; y <= maxY; y++) {
-            for (let x = minX; x <= maxX; x++) {
-                this.walkable[y][x] = !blocked;
-            }
-        }
-    }
-
-    private buildGridFromImage() {
-        this.cols = Math.max(
-            1,
-            Math.floor(this.mapImage.displayWidth / this.tileSize)
-        );
-        this.rows = Math.max(
-            1,
-            Math.floor(this.mapImage.displayHeight / this.tileSize)
-        );
-        this.walkable = new Array(this.rows);
-        for (let y = 0; y < this.rows; y++) {
-            this.walkable[y] = new Array(this.cols);
-            for (let x = 0; x < this.cols; x++) {
-                const c = this.gridToWorldCenter(x, y);
-                this.walkable[y][x] = this.sampleWalkableAt(c.x, c.y);
-            }
-        }
-    }
-
-    private drawGridOverlay() {
-        if (!this.gridGraphics) {
-            this.gridGraphics = this.add.graphics();
-            this.gridGraphics.setDepth(50);
-            // Keep overlay glued to the background image
-            this.gridGraphics.setScrollFactor(
-                this.mapImage.scrollFactorX,
-                this.mapImage.scrollFactorY
-            );
-        }
-        const g = this.gridGraphics;
-        g.clear();
-
-        const topLeft = this.mapImage.getTopLeft();
-
-        // Light outline for all cells
-        g.lineStyle(1, 0xffffff, 0.15);
-
-        for (let y = 0; y < this.rows; y++) {
-            for (let x = 0; x < this.cols; x++) {
-                const rx = topLeft.x + x * this.tileSize;
-                const ry = topLeft.y + y * this.tileSize;
-
-                // Fill blocked cells with translucent red; walkable faint green
-                if (!this.walkable[y][x]) {
-                    g.fillStyle(0xff4d4f, 0.2);
-                    g.fillRect(rx, ry, this.tileSize, this.tileSize);
-                } else {
-                    g.fillStyle(0x52c41a, 0.08);
-                    g.fillRect(rx, ry, this.tileSize, this.tileSize);
-                }
-
-                g.strokeRect(rx, ry, this.tileSize, this.tileSize);
-            }
-        }
-
-        g.setVisible(this.showGrid);
-    }
+    // remove grid helpers/overlay; inherited from BasePokemonScene
 
     private canMoveTo(worldX: number, worldY: number): boolean {
         // Translate world position into texture pixel coordinates for 'basiliaTown'
@@ -243,19 +129,16 @@ export class BasiliaTownScene extends Scene {
     }
 
     // Used by grid builder; separate from runtime movement checks
-    private sampleWalkableAt(worldX: number, worldY: number): boolean {
+    protected override sampleWalkableAt(
+        worldX: number,
+        worldY: number
+    ): boolean {
         return this.canMoveTo(worldX, worldY);
     }
 
-    public update() {
-        // Toggle grid overlay
-        if (
-            this.gridToggleKey &&
-            Phaser.Input.Keyboard.JustDown(this.gridToggleKey)
-        ) {
-            this.showGrid = !this.showGrid;
-            this.gridGraphics?.setVisible(this.showGrid);
-        }
+    public update(time: number, delta: number) {
+        super.update(time, delta); // handle base overlay toggle
+        // Base handles G toggle for overlay via showGridOverlay
 
         // If currently moving, continue toward target
         if (this.isMoving && this.targetPos) {
