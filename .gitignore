@@ -33,3 +33,5 @@ certs/
 wwwroot/
 
 *.csproj.user
+
+.vscode/

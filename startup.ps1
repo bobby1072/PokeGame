@@ -5,17 +5,14 @@ param (
 $ErrorActionPreference = "Stop"
 
 
+if ($useReactServer -eq $true) {
+    docker compose -f docker-compose.yml -f docker-compose.reactserver.yml -f docker-compose.coreapi.yml up -d --build
+    return
+}
 if ($debug -eq $true) {
     docker compose up -d --build
 }
 else {
     docker compose -f docker-compose.yml -f docker-compose.coreapi.yml up -d --build
 }
-
-if ($useReactServer -eq $true) {
-    docker compose -f docker-compose.reactserver.yml up -d --build
-}
-else{
-    npm run dev --prefix src/phaser-client
-}
-
+npm run dev --prefix src/phaser-client
