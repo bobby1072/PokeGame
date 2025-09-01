@@ -33,32 +33,48 @@ public static class DomainServicesServiceCollectionExtensions
             throw new ArgumentNullException(ServiceInfo.Key);
         }
 
-        services
-            .AddHealthChecks()
-            .AddCheck<IPokedexDataMigratorHealthCheck>(
-                nameof(PokedexDataMigratorHealthCheck)
-            );
+        var healthCheckBuilder = services
+            .AddHealthChecks();
         
         services
             .AddHttpClient()
             .AddLogging()
             .AddDomainModelValidators()
-            .AddPokeGamePersistence(configuration, environment.IsDevelopment())
+            .AddPokeGamePersistence(configuration, healthCheckBuilder ,environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
 
+        services
+            .AddScoped<IScopedDomainServiceCommandExecutor, ScopedDomainServiceCommandExecutor>()
+            .AddUserServices()
+            .AddPokedexServices(configuration, healthCheckBuilder);
+        
+        
+        return services;
+    }
+
+    private static IServiceCollection AddUserServices(this IServiceCollection services)
+    {
+        services
+            .AddScoped<SaveUserCommand>()
+            .AddScoped<GetUserByEmailCommand>()
+            .AddScoped<IUserProcessingManager, UserProcessingManager>();
+        
+        return services;
+    }
+    private static IServiceCollection AddPokedexServices(this IServiceCollection services, IConfiguration configuration, IHealthChecksBuilder healthCheckBuilder)
+    {
         services
             .AddPokedexJsonDoc(configuration)
             .AddScoped<CreatePokedexPokemonCommand>()
             .AddScoped<GetPokedexPokemonCommand>()
-            .AddScoped<SaveUserCommand>()
-            .AddScoped<GetUserByEmailCommand>()
-            .AddScoped<IScopedDomainServiceCommandExecutor, ScopedDomainServiceCommandExecutor>()
-            .AddScoped<IUserProcessingManager, UserProcessingManager>()
-            .AddHostedService<PokedexDataMigratorHostedService>();
-            
+            .AddHostedService<PokedexDataMigratorHostedService>()
+            .AddSingleton<IPokedexDataMigratorHealthCheck, PokedexDataMigratorHealthCheck>();
+        
+        healthCheckBuilder
+            .AddCheck<IPokedexDataMigratorHealthCheck>(nameof(PokedexDataMigratorHealthCheck));
+        
         return services;
     }
-
     private static IServiceCollection AddPokedexJsonDoc(this IServiceCollection services, IConfiguration configuration)
     {
         var baseServicesDomain = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;

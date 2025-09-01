@@ -21,4 +21,4 @@ using var consoleHost = Host.CreateDefaultBuilder()
     })
     .Build();
     
-await consoleHost.RunAsync();       
+await consoleHost.RunAsync();
