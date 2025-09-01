@@ -36,8 +36,7 @@ public static class PersistenceServiceCollectionExtensions
             .AddSingleton<IDatabaseMigratorHealthCheck, DatabaseMigratorHealthCheck>()
             .AddHealthChecks()
             .AddCheck<IDatabaseMigratorHealthCheck>(
-                DatabaseMigratorHealthCheck.Name,
-                tags: ["Ready"]
+                nameof(DatabaseMigratorHealthCheck)
             );
 
         services

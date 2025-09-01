@@ -34,6 +34,12 @@ public static class DomainServicesServiceCollectionExtensions
         }
 
         services
+            .AddHealthChecks()
+            .AddCheck<IPokedexDataMigratorHealthCheck>(
+                nameof(PokedexDataMigratorHealthCheck)
+            );
+        
+        services
             .AddHttpClient()
             .AddLogging()
             .AddDomainModelValidators()
@@ -49,7 +55,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<IScopedDomainServiceCommandExecutor, ScopedDomainServiceCommandExecutor>()
             .AddScoped<IUserProcessingManager, UserProcessingManager>()
             .AddHostedService<PokedexDataMigratorHostedService>();
-
+            
         return services;
     }
 

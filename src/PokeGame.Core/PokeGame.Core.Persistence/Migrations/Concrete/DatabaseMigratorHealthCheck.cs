@@ -5,8 +5,6 @@ namespace PokeGame.Core.Persistence.Migrations.Concrete;
 
 internal class DatabaseMigratorHealthCheck : IDatabaseMigratorHealthCheck
 {
-    public const string Name = nameof(DatabaseMigratorHealthCheck);
-
     public bool MigrationCompleted { get; set; } = false;
 
     public Task<HealthCheckResult> CheckHealthAsync(

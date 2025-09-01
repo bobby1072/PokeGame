@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common;
 using PokeGame.Core.Domain.Services.Abstract;
+using PokeGame.Core.Domain.Services.Pokedex.Abstract;
 using PokeGame.Core.Domain.Services.Pokedex.Commands;
 using PokeGame.Core.Persistence.Migrations.Abstract;
 using PokeGame.Core.Schemas;
@@ -16,17 +17,20 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IDatabaseMigratorHealthCheck _databaseMigratorHealthCheck;
+    private readonly IPokedexDataMigratorHealthCheck _pokedexDataMigratorHealthCheck;
     private readonly JsonDocument _pokedexJsonFile;
     private readonly ILogger<PokedexDataMigratorHostedService> _logger;
 
     public PokedexDataMigratorHostedService(
         IServiceScopeFactory scopeFactory,
         IDatabaseMigratorHealthCheck databaseMigratorHealthCheck,
+        IPokedexDataMigratorHealthCheck pokedexDataMigratorHealthCheck,
         [FromKeyedServices(Constants.ServiceKeys.PokedexJsonFile)] JsonDocument pokedexJsonFile,
         ILogger<PokedexDataMigratorHostedService> logger)
     {
         _scopeFactory = scopeFactory;
         _databaseMigratorHealthCheck = databaseMigratorHealthCheck;
+        _pokedexDataMigratorHealthCheck = pokedexDataMigratorHealthCheck;
         _pokedexJsonFile = pokedexJsonFile;
         _logger = logger;
     }
@@ -51,6 +55,9 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         _logger.LogInformation("Database migration completed. Starting Pokedex data seeding...");
 
         await SeedPokedexDataAsync(stoppingToken);
+        
+        _pokedexDataMigratorHealthCheck.SetDatabaseSeeded(true);
+        
         _logger.LogInformation("Pokedex data seeding completed successfully");
     }
 
@@ -66,7 +73,7 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while seeding Pokedex data");
+            _logger.LogError(ex, "Error occurred while deserializing pokedex json");
             throw;
         }
         await using var scope = _scopeFactory.CreateAsyncScope();
