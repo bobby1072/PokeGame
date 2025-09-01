@@ -26,7 +26,7 @@ namespace PokeGame.Core.Persistence.Migrations.Concrete
             
             await pipeline.ExecuteAsync(async _ => await Migrate(), cancellationToken);
             
-            _databaseMigratorHealthCheck.MigrationCompleted = true;
+            _databaseMigratorHealthCheck.SetMigrationCompleted(true);
         }
         public Task StopAsync(CancellationToken cancellationToken)
         {

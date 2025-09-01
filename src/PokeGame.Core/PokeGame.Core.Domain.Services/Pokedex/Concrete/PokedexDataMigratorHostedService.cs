@@ -1,6 +1,7 @@
 using System.Text.Json;
 using BT.Common.FastArray.Proto;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common;
@@ -40,7 +41,7 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         _logger.LogInformation("PokedexDataMigratorHostedService starting...");
 
         // Wait for database migration to complete
-        while (!_databaseMigratorHealthCheck.MigrationCompleted && !stoppingToken.IsCancellationRequested)
+        while ((await _databaseMigratorHealthCheck.CheckHealthAsync(new HealthCheckContext(), stoppingToken)).Status != HealthStatus.Healthy && !stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("Waiting for database migration to complete...");
             await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);

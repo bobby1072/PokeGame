@@ -3,14 +3,18 @@ using PokeGame.Core.Persistence.Migrations.Abstract;
 
 namespace PokeGame.Core.Persistence.Migrations.Concrete;
 
-internal class DatabaseMigratorHealthCheck : IDatabaseMigratorHealthCheck
+internal sealed class DatabaseMigratorHealthCheck : IDatabaseMigratorHealthCheck
 {
-    public bool MigrationCompleted { get; set; } = false;
+    private bool _migrationCompleted = false;
 
+    public void SetMigrationCompleted(bool isMigrationCompleted)
+    {
+        _migrationCompleted = isMigrationCompleted;
+    }
     public Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,
         CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(MigrationCompleted ? HealthCheckResult.Healthy("The database migrator is finished.") : HealthCheckResult.Unhealthy("The database migrator is still running."));
+        return Task.FromResult(_migrationCompleted ? HealthCheckResult.Healthy("The database migrator is finished.") : HealthCheckResult.Unhealthy("The database migrator is still running."));
     }
 }
