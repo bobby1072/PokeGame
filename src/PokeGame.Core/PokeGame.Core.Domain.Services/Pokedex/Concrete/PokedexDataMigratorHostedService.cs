@@ -67,7 +67,6 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while seeding Pokedex data");
-
             throw;
         }
         await using var scope = _scopeFactory.CreateAsyncScope();
