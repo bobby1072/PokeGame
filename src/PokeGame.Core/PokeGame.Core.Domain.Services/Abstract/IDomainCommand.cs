@@ -12,5 +12,5 @@ internal interface IDomainCommand<in TInput> : IDomainCommand
 
 internal interface IDomainCommand<in TInput, TOutput> : IDomainCommand
 {
-    Task<TOutput> ExecuteAsync(TInput id, CancellationToken cancellationToken = default);
+    Task<TOutput> ExecuteAsync(TInput pokemons, CancellationToken cancellationToken = default);
 }
