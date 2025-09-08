@@ -47,6 +47,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<SaveUserCommand>()
             .AddScoped<GetUserByEmailCommand>()
             .AddScoped<IAdvancedPokeApiClient, AdvancedPokeApiClient>()
+            .AddScoped<IGetPokeApiResourceByNameCommandFactory, GetPokeApiResourceByNameCommandFactory>()
             .AddScoped<IScopedDomainServiceCommandExecutor, ScopedDomainServiceCommandExecutor>()
             .AddScoped<IUserProcessingManager, UserProcessingManager>()
             .AddHostedService<PokedexDataMigratorHostedService>();
