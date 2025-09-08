@@ -82,7 +82,7 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         
         if (pokedexPokemonList.Length > 0)
         {
-            await commandExecutor.RunCommandAsync<CreatePokedexPokemonCommand, IReadOnlyCollection<PokedexPokemon>, IReadOnlyCollection<PokedexPokemon>>(pokedexPokemonList);
+            await commandExecutor.RunCommandAsync<CreateDbPokedexPokemonCommand, IReadOnlyCollection<PokedexPokemon>, IReadOnlyCollection<PokedexPokemon>>(pokedexPokemonList);
         }
         else
         {

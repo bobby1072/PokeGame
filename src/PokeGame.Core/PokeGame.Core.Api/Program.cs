@@ -28,6 +28,7 @@ try
 
     builder.Services.AddLogging(opts =>
     {
+        opts.ClearProviders();
         opts.AddJsonConsole(ctx =>
         {
             ctx.IncludeScopes = true;

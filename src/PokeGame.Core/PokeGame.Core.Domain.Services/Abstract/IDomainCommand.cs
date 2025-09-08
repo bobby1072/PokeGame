@@ -7,10 +7,10 @@ internal interface IDomainCommand
 
 internal interface IDomainCommand<in TInput> : IDomainCommand
 {
-    Task ExecuteAsync(TInput input);
+    Task ExecuteAsync(TInput input, CancellationToken cancellationToken = default);
 }
 
 internal interface IDomainCommand<in TInput, TOutput> : IDomainCommand
 {
-    Task<TOutput> ExecuteAsync(TInput input);
+    Task<TOutput> ExecuteAsync(TInput id, CancellationToken cancellationToken = default);
 }
