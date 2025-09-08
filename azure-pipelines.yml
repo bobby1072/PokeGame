@@ -7,6 +7,8 @@ variables:
     value: bobby1072/poke_game_react_server
   - name: ReleaseVersion
     value: $(Build.BuildNumber)     
+  - name: ServiceInfo__ReleaseVersion
+    value: $(Build.BuildNumber)     
   - name: releaseVersion
     value: $(Build.BuildNumber)
 
