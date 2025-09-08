@@ -71,6 +71,10 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<CreateDbPokedexPokemonCommand>()
             .AddScoped<GetDbPokedexPokemonCommand>()
             .AddScoped<IAdvancedPokeApiClient, AdvancedPokeApiClient>()
+            .AddScoped<
+                IGetPokeApiResourceByNameCommandFactory,
+                GetPokeApiResourceByNameCommandFactory
+            >()
             .AddSingleton<IPokedexDataMigratorHealthCheck, PokedexDataMigratorHealthCheck>()
             .AddHostedService<PokedexDataMigratorHostedService>();
 
