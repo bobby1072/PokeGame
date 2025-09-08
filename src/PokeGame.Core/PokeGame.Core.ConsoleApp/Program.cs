@@ -17,7 +17,7 @@ using var consoleHost = Host.CreateDefaultBuilder()
     {
         sc
             .AddPokeGameApplicationServices(ctx.Configuration, ctx.HostingEnvironment)
-            .AddScoped<IConsoleApplicationOrchestratorService, ConsoleApplicationOrchestratorService>()
+            .AddTransient<IConsoleApplicationOrchestratorService, ConsoleApplicationOrchestratorService>()
             .AddHostedService<ConsoleApplicationRunnerService>();
     })
     .ConfigureLogging(lg =>

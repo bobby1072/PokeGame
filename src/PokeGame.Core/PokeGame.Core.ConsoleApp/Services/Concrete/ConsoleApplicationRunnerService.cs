@@ -27,9 +27,6 @@ internal sealed class ConsoleApplicationRunnerService: IHostedService
         {
             await Task.Delay(TimeSpan.FromSeconds(0.1), cancellationToken);
         }
-        
-        Console.WriteLine($"{ConsoleHelper.GetConsoleNewLine()}Application starting...{ConsoleHelper.GetConsoleNewLine()}");
-        
         await using var scope = _serviceScopeFactory.CreateAsyncScope();
         var orchestratorService = scope.ServiceProvider.GetRequiredService<IConsoleApplicationOrchestratorService>();
         
@@ -38,7 +35,7 @@ internal sealed class ConsoleApplicationRunnerService: IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {   
-        Console.WriteLine($"{ConsoleHelper.GetConsoleNewLine()}Application exiting...{ConsoleHelper.GetConsoleNewLine()}");
+        Console.WriteLine($"{ConsoleHelper.CreateNewLines()}Application exiting...{ConsoleHelper.CreateNewLines()}");
         
         return Task.CompletedTask;
     }
