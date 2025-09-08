@@ -41,11 +41,12 @@ public static class DomainServicesServiceCollectionExtensions
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
 
         services
-            .AddPokedexJsonDoc(configuration)
-            .AddScoped<CreatePokedexPokemonCommand>()
-            .AddScoped<GetPokedexPokemonCommand>()
+            .AddPokedexJsonDoc()
+            .AddScoped<CreateDbPokedexPokemonCommand>()
+            .AddScoped<GetDbPokedexPokemonCommand>()
             .AddScoped<SaveUserCommand>()
             .AddScoped<GetUserByEmailCommand>()
+            .AddScoped<IAdvancedPokeApiClient, AdvancedPokeApiClient>()
             .AddScoped<IScopedDomainServiceCommandExecutor, ScopedDomainServiceCommandExecutor>()
             .AddScoped<IUserProcessingManager, UserProcessingManager>()
             .AddHostedService<PokedexDataMigratorHostedService>();
@@ -53,7 +54,7 @@ public static class DomainServicesServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddPokedexJsonDoc(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddPokedexJsonDoc(this IServiceCollection services)
     {
         var baseServicesDomain = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
         var foundFilePath = Path.Combine(baseServicesDomain, "Pokedex", "Data", "Pokedex.json");;

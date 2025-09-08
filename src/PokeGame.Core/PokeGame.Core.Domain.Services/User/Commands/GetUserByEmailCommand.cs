@@ -23,18 +23,18 @@ internal sealed class GetUserByEmailCommand: IDomainCommand<string, Schemas.User
         _logger = logger;
     }
 
-    public async Task<Schemas.User> ExecuteAsync(string email)
+    public async Task<Schemas.User> ExecuteAsync(string id, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("About to attempt to get user with id: {Email}", email);
+        _logger.LogInformation("About to attempt to get user with id: {Email}", id);
         
-        if (!email.IsValidEmail())
+        if (!id.IsValidEmail())
         {
             throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Invalid email");
         }
         
         var foundUser = await EntityFrameworkUtils
             .TryDbOperation(
-                () => _userRepository.GetOne(email, nameof(UserEntity.Email)),
+                () => _userRepository.GetOne(id, nameof(UserEntity.Email)),
                 _logger
             ) ?? throw new PokeGameApiServerException("Failed to retrieve user");
 

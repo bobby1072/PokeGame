@@ -8,17 +8,17 @@ using PokeGame.Core.Schemas;
 
 namespace PokeGame.Core.Tests.DomainServiceTests.PokdexTests;
 
-public sealed class CreatePokedexPokemonCommandTests
+public sealed class CreateDbPokedexPokemonCommandTests
 {
     private static readonly Fixture _fixture = new();
     private readonly Mock<IPokedexPokemonRepository> _mockPokedexPokemonRepository = new();
-    private readonly CreatePokedexPokemonCommand _command;
+    private readonly CreateDbPokedexPokemonCommand _command;
 
-    public CreatePokedexPokemonCommandTests()
+    public CreateDbPokedexPokemonCommandTests()
     {
-        _command = new CreatePokedexPokemonCommand(
+        _command = new CreateDbPokedexPokemonCommand(
             _mockPokedexPokemonRepository.Object,
-            new NullLogger<CreatePokedexPokemonCommand>()
+            new NullLogger<CreateDbPokedexPokemonCommand>()
         );
     }
     [Theory]

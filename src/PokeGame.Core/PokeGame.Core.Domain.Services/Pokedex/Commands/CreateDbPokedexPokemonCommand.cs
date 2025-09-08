@@ -8,28 +8,28 @@ using PokeGame.Core.Schemas;
 
 namespace PokeGame.Core.Domain.Services.Pokedex.Commands;
 
-internal sealed class CreatePokedexPokemonCommand: IDomainCommand<IReadOnlyCollection<PokedexPokemon>, IReadOnlyCollection<PokedexPokemon>>
+internal sealed class CreateDbPokedexPokemonCommand: IDomainCommand<IReadOnlyCollection<PokedexPokemon>, IReadOnlyCollection<PokedexPokemon>>
 {
-    public string CommandName => nameof(CreatePokedexPokemonCommand);
+    public string CommandName => nameof(CreateDbPokedexPokemonCommand);
     private readonly IPokedexPokemonRepository _pokedexPokemonRepository;
-    private readonly ILogger<CreatePokedexPokemonCommand> _logger;
+    private readonly ILogger<CreateDbPokedexPokemonCommand> _logger;
 
-    public CreatePokedexPokemonCommand(
+    public CreateDbPokedexPokemonCommand(
         IPokedexPokemonRepository pokedexPokemonRepository,
-        ILogger<CreatePokedexPokemonCommand> logger
+        ILogger<CreateDbPokedexPokemonCommand> logger
     )
     {
         _pokedexPokemonRepository = pokedexPokemonRepository;
         _logger = logger;
     }
 
-    public async Task<IReadOnlyCollection<PokedexPokemon>> ExecuteAsync(IReadOnlyCollection<PokedexPokemon> input)
+    public async Task<IReadOnlyCollection<PokedexPokemon>> ExecuteAsync(IReadOnlyCollection<PokedexPokemon> id, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Input contains {PokedexPokemonSaveCount} pokedex pokemon records...", input.Count);
+        _logger.LogInformation("Input contains {PokedexPokemonSaveCount} pokedex pokemon records...", id.Count);
         
         var existingPokedex = await EntityFrameworkUtils.TryDbOperation(() => _pokedexPokemonRepository.GetAll(), _logger) ?? throw new PokeGameApiServerException("Failed to get existing pokedex count");
 
-        var pokemonToCreate = input.FastArrayWhere(x => !existingPokedex.Data.Any(y => y.Equals(x))).ToArray();
+        var pokemonToCreate = id.FastArrayWhere(x => !existingPokedex.Data.Any(y => y.Equals(x))).ToArray();
 
         if (pokemonToCreate.Length == 0)
         {
