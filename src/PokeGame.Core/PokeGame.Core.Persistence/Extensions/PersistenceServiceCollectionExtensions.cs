@@ -18,6 +18,7 @@ public static class PersistenceServiceCollectionExtensions
     public static IServiceCollection AddPokeGamePersistence(
         this IServiceCollection services,
         IConfiguration configuration,
+        IHealthChecksBuilder healthChecksBuilder,
         bool isDevelopment = true
     )
     {
@@ -33,11 +34,11 @@ public static class PersistenceServiceCollectionExtensions
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
 
         services
-            .AddSingleton<IDatabaseMigratorHealthCheck, DatabaseMigratorHealthCheck>()
-            .AddHealthChecks()
+            .AddSingleton<IDatabaseMigratorHealthCheck, DatabaseMigratorHealthCheck>();
+            
+        healthChecksBuilder
             .AddCheck<IDatabaseMigratorHealthCheck>(
-                DatabaseMigratorHealthCheck.Name,
-                tags: ["Ready"]
+                nameof(DatabaseMigratorHealthCheck)
             );
 
         services
@@ -71,4 +72,5 @@ public static class PersistenceServiceCollectionExtensions
 
         return services;
     }
+    
 }

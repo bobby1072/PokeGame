@@ -4,5 +4,5 @@ namespace PokeGame.Core.Persistence.Migrations.Abstract;
 
 public interface IDatabaseMigratorHealthCheck: IHealthCheck
 {
-    bool MigrationCompleted { get; set; }
+    void SetMigrationCompleted(bool isMigrationCompleted);
 }
