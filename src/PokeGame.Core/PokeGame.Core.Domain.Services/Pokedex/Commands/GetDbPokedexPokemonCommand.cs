@@ -10,27 +10,27 @@ using PokeGame.Core.Schemas.Input;
 
 namespace PokeGame.Core.Domain.Services.Pokedex.Commands;
 
-internal sealed class GetPokedexPokemonCommand: IDomainCommand<GetPokedexPokemonInput, IReadOnlyCollection<PokedexPokemon>>
+internal sealed class GetDbPokedexPokemonCommand: IDomainCommand<GetPokedexPokemonInput, IReadOnlyCollection<PokedexPokemon>>
 {
-    public string CommandName => nameof(GetPokedexPokemonCommand);
+    public string CommandName => nameof(GetDbPokedexPokemonCommand);
     private readonly IPokedexPokemonRepository _pokedexPokemonRepository;
-    private readonly ILogger<GetPokedexPokemonCommand> _logger;
+    private readonly ILogger<GetDbPokedexPokemonCommand> _logger;
 
-    public GetPokedexPokemonCommand(
+    public GetDbPokedexPokemonCommand(
         IPokedexPokemonRepository pokedexPokemonRepository,
-        ILogger<GetPokedexPokemonCommand> logger
+        ILogger<GetDbPokedexPokemonCommand> logger
     )
     {
         _pokedexPokemonRepository = pokedexPokemonRepository;
         _logger = logger;
     }
 
-    public async Task<IReadOnlyCollection<PokedexPokemon>> ExecuteAsync(GetPokedexPokemonInput input)
+    public async Task<IReadOnlyCollection<PokedexPokemon>> ExecuteAsync(GetPokedexPokemonInput id, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("About to get pokedex pokemon with input of: {@PokedexQueryInput}",
-            input);
+            id);
         
-        if (!input.HasInputProperties())
+        if (!id.HasInputProperties())
         {
             var result = await EntityFrameworkUtils
                 .TryDbOperation(() => 
@@ -47,10 +47,10 @@ internal sealed class GetPokedexPokemonCommand: IDomainCommand<GetPokedexPokemon
         
         IReadOnlyCollection<PokedexPokemon> pokedexPokemon;
 
-        if (input.FetchMultiple)
+        if (id.FetchMultiple)
         {
             var dbRes = await EntityFrameworkUtils.TryDbOperation(() =>
-                _pokedexPokemonRepository.GetMany(input.ToDictionary()))
+                _pokedexPokemonRepository.GetMany(id.ToDictionary()))
                     ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 
             if (!dbRes.IsSuccessful || dbRes.Data.Count == 0)
@@ -64,7 +64,7 @@ internal sealed class GetPokedexPokemonCommand: IDomainCommand<GetPokedexPokemon
         {
             var dbRes = await EntityFrameworkUtils
                 .TryDbOperation(() => 
-                    _pokedexPokemonRepository.GetOne(input.ToDictionary()))
+                    _pokedexPokemonRepository.GetOne(id.ToDictionary()))
                         ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
             
             if (!dbRes.IsSuccessful || dbRes.Data is null)

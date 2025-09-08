@@ -23,16 +23,16 @@ internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, Schemas.Use
     }
     
     
-    public async Task<Schemas.User> ExecuteAsync(SaveUserInput input)
+    public async Task<Schemas.User> ExecuteAsync(SaveUserInput id, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("About to attempt to save user with name: {Name}...", input.Name);
+        _logger.LogInformation("About to attempt to save user with name: {Name}...", id.Name);
 
-        var parsedUser = input.ToUserModel();
+        var parsedUser = id.ToUserModel();
         var validationResult = await _validator.ValidateAsync(parsedUser);
 
         if (!validationResult.IsValid)
         {
-            _logger.LogInformation("User to save with name: {Name} failed validation...", input.Name);
+            _logger.LogInformation("User to save with name: {Name} failed validation...", id.Name);
             
             throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Invalid email address");
         }
