@@ -11,6 +11,7 @@ using PokeGame.Core.Domain.Services.Pokedex.Commands;
 using PokeGame.Core.Persistence.Migrations.Abstract;
 using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Extensions;
+using PokeGame.Core.Domain.Services.Models;
 
 namespace PokeGame.Core.Domain.Services.Pokedex.Concrete;
 
@@ -44,7 +45,7 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         while ((await _databaseMigratorHealthCheck.CheckHealthAsync(new HealthCheckContext(), stoppingToken)).Status != HealthStatus.Healthy && !stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("Waiting for database migration to complete...");
-            await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
         }
 
         if (stoppingToken.IsCancellationRequested)
@@ -82,7 +83,7 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         
         if (pokedexPokemonList.Length > 0)
         {
-            await commandExecutor.RunCommandAsync<CreateDbPokedexPokemonCommand, IReadOnlyCollection<PokedexPokemon>, IReadOnlyCollection<PokedexPokemon>>(pokedexPokemonList);
+            await commandExecutor.RunCommandAsync<CreateDbPokedexPokemonCommand, IReadOnlyCollection<PokedexPokemon>, DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>>(pokedexPokemonList);
         }
         else
         {

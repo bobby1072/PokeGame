@@ -4,12 +4,13 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
+using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas.Input;
 
 namespace PokeGame.Core.Domain.Services.User.Commands;
 
-internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, Schemas.User>
+internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, DomainCommandResult<Schemas.User>>
 {
     public string CommandName => nameof(SaveUserCommand);
     private readonly IUserRepository _userRepository;
@@ -23,16 +24,16 @@ internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, Schemas.Use
     }
     
     
-    public async Task<Schemas.User> ExecuteAsync(SaveUserInput pokemons, CancellationToken cancellationToken = default)
+    public async Task<DomainCommandResult<Schemas.User>> ExecuteAsync(SaveUserInput email, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("About to attempt to save user with name: {Name}...", pokemons.Name);
+        _logger.LogInformation("About to attempt to save user with name: {Name}...", email.Name);
 
-        var parsedUser = pokemons.ToUserModel();
+        var parsedUser = email.ToUserModel();
         var validationResult = await _validator.ValidateAsync(parsedUser);
 
         if (!validationResult.IsValid)
         {
-            _logger.LogInformation("User to save with name: {Name} failed validation...", pokemons.Name);
+            _logger.LogInformation("User to save with name: {Name} failed validation...", email.Name);
             
             throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Invalid email address");
         }
@@ -69,6 +70,9 @@ internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, Schemas.Use
         
         _logger.LogInformation("Successfully saved user with name: {Name}", result);
         
-        return result;
+        return new DomainCommandResult<Schemas.User> 
+        {
+            CommandResult = result
+        };
     }
 }

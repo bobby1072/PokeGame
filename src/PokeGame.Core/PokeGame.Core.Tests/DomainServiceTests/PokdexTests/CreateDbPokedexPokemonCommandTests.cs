@@ -2,6 +2,7 @@
 using BT.Common.Persistence.Shared.Models;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Domain.Services.Pokedex.Commands;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas;
@@ -49,7 +50,9 @@ public sealed class CreateDbPokedexPokemonCommandTests
         
         if (!shouldHaveCalledCreateDbMethod)
         {
-            Assert.Equal(expected, result);
+            Assert.Equal(new DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>{
+                CommandResult = expected
+            }, result);
         }
         else
         {
