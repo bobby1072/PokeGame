@@ -4,9 +4,7 @@ variables:
   - name: ApiDockerRepository
     value: bobby1072/poke_game_api
   - name: ReactServerDockerRepository
-    value: bobby1072/poke_game_react_server
-  - name: ReleaseVersion
-    value: $(Build.BuildNumber)     
+    value: bobby1072/poke_game_react_server  
   - name: ServiceInfo__ReleaseVersion
     value: $(Build.BuildNumber)     
   - name: releaseVersion
@@ -72,7 +70,7 @@ stages:
               customCommand: "run check-types"
               workingDir: $(Build.SourcesDirectory)/src/phaser-client
 
-          - task: FileTransform@1
+          - task: FileTransform@2
             displayName: "Transform react app settings"
             inputs:
               folderPath: "$(Build.SourcesDirectory)/src/phaser-client/src/common/utils"
@@ -108,7 +106,7 @@ stages:
               username: $(dockerHubUsername)
               password: $(dockerHubPassword)
 
-          - task: FileTransform@1
+          - task: FileTransform@2
             displayName: "Transform api app settings"
             inputs:
               folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core/PokeGame.Core.Api"
@@ -153,7 +151,7 @@ stages:
               username: $(dockerHubUsername)
               password: $(dockerHubPassword)
 
-          - task: FileTransform@1
+          - task: FileTransform@2
             displayName: "Transform react server app settings"
             inputs:
               folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core/PokeGame.Core.React.Server"
