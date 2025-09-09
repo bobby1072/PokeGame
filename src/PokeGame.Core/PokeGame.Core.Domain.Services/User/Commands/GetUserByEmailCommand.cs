@@ -5,12 +5,13 @@ using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using BT.Common.Helpers.Extensions;
 using PokeGame.Core.Common.Exceptions;
+using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Persistence.Entities;
 
 
 namespace PokeGame.Core.Domain.Services.User.Commands;
 
-internal sealed class GetUserByEmailCommand: IDomainCommand<string, Schemas.User>
+internal sealed class GetUserByEmailCommand: IDomainCommand<string, DomainCommandResult<Schemas.User>>
 {
     public string CommandName => nameof(GetUserByEmailCommand);
     private readonly IUserRepository _userRepository;
@@ -23,18 +24,18 @@ internal sealed class GetUserByEmailCommand: IDomainCommand<string, Schemas.User
         _logger = logger;
     }
 
-    public async Task<Schemas.User> ExecuteAsync(string pokemons, CancellationToken cancellationToken = default)
+    public async Task<DomainCommandResult<Schemas.User>> ExecuteAsync(string email, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("About to attempt to get user with id: {Email}", pokemons);
+        _logger.LogInformation("About to attempt to get user with id: {Email}", email);
         
-        if (!pokemons.IsValidEmail())
+        if (!email.IsValidEmail())
         {
             throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Invalid email");
         }
         
         var foundUser = await EntityFrameworkUtils
             .TryDbOperation(
-                () => _userRepository.GetOne(pokemons, nameof(UserEntity.Email)),
+                () => _userRepository.GetOne(email, nameof(UserEntity.Email)),
                 _logger
             ) ?? throw new PokeGameApiServerException("Failed to retrieve user");
 
@@ -43,6 +44,8 @@ internal sealed class GetUserByEmailCommand: IDomainCommand<string, Schemas.User
             throw new PokeGameApiUserException(HttpStatusCode.NotFound, "User not found");
         }
         
-        return foundUser.Data;
+        return new DomainCommandResult<Schemas.User> {
+            CommandResult = foundUser.Data
+        };
     }
 }

@@ -3,6 +3,7 @@ using BT.Common.Persistence.Shared.Utils;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
+using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Extensions;
@@ -10,7 +11,7 @@ using PokeGame.Core.Schemas.Input;
 
 namespace PokeGame.Core.Domain.Services.Pokedex.Commands;
 
-internal sealed class GetDbPokedexPokemonCommand: IDomainCommand<GetPokedexPokemonInput, IReadOnlyCollection<PokedexPokemon>>
+internal sealed class GetDbPokedexPokemonCommand: IDomainCommand<GetPokedexPokemonInput, DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>>
 {
     public string CommandName => nameof(GetDbPokedexPokemonCommand);
     private readonly IPokedexPokemonRepository _pokedexPokemonRepository;
@@ -25,12 +26,12 @@ internal sealed class GetDbPokedexPokemonCommand: IDomainCommand<GetPokedexPokem
         _logger = logger;
     }
 
-    public async Task<IReadOnlyCollection<PokedexPokemon>> ExecuteAsync(GetPokedexPokemonInput pokemons, CancellationToken cancellationToken = default)
+    public async Task<DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>> ExecuteAsync(GetPokedexPokemonInput email, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("About to get pokedex pokemon with input of: {@PokedexQueryInput}",
-            pokemons);
+            email);
         
-        if (!pokemons.HasInputProperties())
+        if (!email.HasInputProperties())
         {
             var result = await EntityFrameworkUtils
                 .TryDbOperation(() => 
@@ -42,15 +43,17 @@ internal sealed class GetDbPokedexPokemonCommand: IDomainCommand<GetPokedexPokem
                 throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
             }
             
-            return result.Data;
+            return new DomainCommandResult<IReadOnlyCollection<PokedexPokemon>> {
+                CommandResult = result.Data
+            };
         }
         
         IReadOnlyCollection<PokedexPokemon> pokedexPokemon;
 
-        if (pokemons.FetchMultiple)
+        if (email.FetchMultiple)
         {
             var dbRes = await EntityFrameworkUtils.TryDbOperation(() =>
-                _pokedexPokemonRepository.GetMany(pokemons.ToDictionary()))
+                _pokedexPokemonRepository.GetMany(email.ToDictionary()))
                     ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 
             if (!dbRes.IsSuccessful || dbRes.Data.Count == 0)
@@ -64,7 +67,7 @@ internal sealed class GetDbPokedexPokemonCommand: IDomainCommand<GetPokedexPokem
         {
             var dbRes = await EntityFrameworkUtils
                 .TryDbOperation(() => 
-                    _pokedexPokemonRepository.GetOne(pokemons.ToDictionary()))
+                    _pokedexPokemonRepository.GetOne(email.ToDictionary()))
                         ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
             
             if (!dbRes.IsSuccessful || dbRes.Data is null)
@@ -75,6 +78,8 @@ internal sealed class GetDbPokedexPokemonCommand: IDomainCommand<GetPokedexPokem
             pokedexPokemon = [dbRes.Data];
         }
         
-        return pokedexPokemon;
+        return new DomainCommandResult<IReadOnlyCollection<PokedexPokemon>> {
+            CommandResult = pokedexPokemon
+        };
     }
 }

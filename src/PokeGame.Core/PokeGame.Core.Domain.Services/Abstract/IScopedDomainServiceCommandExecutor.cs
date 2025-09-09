@@ -1,10 +1,10 @@
 ﻿
+using PokeGame.Core.Domain.Services.Models;
+
 namespace PokeGame.Core.Domain.Services.Abstract;
 
 internal interface IScopedDomainServiceCommandExecutor
 {
-    Task RunCommandAsync<TCommand, TInput>(TInput input) where TCommand : IDomainCommand<TInput>;
-
-    Task<TReturn> RunCommandAsync<TCommand, TInput, TReturn>(TInput input)
-        where TCommand : IDomainCommand<TInput, TReturn>;
+    Task<TOutput> RunCommandAsync<TCommand, TInput, TOutput>(TInput input) where TCommand : IDomainCommand<TInput, TOutput> where TOutput : DomainCommandResult;
+    Task<TOutput> RunCommandAsync<TCommand, TOutput>() where TCommand : IDomainCommand<TOutput> where TOutput : DomainCommandResult;
 }
