@@ -1,9 +1,9 @@
 ﻿using PokeApiNet;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
-using PokeGame.Core.Domain.Services.Pokedex.Abstract;
+using PokeGame.Core.Domain.Services.Pokemon.Abstract;
 
-namespace PokeGame.Core.Domain.Services.Pokedex.Commands;
+namespace PokeGame.Core.Domain.Services.Pokemon.Commands;
 
 internal sealed class GetPokeApiResourceByNameCommand<TResource>: IDomainCommand<string, DomainCommandResult<TResource>> where TResource : NamedApiResource
 {

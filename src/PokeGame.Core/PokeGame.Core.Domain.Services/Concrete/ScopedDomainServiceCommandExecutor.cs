@@ -16,6 +16,34 @@ internal sealed class ScopedDomainServiceCommandExecutor: IScopedDomainServiceCo
         _logger = logger;
     }
 
+    public async Task<TOutput> RunCommandAsync<TCommand, TInput, TOutput>(TInput input,
+        Func<IServiceProvider, TCommand> commandBuilder) where TCommand : IDomainCommand<TInput, TOutput>
+        where TOutput : DomainCommandResult
+    {
+        var foundCommand = commandBuilder.Invoke(_serviceProvider);
+        
+        _logger.LogInformation("Attempting to execute {CommandName}", foundCommand.CommandName);
+        
+        var (timeTaken, result) = await OperationTimerUtils.TimeWithResultsAsync(() => foundCommand.ExecuteAsync(input));
+        
+        _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.Milliseconds);
+
+        return result;
+    }
+
+    public async Task<TOutput> RunCommandAsync<TCommand, TOutput>(Func<IServiceProvider, TCommand> commandBuilder)
+        where TCommand : IDomainCommand<TOutput> where TOutput : DomainCommandResult
+    {
+        var foundCommand = commandBuilder.Invoke(_serviceProvider);
+        
+        _logger.LogInformation("Attempting to execute {CommandName}", foundCommand.CommandName);
+        
+        var (timeTaken, result) = await OperationTimerUtils.TimeWithResultsAsync(() => foundCommand.ExecuteAsync());
+        
+        _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.Milliseconds);
+
+        return result;
+    }
     public async Task<TOutput> RunCommandAsync<TCommand, TInput, TOutput>(TInput input) where TCommand : IDomainCommand<TInput, TOutput>
         where TOutput : DomainCommandResult
     {
@@ -43,4 +71,5 @@ internal sealed class ScopedDomainServiceCommandExecutor: IScopedDomainServiceCo
 
         return result;
     }
+    
 }

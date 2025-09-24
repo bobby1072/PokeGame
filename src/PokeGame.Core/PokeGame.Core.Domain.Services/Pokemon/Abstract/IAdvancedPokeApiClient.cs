@@ -1,6 +1,6 @@
 ﻿using PokeApiNet;
 
-namespace PokeGame.Core.Domain.Services.Pokedex.Abstract;
+namespace PokeGame.Core.Domain.Services.Pokemon.Abstract;
 
 internal interface IAdvancedPokeApiClient: IDisposable
 {

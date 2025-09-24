@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using PokeApiNet;
-using PokeGame.Core.Domain.Services.Pokedex.Abstract;
+using PokeGame.Core.Domain.Services.Pokemon.Abstract;
 
-namespace PokeGame.Core.Domain.Services.Pokedex.Concrete;
+namespace PokeGame.Core.Domain.Services.Pokemon.Concrete;
 
 internal sealed class AdvancedPokeApiClient: PokeApiClient, IAdvancedPokeApiClient
 {
@@ -28,6 +28,6 @@ internal sealed class AdvancedPokeApiClient: PokeApiClient, IAdvancedPokeApiClie
     {
         _logger.LogInformation("Making request to get api resource of: {ResourceType}", typeof(T).Name);
         
-        return await GetResourceAsync<T>(urlResource, cancellationToken);
+        return await GetResourceAsync(urlResource, cancellationToken);
     }
 }

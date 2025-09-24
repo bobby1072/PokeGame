@@ -3,7 +3,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using PokeGame.Core.ConsoleApp.Helpers;
 using PokeGame.Core.ConsoleApp.Services.Abstract;
-using PokeGame.Core.Domain.Services.Pokedex.Abstract;
+using PokeGame.Core.Domain.Services.Pokemon.Abstract;
 
 namespace PokeGame.Core.ConsoleApp.Services.Concrete;
 

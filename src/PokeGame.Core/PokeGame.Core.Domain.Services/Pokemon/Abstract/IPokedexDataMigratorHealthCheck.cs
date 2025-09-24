@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace PokeGame.Core.Domain.Services.Pokedex.Abstract;
+namespace PokeGame.Core.Domain.Services.Pokemon.Abstract;
 
 public interface IPokedexDataMigratorHealthCheck: IHealthCheck
 {

@@ -9,7 +9,7 @@ using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Extensions;
 using PokeGame.Core.Schemas.Input;
 
-namespace PokeGame.Core.Domain.Services.Pokedex.Commands;
+namespace PokeGame.Core.Domain.Services.Pokemon.Commands;
 
 internal sealed class GetDbPokedexPokemonCommand: IDomainCommand<GetPokedexPokemonInput, DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>>
 {

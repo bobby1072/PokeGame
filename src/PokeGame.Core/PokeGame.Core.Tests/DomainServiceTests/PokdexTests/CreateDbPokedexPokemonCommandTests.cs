@@ -3,7 +3,7 @@ using BT.Common.Persistence.Shared.Models;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using PokeGame.Core.Domain.Services.Models;
-using PokeGame.Core.Domain.Services.Pokedex.Commands;
+using PokeGame.Core.Domain.Services.Pokemon.Commands;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas;
 

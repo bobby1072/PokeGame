@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="Pokedex\Data\Pokedex.json" CopyToOutputDirectory="PreserveNewest" />
+      <None Include="Pokemon\Data\Pokedex.json" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

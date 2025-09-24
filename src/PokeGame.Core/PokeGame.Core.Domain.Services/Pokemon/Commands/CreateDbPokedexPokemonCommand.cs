@@ -7,7 +7,7 @@ using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas;
 
-namespace PokeGame.Core.Domain.Services.Pokedex.Commands;
+namespace PokeGame.Core.Domain.Services.Pokemon.Commands;
 
 internal sealed class CreateDbPokedexPokemonCommand: IDomainCommand<IReadOnlyCollection<PokedexPokemon>, DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>>
 {
