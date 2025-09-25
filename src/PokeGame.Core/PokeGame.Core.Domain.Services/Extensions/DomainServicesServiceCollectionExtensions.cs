@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using BT.Common.Helpers.Extensions;
+using BT.Common.Services.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,6 +40,7 @@ public static class DomainServicesServiceCollectionExtensions
         services
             .AddHttpClient()
             .AddLogging()
+            .AddDistributedCachingService()
             .AddDomainModelValidators()
             .AddPokeGamePersistence(configuration, healthCheckBuilder, environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
@@ -67,10 +69,10 @@ public static class DomainServicesServiceCollectionExtensions
     )
     {
         services
+                
             .AddPokedexJsonDoc()
             .AddScoped<CreateDbPokedexPokemonCommand>()
             .AddScoped<GetDbPokedexPokemonCommand>()
-            .AddScoped<IAdvancedPokeApiClient, AdvancedPokeApiClient>()
             .AddScoped<IPokemonProcessingManager, PokemonProcessingManager>()
             .AddScoped<
                 IGetPokeApiResourceByNameCommandFactory,
@@ -79,6 +81,9 @@ public static class DomainServicesServiceCollectionExtensions
             .AddSingleton<IPokedexDataMigratorHealthCheck, PokedexDataMigratorHealthCheck>()
             .AddHostedService<PokedexDataMigratorHostedService>();
 
+        services
+            .AddHttpClient<IAdvancedPokeApiClient, AdvancedPokeApiClient>();
+        
         healthCheckBuilder.AddCheck<IPokedexDataMigratorHealthCheck>(
             nameof(PokedexDataMigratorHealthCheck)
         );
