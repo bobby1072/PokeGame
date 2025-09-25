@@ -2,11 +2,12 @@
 using PokeApiNet;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
+using PokeGame.Core.Domain.Services.Pokemon.Abstract;
 using PokeGame.Core.Domain.Services.Pokemon.Commands;
 
 namespace PokeGame.Core.Domain.Services.Pokemon.Concrete;
 
-internal sealed class PokemonProcessingManager
+internal sealed class PokemonProcessingManager: IPokemonProcessingManager
 {
     private readonly IScopedDomainServiceCommandExecutor _scopedDomainServiceCommandExecutor;
 

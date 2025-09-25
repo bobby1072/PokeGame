@@ -45,7 +45,7 @@ public static class DomainServicesServiceCollectionExtensions
 
         services
             .AddUserServices()
-            .AddPokedexServices(healthCheckBuilder)
+            .AddPokemonServices(healthCheckBuilder)
             .AddScoped<IScopedDomainServiceCommandExecutor, ScopedDomainServiceCommandExecutor>();
 
         return services;
@@ -61,7 +61,7 @@ public static class DomainServicesServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddPokedexServices(
+    private static IServiceCollection AddPokemonServices(
         this IServiceCollection services,
         IHealthChecksBuilder healthCheckBuilder
     )
@@ -71,6 +71,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<CreateDbPokedexPokemonCommand>()
             .AddScoped<GetDbPokedexPokemonCommand>()
             .AddScoped<IAdvancedPokeApiClient, AdvancedPokeApiClient>()
+            .AddScoped<IPokemonProcessingManager, PokemonProcessingManager>()
             .AddScoped<
                 IGetPokeApiResourceByNameCommandFactory,
                 GetPokeApiResourceByNameCommandFactory
