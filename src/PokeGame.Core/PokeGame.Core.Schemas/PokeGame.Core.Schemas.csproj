@@ -16,4 +16,8 @@
       <ProjectReference Include="..\PokeGame.Core.Common\PokeGame.Core.Common.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Output\" />
+    </ItemGroup>
+
 </Project>
