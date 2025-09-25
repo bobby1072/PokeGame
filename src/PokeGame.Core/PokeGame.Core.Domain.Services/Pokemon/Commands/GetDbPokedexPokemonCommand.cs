@@ -9,7 +9,7 @@ using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Extensions;
 using PokeGame.Core.Schemas.Input;
 
-namespace PokeGame.Core.Domain.Services.Pokedex.Commands;
+namespace PokeGame.Core.Domain.Services.Pokemon.Commands;
 
 internal sealed class GetDbPokedexPokemonCommand: IDomainCommand<GetPokedexPokemonInput, DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>>
 {
@@ -53,7 +53,7 @@ internal sealed class GetDbPokedexPokemonCommand: IDomainCommand<GetPokedexPokem
         if (email.FetchMultiple)
         {
             var dbRes = await EntityFrameworkUtils.TryDbOperation(() =>
-                _pokedexPokemonRepository.GetMany(email.ToDictionary()))
+                _pokedexPokemonRepository.GetMany(email.ToLangNameDictionary()))
                     ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 
             if (!dbRes.IsSuccessful || dbRes.Data.Count == 0)
@@ -67,7 +67,7 @@ internal sealed class GetDbPokedexPokemonCommand: IDomainCommand<GetPokedexPokem
         {
             var dbRes = await EntityFrameworkUtils
                 .TryDbOperation(() => 
-                    _pokedexPokemonRepository.GetOne(email.ToDictionary()))
+                    _pokedexPokemonRepository.GetOne(email.ToLangNameDictionary()))
                         ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
             
             if (!dbRes.IsSuccessful || dbRes.Data is null)

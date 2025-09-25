@@ -89,6 +89,8 @@ try
 
     app.MapControllers();
 
+    app.UseHealthGetEndpoint();
+
     await app.RunAsync();
 }
 catch (Exception ex)

@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using BT.Common.Helpers.Extensions;
+using BT.Common.Services.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,9 +9,9 @@ using PokeGame.Core.Common;
 using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
-using PokeGame.Core.Domain.Services.Pokedex.Abstract;
-using PokeGame.Core.Domain.Services.Pokedex.Commands;
-using PokeGame.Core.Domain.Services.Pokedex.Concrete;
+using PokeGame.Core.Domain.Services.Pokemon.Abstract;
+using PokeGame.Core.Domain.Services.Pokemon.Commands;
+using PokeGame.Core.Domain.Services.Pokemon.Concrete;
 using PokeGame.Core.Domain.Services.User.Abstract;
 using PokeGame.Core.Domain.Services.User.Commands;
 using PokeGame.Core.Domain.Services.User.Concrete;
@@ -39,13 +40,14 @@ public static class DomainServicesServiceCollectionExtensions
         services
             .AddHttpClient()
             .AddLogging()
+            .AddDistributedCachingService()
             .AddDomainModelValidators()
             .AddPokeGamePersistence(configuration, healthCheckBuilder, environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
 
         services
             .AddUserServices()
-            .AddPokedexServices(healthCheckBuilder)
+            .AddPokemonServices(healthCheckBuilder)
             .AddScoped<IScopedDomainServiceCommandExecutor, ScopedDomainServiceCommandExecutor>();
 
         return services;
@@ -61,16 +63,17 @@ public static class DomainServicesServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddPokedexServices(
+    private static IServiceCollection AddPokemonServices(
         this IServiceCollection services,
         IHealthChecksBuilder healthCheckBuilder
     )
     {
         services
+                
             .AddPokedexJsonDoc()
             .AddScoped<CreateDbPokedexPokemonCommand>()
             .AddScoped<GetDbPokedexPokemonCommand>()
-            .AddScoped<IAdvancedPokeApiClient, AdvancedPokeApiClient>()
+            .AddScoped<IPokemonProcessingManager, PokemonProcessingManager>()
             .AddScoped<
                 IGetPokeApiResourceByNameCommandFactory,
                 GetPokeApiResourceByNameCommandFactory
@@ -78,6 +81,9 @@ public static class DomainServicesServiceCollectionExtensions
             .AddSingleton<IPokedexDataMigratorHealthCheck, PokedexDataMigratorHealthCheck>()
             .AddHostedService<PokedexDataMigratorHostedService>();
 
+        services
+            .AddHttpClient<IAdvancedPokeApiClient, AdvancedPokeApiClient>();
+        
         healthCheckBuilder.AddCheck<IPokedexDataMigratorHealthCheck>(
             nameof(PokedexDataMigratorHealthCheck)
         );

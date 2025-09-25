@@ -1,8 +1,8 @@
 ﻿using PokeApiNet;
-using PokeGame.Core.Domain.Services.Pokedex.Abstract;
-using PokeGame.Core.Domain.Services.Pokedex.Commands;
+using PokeGame.Core.Domain.Services.Pokemon.Abstract;
+using PokeGame.Core.Domain.Services.Pokemon.Commands;
 
-namespace PokeGame.Core.Domain.Services.Pokedex.Concrete;
+namespace PokeGame.Core.Domain.Services.Pokemon.Concrete;
 
 internal sealed class GetPokeApiResourceByNameCommandFactory : IGetPokeApiResourceByNameCommandFactory
 {

@@ -1,7 +1,7 @@
 ﻿using PokeApiNet;
-using PokeGame.Core.Domain.Services.Pokedex.Commands;
+using PokeGame.Core.Domain.Services.Pokemon.Commands;
 
-namespace PokeGame.Core.Domain.Services.Pokedex.Abstract;
+namespace PokeGame.Core.Domain.Services.Pokemon.Abstract;
 
 internal interface IGetPokeApiResourceByNameCommandFactory
 {

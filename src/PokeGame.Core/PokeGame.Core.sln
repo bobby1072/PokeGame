@@ -41,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EntryPoints", "EntryPoints"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.ConsoleApp", "PokeGame.Core.ConsoleApp\PokeGame.Core.ConsoleApp.csproj", "{1106963F-D8FC-4503-8E0F-7B627BF16676}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.Services", "..\Submodules\BT\src\BT.Common\BT.Common.Services\BT.Common.Services.csproj", "{CF9BD9BD-E2DF-4EED-8A22-CA5E45208D18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,10 @@ Global
 		{1106963F-D8FC-4503-8E0F-7B627BF16676}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1106963F-D8FC-4503-8E0F-7B627BF16676}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1106963F-D8FC-4503-8E0F-7B627BF16676}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF9BD9BD-E2DF-4EED-8A22-CA5E45208D18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF9BD9BD-E2DF-4EED-8A22-CA5E45208D18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF9BD9BD-E2DF-4EED-8A22-CA5E45208D18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF9BD9BD-E2DF-4EED-8A22-CA5E45208D18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,6 +132,8 @@ Global
 		{3219F066-ACB1-4942-A9D6-7B4BC73BC034} = {65E0A736-C581-45FD-B125-E28E5B75E06E}
 		{62F53818-F8C3-473C-BB5A-28DF70382245} = {65E0A736-C581-45FD-B125-E28E5B75E06E}
 		{1106963F-D8FC-4503-8E0F-7B627BF16676} = {65E0A736-C581-45FD-B125-E28E5B75E06E}
+		{912E2A50-737A-47CE-8729-563F463900AB} = {65E0A736-C581-45FD-B125-E28E5B75E06E}
+		{CF9BD9BD-E2DF-4EED-8A22-CA5E45208D18} = {7870B4D1-9D51-4166-AE81-C3AF7571C815}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C122D0E2-872C-45D3-AB0F-E1FA14AFCE8E}
