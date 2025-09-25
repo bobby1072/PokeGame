@@ -13,7 +13,7 @@ public static class GetPokedexPokemonInputExtensions
                || input.JapaneseName is not null;
     }
 
-    public static Dictionary<string, object?> ToDictionary(this GetPokedexPokemonInput input)
+    public static Dictionary<string, object?> ToLangNameDictionary(this GetPokedexPokemonInput input)
     {
         return new Dictionary<string, object?>
         {
