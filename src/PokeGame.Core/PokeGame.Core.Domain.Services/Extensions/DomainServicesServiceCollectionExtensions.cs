@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
+using PokeGame.Core.Domain.Services.Game.Commands;
 using PokeGame.Core.Domain.Services.Pokemon.Abstract;
 using PokeGame.Core.Domain.Services.Pokemon.Commands;
 using PokeGame.Core.Domain.Services.Pokemon.Concrete;
@@ -48,11 +49,19 @@ public static class DomainServicesServiceCollectionExtensions
         services
             .AddUserServices()
             .AddPokemonServices(healthCheckBuilder)
+            .AddGameServices()
             .AddScoped<IScopedDomainServiceCommandExecutor, ScopedDomainServiceCommandExecutor>();
 
         return services;
     }
 
+    private static IServiceCollection AddGameServices(this IServiceCollection services)
+    {
+        services
+            .AddScoped<InstantiateNewGameCommand>();
+        
+        return services;
+    }
     private static IServiceCollection AddUserServices(this IServiceCollection services)
     {
         services
@@ -69,7 +78,6 @@ public static class DomainServicesServiceCollectionExtensions
     )
     {
         services
-                
             .AddPokedexJsonDoc()
             .AddScoped<CreateDbPokedexPokemonCommand>()
             .AddScoped<GetDbPokedexPokemonCommand>()
