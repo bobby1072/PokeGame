@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using BT.Common.Api.Helpers.Models;
 using BT.Common.Helpers.Extensions;
 using BT.Common.Services.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -6,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common;
-using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
 using PokeGame.Core.Domain.Services.Pokemon.Abstract;
