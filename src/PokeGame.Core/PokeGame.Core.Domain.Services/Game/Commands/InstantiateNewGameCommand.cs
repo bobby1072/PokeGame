@@ -27,6 +27,6 @@ internal sealed class InstantiateNewGameCommand: IDomainCommand<GameSaveInput, D
     public async Task<DomainCommandResult<GameSave>> ExecuteAsync(GameSaveInput input,
         CancellationToken cancellationToken = default)
     {
-        
+        throw new NotImplementedException();
     }
 }
