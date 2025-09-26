@@ -6,12 +6,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common;
 using PokeGame.Core.Domain.Services.Abstract;
+using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Domain.Services.Pokemon.Abstract;
 using PokeGame.Core.Domain.Services.Pokemon.Commands;
 using PokeGame.Core.Persistence.Migrations.Abstract;
 using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Extensions;
-using PokeGame.Core.Domain.Services.Models;
 
 namespace PokeGame.Core.Domain.Services.Pokemon.Concrete;
 
@@ -28,7 +28,8 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         IDatabaseMigratorHealthCheck databaseMigratorHealthCheck,
         IPokedexDataMigratorHealthCheck pokedexDataMigratorHealthCheck,
         [FromKeyedServices(Constants.ServiceKeys.PokedexJsonFile)] JsonDocument pokedexJsonFile,
-        ILogger<PokedexDataMigratorHostedService> logger)
+        ILogger<PokedexDataMigratorHostedService> logger
+    )
     {
         _scopeFactory = scopeFactory;
         _databaseMigratorHealthCheck = databaseMigratorHealthCheck;
@@ -42,24 +43,34 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         _logger.LogInformation("PokedexDataMigratorHostedService starting...");
 
         // Wait for database migration to complete
-        while ((await _databaseMigratorHealthCheck.CheckHealthAsync(new HealthCheckContext(), stoppingToken)).Status != HealthStatus.Healthy && !stoppingToken.IsCancellationRequested)
+        while (
+            (
+                await _databaseMigratorHealthCheck.CheckHealthAsync(
+                    new HealthCheckContext(),
+                    stoppingToken
+                )
+            ).Status != HealthStatus.Healthy
+            && !stoppingToken.IsCancellationRequested
+        )
         {
             _logger.LogInformation("Waiting for database migration to complete...");
-            await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(0.5), stoppingToken);
         }
 
         if (stoppingToken.IsCancellationRequested)
         {
-            _logger.LogWarning("PokedexDataMigratorHostedService was cancelled before database migration completed");
+            _logger.LogWarning(
+                "PokedexDataMigratorHostedService was cancelled before database migration completed"
+            );
             return;
         }
 
         _logger.LogInformation("Database migration completed. Starting Pokedex data seeding...");
 
         await SeedPokedexDataAsync(stoppingToken);
-        
+
         _pokedexDataMigratorHealthCheck.SetDatabaseSeeded(true);
-        
+
         _logger.LogInformation("Pokedex data seeding completed successfully");
     }
 
@@ -68,10 +79,11 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         PokedexPokemon[] pokedexPokemonList;
         try
         {
-            pokedexPokemonList = _pokedexJsonFile
-                .Deserialize<PokedexPokemonRawJson[]>()
-                ?.FastArraySelect(x => x.ToRuntimeModel())
-                .ToArray() ?? [];
+            pokedexPokemonList =
+                _pokedexJsonFile
+                    .Deserialize<PokedexPokemonRawJson[]>()
+                    ?.FastArraySelect(x => x.ToRuntimeModel())
+                    .ToArray() ?? [];
         }
         catch (Exception ex)
         {
@@ -79,15 +91,22 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
             throw;
         }
         await using var scope = _scopeFactory.CreateAsyncScope();
-        var commandExecutor = scope.ServiceProvider.GetRequiredService<IScopedDomainServiceCommandExecutor>();
-        
+        var commandExecutor =
+            scope.ServiceProvider.GetRequiredService<IScopedDomainServiceCommandExecutor>();
+
         if (pokedexPokemonList.Length > 0)
         {
-            await commandExecutor.RunCommandAsync<CreateDbPokedexPokemonCommand, IReadOnlyCollection<PokedexPokemon>, DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>>(pokedexPokemonList);
+            await commandExecutor.RunCommandAsync<
+                CreateDbPokedexPokemonCommand,
+                IReadOnlyCollection<PokedexPokemon>,
+                DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>
+            >(pokedexPokemonList);
         }
         else
         {
-            throw new InvalidOperationException("No Pokemon records were parsed/found in JSON file");
+            throw new InvalidOperationException(
+                "No Pokemon records were parsed/found in JSON file"
+            );
         }
     }
 }

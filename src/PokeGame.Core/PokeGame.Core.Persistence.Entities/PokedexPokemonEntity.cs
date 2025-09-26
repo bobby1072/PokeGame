@@ -6,7 +6,7 @@ using PokeGame.Core.Schemas.Extensions;
 namespace PokeGame.Core.Persistence.Entities;
 
 [Table("pokedex", Schema = "public")]
-public sealed class PokedexPokemonEntity : BaseEntity<int, PokedexPokemon>
+public sealed class PokedexPokemonEntity : BasePokeGameEntity<int, PokedexPokemon>
 {
     public required string EnglishName { get; set; }
     public required string JapaneseName { get; set; }

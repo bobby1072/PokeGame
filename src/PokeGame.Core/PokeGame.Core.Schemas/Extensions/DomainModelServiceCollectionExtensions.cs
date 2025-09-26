@@ -9,7 +9,8 @@ public static class DomainModelServiceCollectionExtensions
     public static IServiceCollection AddDomainModelValidators(this IServiceCollection services)
     {
         services
-            .AddSingleton<IValidator<User>, UserValidator>();
+            .AddSingleton<IValidator<User>, UserValidator>()
+            .AddSingleton<IValidator<GameSave>, GameSaveValidator>();
         
         return services;
     }

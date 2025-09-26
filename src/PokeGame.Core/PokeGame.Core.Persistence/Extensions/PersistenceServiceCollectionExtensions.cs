@@ -68,7 +68,8 @@ public static class PersistenceServiceCollectionExtensions
 
         services
             .AddScoped<IUserRepository, UserRepository>()
-            .AddScoped<IPokedexPokemonRepository, PokedexPokemonRepository>();
+            .AddScoped<IPokedexPokemonRepository, PokedexPokemonRepository>()
+            .AddScoped<IGameSaveRepository, GameSaveRepository>();
 
         return services;
     }

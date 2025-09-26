@@ -23,7 +23,17 @@ internal static class PersistableDomainModelExtensions
             JapaneseName = pokemon.JapaneseName,
         };
     }
-
+    public static GameSaveEntity ToEntity(this GameSave gameSave)
+    {
+        return new GameSaveEntity
+        {
+            Id = gameSave.Id,
+            CharacterName = gameSave.CharacterName,
+            UserId = gameSave.UserId,
+            DateCreated = gameSave.DateCreated,
+            LastPlayed = gameSave.LastPlayed
+        };
+    }
     public static UserEntity ToEntity(this User runtimeObj)
     {
         return new UserEntity
