@@ -45,4 +45,34 @@ internal static class PersistableDomainModelExtensions
             DateModified = runtimeObj.DateModified,
         };
     }
+
+    public static OwnedPokemonEntity ToEntity(this OwnedPokemon ownedPokemon)
+    {
+        return new OwnedPokemonEntity
+        {
+            Id = ownedPokemon.Id,
+            GameSaveId = ownedPokemon.GameSaveId,
+            ResourceName = ownedPokemon.ResourceName,
+            CaughtAt = ownedPokemon.CaughtAt,
+            InDeck = ownedPokemon.InDeck,
+            PokemonLevel = ownedPokemon.PokemonLevel,
+            CurrentExperience = ownedPokemon.CurrentExperience,
+            CurrentHp = ownedPokemon.CurrentHp,
+            MoveOneResourceName = ownedPokemon.MoveOneResourceName,
+            MoveTwoResourceName = ownedPokemon.MoveTwoResourceName,
+            MoveThreeResourceName = ownedPokemon.MoveThreeResourceName,
+            MoveFourResourceName = ownedPokemon.MoveFourResourceName
+        };
+    }
+
+    public static ItemStackEntity ToEntity(this ItemStack itemStack)
+    {
+        return new ItemStackEntity
+        {
+            Id = itemStack.Id,
+            GameSaveId = itemStack.GameSaveId,
+            ResourceName = itemStack.ResourceName,
+            Quantity = itemStack.Quantity
+        };
+    }
 }

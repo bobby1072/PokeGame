@@ -11,6 +11,9 @@ internal sealed class PokeGameContext: DbContext
 {
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<PokedexPokemonEntity> PokedexPokemons { get; set; }
+    public DbSet<GameSaveEntity> GameSaves { get; set; }
+    public DbSet<OwnedPokemonEntity> OwnedPokemons { get; set; }
+    public DbSet<ItemStackEntity> ItemStacks { get; set; }
     public PokeGameContext(DbContextOptions<PokeGameContext> options) : base(options) {}
 
 
@@ -75,6 +78,32 @@ internal sealed class PokeGameContext: DbContext
                         userEntity,
                         [
                             nameof(UserEntity.DateModified)
+                        ],
+                        currentTime
+                    );
+                }
+            }
+            else if (updatedEnt.Entity is GameSaveEntity gameSaveEntity)
+            {
+                if (updatedEnt.State == EntityState.Added)
+                {
+                    UpdateEntityDates<GameSaveEntity, Guid?, GameSave>(
+                        gameSaveEntity,
+                        [
+                            nameof(GameSaveEntity.DateCreated)
+                        ],
+                        currentTime
+                    );
+                }
+            }
+            else if (updatedEnt.Entity is OwnedPokemonEntity ownedPokemon)
+            {
+                if (updatedEnt.State == EntityState.Added)
+                {
+                    UpdateEntityDates<OwnedPokemonEntity, Guid?, OwnedPokemon>(
+                        ownedPokemon,
+                        [
+                            nameof(GameSaveEntity.DateCreated)
                         ],
                         currentTime
                     );
