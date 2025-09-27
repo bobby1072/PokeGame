@@ -11,6 +11,9 @@ internal sealed class PokeGameContext: DbContext
 {
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<PokedexPokemonEntity> PokedexPokemons { get; set; }
+    public DbSet<GameSaveEntity> GameSaves { get; set; }
+    public DbSet<OwnedPokemonEntity> OwnedPokemons { get; set; }
+    public DbSet<ItemStackEntity> ItemStacks { get; set; }
     public PokeGameContext(DbContextOptions<PokeGameContext> options) : base(options) {}
 
 
