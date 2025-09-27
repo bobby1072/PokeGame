@@ -96,6 +96,19 @@ internal sealed class PokeGameContext: DbContext
                     );
                 }
             }
+            else if (updatedEnt.Entity is OwnedPokemonEntity ownedPokemon)
+            {
+                if (updatedEnt.State == EntityState.Added)
+                {
+                    UpdateEntityDates<OwnedPokemonEntity, Guid?, OwnedPokemon>(
+                        ownedPokemon,
+                        [
+                            nameof(GameSaveEntity.DateCreated)
+                        ],
+                        currentTime
+                    );
+                }
+            }
         }
     }
     
