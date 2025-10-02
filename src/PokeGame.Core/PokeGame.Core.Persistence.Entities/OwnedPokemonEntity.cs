@@ -11,7 +11,7 @@ public sealed class OwnedPokemonEntity : BasePokeGameEntity<Guid?, OwnedPokemon>
     public DateTime CaughtAt { get; set; } = DateTime.UtcNow;
     public bool InDeck { get; set; } = false;
     public required int PokemonLevel { get; set; }
-    public int CurrentExperience { get; set; } = 0;
+    public required int CurrentExperience { get; set; }
     public required int CurrentHp { get; set; }
     public required string MoveOneResourceName { get; set; }
     public string? MoveTwoResourceName { get; set; }

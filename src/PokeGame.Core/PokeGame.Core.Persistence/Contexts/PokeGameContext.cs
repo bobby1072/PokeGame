@@ -103,7 +103,7 @@ internal sealed class PokeGameContext: DbContext
                     UpdateEntityDates<OwnedPokemonEntity, Guid?, OwnedPokemon>(
                         ownedPokemon,
                         [
-                            nameof(GameSaveEntity.DateCreated)
+                            nameof(OwnedPokemonEntity.CaughtAt)
                         ],
                         currentTime
                     );

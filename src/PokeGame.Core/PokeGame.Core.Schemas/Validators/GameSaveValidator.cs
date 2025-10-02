@@ -2,7 +2,7 @@
 
 namespace PokeGame.Core.Schemas.Validators;
 
-internal sealed class GameSaveValidator: AbstractValidator<GameSave>
+internal sealed class GameSaveValidator: BaseValidator<GameSave>
 {
     public GameSaveValidator()
     {

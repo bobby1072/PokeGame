@@ -10,7 +10,9 @@ public static class DomainModelServiceCollectionExtensions
     {
         services
             .AddSingleton<IValidator<User>, UserValidator>()
-            .AddSingleton<IValidator<GameSave>, GameSaveValidator>();
+            .AddSingleton<IValidator<GameSave>, GameSaveValidator>()
+            .AddSingleton<IValidator<OwnedPokemon>, OwnedPokemonValidator>()
+            .AddSingleton<IValidator<ItemStack>, ItemStackValidator>();
         
         return services;
     }
