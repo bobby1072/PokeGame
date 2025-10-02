@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace PokeGame.Core.Schemas;
+namespace PokeGame.Core.Schemas.Pokedex;
 
 public sealed record PokedexPokemonStatsRawJson
 {

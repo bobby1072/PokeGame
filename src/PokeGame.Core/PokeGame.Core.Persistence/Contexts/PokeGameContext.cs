@@ -4,6 +4,7 @@ using BT.Common.Persistence.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
 using PokeGame.Core.Persistence.Entities;
 using PokeGame.Core.Schemas;
+using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Persistence.Contexts;
 

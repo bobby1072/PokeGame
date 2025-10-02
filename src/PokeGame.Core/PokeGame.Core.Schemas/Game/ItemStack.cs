@@ -1,4 +1,4 @@
-namespace PokeGame.Core.Schemas;
+namespace PokeGame.Core.Schemas.Game;
 
 public sealed class ItemStack : PersistableDomainModel<ItemStack, Guid?>
 {

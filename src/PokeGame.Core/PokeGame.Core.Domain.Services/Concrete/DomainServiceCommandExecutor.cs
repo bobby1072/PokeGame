@@ -6,11 +6,11 @@ using PokeGame.Core.Domain.Services.Models;
 
 namespace PokeGame.Core.Domain.Services.Concrete;
 
-internal sealed class ScopedDomainServiceCommandExecutor: IScopedDomainServiceCommandExecutor
+internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecutor
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<ScopedDomainServiceCommandExecutor> _logger;
-    public ScopedDomainServiceCommandExecutor(IServiceProvider serviceProvider, ILogger<ScopedDomainServiceCommandExecutor> logger)
+    private readonly ILogger<DomainServiceCommandExecutor> _logger;
+    public DomainServiceCommandExecutor(IServiceProvider serviceProvider, ILogger<DomainServiceCommandExecutor> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;

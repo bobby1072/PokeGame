@@ -1,6 +1,6 @@
-﻿namespace PokeGame.Core.Schemas;
+﻿namespace PokeGame.Core.Schemas.Pokedex;
 
-public sealed class PokedexPokemonType:  DomainModel<PokedexPokemonType>
+public sealed class PokedexPokemonType : DomainModel<PokedexPokemonType>
 {
     public required PokemonType Type1 { get; set; }
     public PokemonType? Type2 { get; set; }

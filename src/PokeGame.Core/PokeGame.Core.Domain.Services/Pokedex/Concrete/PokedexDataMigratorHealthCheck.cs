@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using PokeGame.Core.Domain.Services.Pokemon.Abstract;
+using PokeGame.Core.Domain.Services.Pokedex.Abstract;
 
-namespace PokeGame.Core.Domain.Services.Pokemon.Concrete;
+namespace PokeGame.Core.Domain.Services.Pokedex.Concrete;
 
-internal sealed class PokedexDataMigratorHealthCheck: IPokedexDataMigratorHealthCheck
+internal sealed class PokedexDataMigratorHealthCheck : IPokedexDataMigratorHealthCheck
 {
     private bool _isMigrated;
-    
+
     public void SetDatabaseSeeded(bool isMigrated)
     {
         _isMigrated = isMigrated;

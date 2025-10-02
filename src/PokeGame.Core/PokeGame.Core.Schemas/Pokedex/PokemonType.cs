@@ -1,4 +1,4 @@
-﻿namespace PokeGame.Core.Schemas;
+﻿namespace PokeGame.Core.Schemas.Pokedex;
 
 public enum PokemonType
 {

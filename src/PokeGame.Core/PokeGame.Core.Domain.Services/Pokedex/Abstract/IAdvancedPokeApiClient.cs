@@ -1,8 +1,8 @@
 ﻿using PokeApiNet;
 
-namespace PokeGame.Core.Domain.Services.Pokemon.Abstract;
+namespace PokeGame.Core.Domain.Services.Pokedex.Abstract;
 
-internal interface IAdvancedPokeApiClient: IDisposable
+internal interface IAdvancedPokeApiClient : IDisposable
 {
     Task<T> GetApiResourceAsync<T>(string name, CancellationToken cancellationToken)
         where T : NamedApiResource;

@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using PokeGame.Core.Domain.Services.Pokemon.Abstract;
+using PokeGame.Core.Domain.Services.Pokedex.Abstract;
 
-namespace PokeGame.Core.Domain.Services.Pokemon.Concrete;
+namespace PokeGame.Core.Domain.Services.Pokedex.Concrete;
 
 internal sealed class PokedexJsonFactory : IPokedexJsonFactory
 {

@@ -10,9 +10,9 @@ using PokeGame.Core.Common;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
 using PokeGame.Core.Domain.Services.Game.Commands;
-using PokeGame.Core.Domain.Services.Pokemon.Abstract;
-using PokeGame.Core.Domain.Services.Pokemon.Commands;
-using PokeGame.Core.Domain.Services.Pokemon.Concrete;
+using PokeGame.Core.Domain.Services.Pokedex.Abstract;
+using PokeGame.Core.Domain.Services.Pokedex.Commands;
+using PokeGame.Core.Domain.Services.Pokedex.Concrete;
 using PokeGame.Core.Domain.Services.User.Abstract;
 using PokeGame.Core.Domain.Services.User.Commands;
 using PokeGame.Core.Domain.Services.User.Concrete;
@@ -50,7 +50,8 @@ public static class DomainServicesServiceCollectionExtensions
             .AddUserServices()
             .AddPokemonServices(healthCheckBuilder)
             .AddGameServices()
-            .AddScoped<IScopedDomainServiceCommandExecutor, ScopedDomainServiceCommandExecutor>();
+            .AddScoped<IDomainServiceCommandExecutor, DomainServiceCommandExecutor>()
+            .AddScoped<IValidatorService, ValidatorService>();
 
         return services;
     }

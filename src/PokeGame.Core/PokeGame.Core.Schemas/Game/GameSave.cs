@@ -1,6 +1,6 @@
-﻿namespace PokeGame.Core.Schemas;
+﻿namespace PokeGame.Core.Schemas.Game;
 
-public sealed class GameSave: PersistableDomainModel<GameSave, Guid?>
+public sealed class GameSave : PersistableDomainModel<GameSave, Guid?>
 {
     public required Guid UserId { get; set; }
     public required string CharacterName { get; set; }
@@ -9,7 +9,7 @@ public sealed class GameSave: PersistableDomainModel<GameSave, Guid?>
 
     public override bool Equals(GameSave? other)
     {
-        return UserId == other.UserId && 
+        return UserId == other?.UserId &&
                CharacterName == other.CharacterName &&
                DateCreated == other.DateCreated &&
                LastPlayed == other.LastPlayed;

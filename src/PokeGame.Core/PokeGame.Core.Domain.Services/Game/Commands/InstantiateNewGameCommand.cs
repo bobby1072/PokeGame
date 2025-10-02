@@ -7,18 +7,19 @@ using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas;
+using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Domain.Services.Game.Commands;
 
-internal sealed class InstantiateNewGameCommand: IDomainCommand<(string CharacterName, Schemas.User CurrentUser), DomainCommandResult<GameSave>>
+internal sealed class InstantiateNewGameCommand: IDomainCommand<(string CharacterName, Schemas.Game.User CurrentUser), DomainCommandResult<GameSave>>
 {
     public string CommandName => nameof(InstantiateNewGameCommand);
     private readonly IGameSaveRepository _gameSaveRepository;
-    private readonly IValidator<GameSave> _gameSaveValidator;
+    private readonly IValidatorService _gameSaveValidator;
     private readonly ILogger<InstantiateNewGameCommand> _logger;
     
     public InstantiateNewGameCommand(IGameSaveRepository gameSaveRepository, 
-        IValidator<GameSave> gameSaveValidator,
+        IValidatorService gameSaveValidator,
         ILogger<InstantiateNewGameCommand> logger)
     {
         _gameSaveRepository = gameSaveRepository;
@@ -27,7 +28,7 @@ internal sealed class InstantiateNewGameCommand: IDomainCommand<(string Characte
     }
 
     public async Task<DomainCommandResult<GameSave>> ExecuteAsync(
-        (string CharacterName, Schemas.User CurrentUser) input,
+        (string CharacterName, Schemas.Game.User CurrentUser) input,
         CancellationToken cancellationToken = default)
     {
         var newGameSave = new GameSave
@@ -37,15 +38,7 @@ internal sealed class InstantiateNewGameCommand: IDomainCommand<(string Characte
             UserId = (Guid)input.CurrentUser.Id!,
         };
 
-        var validationResult = await _gameSaveValidator.ValidateAsync(newGameSave, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            _logger.LogInformation("Gamesave to save failed validation with errors: {@ValidationResult}",
-                validationResult.Errors);
-
-            throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Game save input is invalid");
-        }
+        await _gameSaveValidator.ValidateAndThrowAsync(newGameSave, cancellationToken);
 
         var createdSave = await EntityFrameworkUtils
             .TryDbOperation(() => _gameSaveRepository.Create(newGameSave), _logger)

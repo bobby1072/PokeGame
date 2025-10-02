@@ -1,4 +1,4 @@
-namespace PokeGame.Core.Schemas;
+namespace PokeGame.Core.Schemas.Game;
 
 public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
 {
@@ -13,7 +13,6 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
     public string? MoveTwoResourceName { get; set; }
     public string? MoveThreeResourceName { get; set; }
     public string? MoveFourResourceName { get; set; }
-
     public override bool Equals(OwnedPokemon? other)
     {
         return other is not null &&

@@ -2,6 +2,7 @@
 using BT.Common.Persistence.Shared.Entities;
 using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Extensions;
+using PokeGame.Core.Schemas.Pokedex;
 
 namespace PokeGame.Core.Persistence.Entities;
 
