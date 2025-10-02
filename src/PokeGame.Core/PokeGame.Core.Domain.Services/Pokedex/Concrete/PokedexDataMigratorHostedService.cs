@@ -7,13 +7,13 @@ using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
-using PokeGame.Core.Domain.Services.Pokemon.Abstract;
-using PokeGame.Core.Domain.Services.Pokemon.Commands;
+using PokeGame.Core.Domain.Services.Pokedex.Abstract;
+using PokeGame.Core.Domain.Services.Pokedex.Commands;
 using PokeGame.Core.Persistence.Migrations.Abstract;
 using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Extensions;
 
-namespace PokeGame.Core.Domain.Services.Pokemon.Concrete;
+namespace PokeGame.Core.Domain.Services.Pokedex.Concrete;
 
 internal sealed class PokedexDataMigratorHostedService : BackgroundService
 {

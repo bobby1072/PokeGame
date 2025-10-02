@@ -1,6 +1,6 @@
 ﻿using System.Net.Mail;
 using FluentValidation;
-using PokeGame.Core.Schemas;
+using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Schemas.Validators;
 

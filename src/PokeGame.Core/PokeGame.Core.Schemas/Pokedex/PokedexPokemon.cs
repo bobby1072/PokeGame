@@ -1,6 +1,6 @@
-﻿namespace PokeGame.Core.Schemas;
+﻿namespace PokeGame.Core.Schemas.Pokedex;
 
-public sealed class PokedexPokemon: PersistableDomainModel<PokedexPokemon, int>
+public sealed class PokedexPokemon : PersistableDomainModel<PokedexPokemon, int>
 {
     public required string EnglishName { get; set; }
     public required string JapaneseName { get; set; }

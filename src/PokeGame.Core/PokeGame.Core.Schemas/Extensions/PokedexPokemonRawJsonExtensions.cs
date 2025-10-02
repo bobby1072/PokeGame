@@ -1,4 +1,5 @@
 ﻿using BT.Common.FastArray.Proto;
+using PokeGame.Core.Schemas.Pokedex;
 
 namespace PokeGame.Core.Schemas.Extensions;
 

@@ -2,15 +2,15 @@
 using BT.Common.Services.Models;
 using Microsoft.Extensions.Logging;
 using PokeApiNet;
-using PokeGame.Core.Domain.Services.Pokemon.Abstract;
+using PokeGame.Core.Domain.Services.Pokedex.Abstract;
 
-namespace PokeGame.Core.Domain.Services.Pokemon.Concrete;
+namespace PokeGame.Core.Domain.Services.Pokedex.Concrete;
 
-internal sealed class AdvancedPokeApiClient: PokeApiClient, IAdvancedPokeApiClient
+internal sealed class AdvancedPokeApiClient : PokeApiClient, IAdvancedPokeApiClient
 {
     private readonly ILogger<AdvancedPokeApiClient> _logger;
     private readonly ICachingService _cachingService;
-    public AdvancedPokeApiClient(ILogger<AdvancedPokeApiClient> logger, ICachingService cachingService, HttpClient httpClient): base(httpClient)
+    public AdvancedPokeApiClient(ILogger<AdvancedPokeApiClient> logger, ICachingService cachingService, HttpClient httpClient) : base(httpClient)
     {
         _logger = logger;
         _cachingService = cachingService;
@@ -22,24 +22,24 @@ internal sealed class AdvancedPokeApiClient: PokeApiClient, IAdvancedPokeApiClie
         var resourceType = typeof(T);
 
         var resourceCacheKey = GetApiResourceCacheKey(resourceType.Name, name);
-        
-        var foundResourceFromCache =  await _cachingService.TryGetObjectAsync<T>(resourceCacheKey, cancellationToken);
+
+        var foundResourceFromCache = await _cachingService.TryGetObjectAsync<T>(resourceCacheKey, cancellationToken);
 
         if (foundResourceFromCache is not null)
         {
             _logger.LogDebug("Found resource {ResourceTypeName} with url: {Url} in cache", resourceType.Name, name);
-            
+
             return foundResourceFromCache;
         }
-        
+
         _logger.LogDebug("Making request to get api resource of: {ResourceType} with name: {Name}",
             resourceType.Name,
             name);
 
         var apiResult = await GetResourceAsync<T>(name, cancellationToken);
-        
+
         await _cachingService.SetObjectAsync(resourceCacheKey, apiResult, CacheObjectTimeToLiveInSeconds.OneHour, cancellationToken);
-        
+
         return apiResult;
     }
 
@@ -49,25 +49,25 @@ internal sealed class AdvancedPokeApiClient: PokeApiClient, IAdvancedPokeApiClie
         var resourceType = typeof(T);
 
         var resourceCacheKey = GetApiResourceCacheKey(resourceType.Name, urlResource.Url);
-        
-        var foundResourceFromCache =  await _cachingService.TryGetObjectAsync<T>(resourceCacheKey, cancellationToken);
+
+        var foundResourceFromCache = await _cachingService.TryGetObjectAsync<T>(resourceCacheKey, cancellationToken);
 
         if (foundResourceFromCache is not null)
         {
             _logger.LogDebug("Found resource {ResourceTypeName} with url: {Url} in cache", resourceType.Name, urlResource.Url);
-            
+
             return foundResourceFromCache;
         }
-        
+
         _logger.LogDebug("Making request to get api resource of: {ResourceType} with url: {Url}", typeof(T).Name, urlResource.Url);
 
         var apiResult = await GetResourceAsync(urlResource, cancellationToken);
-        
+
         await _cachingService.SetObjectAsync(resourceCacheKey, apiResult, CacheObjectTimeToLiveInSeconds.OneHour, cancellationToken);
-        
+
         return apiResult;
     }
 
-    private static string GetApiResourceCacheKey(string resourceType, string searchParamVal) 
+    private static string GetApiResourceCacheKey(string resourceType, string searchParamVal)
         => $"{resourceType}.{searchParamVal}";
 }

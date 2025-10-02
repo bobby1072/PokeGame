@@ -1,4 +1,6 @@
 ﻿
+using PokeGame.Core.Schemas.Game;
+
 namespace PokeGame.Core.Schemas.Input;
 
 public sealed class SaveUserInput
