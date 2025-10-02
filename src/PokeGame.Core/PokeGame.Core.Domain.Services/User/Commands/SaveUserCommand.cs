@@ -14,9 +14,9 @@ internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, DomainComma
 {
     public string CommandName => nameof(SaveUserCommand);
     private readonly IUserRepository _userRepository;
-    private readonly IValidator<Schemas.User> _validator;
+    private readonly IValidatorService _validator;
     private readonly ILogger<SaveUserCommand> _logger;
-    public SaveUserCommand(IUserRepository userRepository, IValidator<Schemas.User> validator, ILogger<SaveUserCommand> logger)
+    public SaveUserCommand(IUserRepository userRepository, IValidatorService validator, ILogger<SaveUserCommand> logger)
     {
         _userRepository = userRepository;
         _validator = validator;
@@ -27,14 +27,8 @@ internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, DomainComma
     public async Task<DomainCommandResult<Schemas.User>> ExecuteAsync(SaveUserInput email, CancellationToken cancellationToken = default)
     {
         var parsedUser = email.ToUserModel();
-        var validationResult = await _validator.ValidateAsync(parsedUser, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            _logger.LogInformation("User to save with name: {Name} failed validation with errors: {@ValidationResult}", email.Name, validationResult.Errors);
-            
-            throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Invalid email address");
-        }
+        
+        await _validator.ValidateAndThrowAsync(parsedUser, cancellationToken);
 
         if (parsedUser.Id is not null)
         {

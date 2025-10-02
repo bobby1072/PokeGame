@@ -14,11 +14,11 @@ internal sealed class InstantiateNewGameCommand: IDomainCommand<(string Characte
 {
     public string CommandName => nameof(InstantiateNewGameCommand);
     private readonly IGameSaveRepository _gameSaveRepository;
-    private readonly IValidator<GameSave> _gameSaveValidator;
+    private readonly IValidatorService _gameSaveValidator;
     private readonly ILogger<InstantiateNewGameCommand> _logger;
     
     public InstantiateNewGameCommand(IGameSaveRepository gameSaveRepository, 
-        IValidator<GameSave> gameSaveValidator,
+        IValidatorService gameSaveValidator,
         ILogger<InstantiateNewGameCommand> logger)
     {
         _gameSaveRepository = gameSaveRepository;
@@ -37,15 +37,7 @@ internal sealed class InstantiateNewGameCommand: IDomainCommand<(string Characte
             UserId = (Guid)input.CurrentUser.Id!,
         };
 
-        var validationResult = await _gameSaveValidator.ValidateAsync(newGameSave, cancellationToken);
-
-        if (!validationResult.IsValid)
-        {
-            _logger.LogInformation("Gamesave to save failed validation with errors: {@ValidationResult}",
-                validationResult.Errors);
-
-            throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Game save input is invalid");
-        }
+        await _gameSaveValidator.ValidateAndThrowAsync(newGameSave, cancellationToken);
 
         var createdSave = await EntityFrameworkUtils
             .TryDbOperation(() => _gameSaveRepository.Create(newGameSave), _logger)
