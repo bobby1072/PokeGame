@@ -9,7 +9,7 @@ public sealed class GameSave: PersistableDomainModel<GameSave, Guid?>
 
     public override bool Equals(GameSave? other)
     {
-        return UserId == other.UserId && 
+        return UserId == other?.UserId && 
                CharacterName == other.CharacterName &&
                DateCreated == other.DateCreated &&
                LastPlayed == other.LastPlayed;
