@@ -93,7 +93,7 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         }
         await using var scope = _scopeFactory.CreateAsyncScope();
         var commandExecutor =
-            scope.ServiceProvider.GetRequiredService<IScopedDomainServiceCommandExecutor>();
+            scope.ServiceProvider.GetRequiredService<IDomainServiceCommandExecutor>();
 
         if (pokedexPokemonList.Length > 0)
         {

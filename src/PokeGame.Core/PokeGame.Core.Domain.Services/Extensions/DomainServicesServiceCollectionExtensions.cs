@@ -50,7 +50,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddUserServices()
             .AddPokemonServices(healthCheckBuilder)
             .AddGameServices()
-            .AddScoped<IScopedDomainServiceCommandExecutor, ScopedDomainServiceCommandExecutor>()
+            .AddScoped<IDomainServiceCommandExecutor, DomainServiceCommandExecutor>()
             .AddScoped<IValidatorService, ValidatorService>();
 
         return services;

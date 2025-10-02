@@ -9,8 +9,8 @@ namespace PokeGame.Core.Domain.Services.User.Concrete;
 
 internal sealed class UserProcessingManager : IUserProcessingManager
 {
-    private readonly IScopedDomainServiceCommandExecutor _commandExecutor;
-    public UserProcessingManager(IScopedDomainServiceCommandExecutor commandExecutor)
+    private readonly IDomainServiceCommandExecutor _commandExecutor;
+    public UserProcessingManager(IDomainServiceCommandExecutor commandExecutor)
     {
         _commandExecutor = commandExecutor;
     }
