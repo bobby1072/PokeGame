@@ -12,6 +12,7 @@ using PokeGame.Core.Domain.Services.Pokedex.Commands;
 using PokeGame.Core.Persistence.Migrations.Abstract;
 using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Extensions;
+using PokeGame.Core.Schemas.Pokedex;
 
 namespace PokeGame.Core.Domain.Services.Pokedex.Concrete;
 

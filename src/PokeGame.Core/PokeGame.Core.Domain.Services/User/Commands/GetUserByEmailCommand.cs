@@ -11,7 +11,7 @@ using PokeGame.Core.Persistence.Entities;
 
 namespace PokeGame.Core.Domain.Services.User.Commands;
 
-internal sealed class GetUserByEmailCommand: IDomainCommand<string, DomainCommandResult<Schemas.User>>
+internal sealed class GetUserByEmailCommand: IDomainCommand<string, DomainCommandResult<Schemas.Game.User>>
 {
     public string CommandName => nameof(GetUserByEmailCommand);
     private readonly IUserRepository _userRepository;
@@ -24,7 +24,7 @@ internal sealed class GetUserByEmailCommand: IDomainCommand<string, DomainComman
         _logger = logger;
     }
 
-    public async Task<DomainCommandResult<Schemas.User>> ExecuteAsync(string email, CancellationToken cancellationToken = default)
+    public async Task<DomainCommandResult<Schemas.Game.User>> ExecuteAsync(string email, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("About to attempt to get user with id: {Email}", email);
         
@@ -44,7 +44,7 @@ internal sealed class GetUserByEmailCommand: IDomainCommand<string, DomainComman
             throw new PokeGameApiUserException(HttpStatusCode.NotFound, "User not found");
         }
         
-        return new DomainCommandResult<Schemas.User> {
+        return new DomainCommandResult<Schemas.Game.User> {
             CommandResult = foundUser.Data
         };
     }

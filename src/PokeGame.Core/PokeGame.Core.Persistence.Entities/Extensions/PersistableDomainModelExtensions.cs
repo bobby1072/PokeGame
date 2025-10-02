@@ -1,4 +1,6 @@
 ﻿using PokeGame.Core.Schemas;
+using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Pokedex;
 
 namespace PokeGame.Core.Persistence.Entities.Extensions;
 

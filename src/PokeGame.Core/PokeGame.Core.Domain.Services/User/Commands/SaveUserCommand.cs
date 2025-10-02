@@ -10,7 +10,7 @@ using PokeGame.Core.Schemas.Input;
 
 namespace PokeGame.Core.Domain.Services.User.Commands;
 
-internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, DomainCommandResult<Schemas.User>>
+internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, DomainCommandResult<Schemas.Game.User>>
 {
     public string CommandName => nameof(SaveUserCommand);
     private readonly IUserRepository _userRepository;
@@ -24,7 +24,7 @@ internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, DomainComma
     }
     
     
-    public async Task<DomainCommandResult<Schemas.User>> ExecuteAsync(SaveUserInput email, CancellationToken cancellationToken = default)
+    public async Task<DomainCommandResult<Schemas.Game.User>> ExecuteAsync(SaveUserInput email, CancellationToken cancellationToken = default)
     {
         var parsedUser = email.ToUserModel();
         
@@ -62,7 +62,7 @@ internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, DomainComma
         
         _logger.LogInformation("Successfully saved user with name: {Name}", result.Name);
         
-        return new DomainCommandResult<Schemas.User> 
+        return new DomainCommandResult<Schemas.Game.User> 
         {
             CommandResult = result
         };

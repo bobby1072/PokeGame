@@ -6,6 +6,7 @@ using PokeGame.Core.Persistence.Entities;
 using PokeGame.Core.Persistence.Entities.Extensions;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas;
+using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Persistence.Repositories.Concrete;
 

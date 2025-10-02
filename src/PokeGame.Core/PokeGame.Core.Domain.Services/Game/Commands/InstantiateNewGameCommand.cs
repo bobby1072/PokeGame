@@ -7,10 +7,11 @@ using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas;
+using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Domain.Services.Game.Commands;
 
-internal sealed class InstantiateNewGameCommand: IDomainCommand<(string CharacterName, Schemas.User CurrentUser), DomainCommandResult<GameSave>>
+internal sealed class InstantiateNewGameCommand: IDomainCommand<(string CharacterName, Schemas.Game.User CurrentUser), DomainCommandResult<GameSave>>
 {
     public string CommandName => nameof(InstantiateNewGameCommand);
     private readonly IGameSaveRepository _gameSaveRepository;
@@ -27,7 +28,7 @@ internal sealed class InstantiateNewGameCommand: IDomainCommand<(string Characte
     }
 
     public async Task<DomainCommandResult<GameSave>> ExecuteAsync(
-        (string CharacterName, Schemas.User CurrentUser) input,
+        (string CharacterName, Schemas.Game.User CurrentUser) input,
         CancellationToken cancellationToken = default)
     {
         var newGameSave = new GameSave
