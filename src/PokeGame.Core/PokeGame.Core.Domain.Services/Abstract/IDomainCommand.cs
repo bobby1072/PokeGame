@@ -14,5 +14,5 @@ internal interface IDomainCommand<TOutput> : IDomainCommand where TOutput : Doma
 
 internal interface IDomainCommand<in TInput, TOutput> : IDomainCommand where TOutput: DomainCommandResult
 {
-    Task<TOutput> ExecuteAsync(TInput email, CancellationToken cancellationToken = default);
+    Task<TOutput> ExecuteAsync(TInput input, CancellationToken cancellationToken = default);
 }

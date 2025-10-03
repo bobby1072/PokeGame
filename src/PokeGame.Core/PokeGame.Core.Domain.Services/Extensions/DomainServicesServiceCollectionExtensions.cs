@@ -59,7 +59,8 @@ public static class DomainServicesServiceCollectionExtensions
     private static IServiceCollection AddGameServices(this IServiceCollection services)
     {
         services
-            .AddScoped<InstantiateNewGameCommand>();
+            .AddScoped<InstantiateNewGameCommand>()
+            .AddScoped<GetGameSavesByUserCommand>();
         
         return services;
     }
@@ -86,7 +87,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddHostedService<PokedexDataMigratorHostedService>();
 
         services
-            .AddHttpClient<IAdvancedPokeApiClient, AdvancedPokeApiClient>();
+            .AddHttpClient<IPokeApiClient, PokeApiClient>();
         
         healthCheckBuilder.AddCheck<IPokedexDataMigratorHealthCheck>(
             nameof(PokedexDataMigratorHealthCheck)

@@ -27,12 +27,12 @@ internal sealed class GetDbPokedexPokemonCommand : IDomainCommand<GetPokedexPoke
         _logger = logger;
     }
 
-    public async Task<DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>> ExecuteAsync(GetPokedexPokemonInput email, CancellationToken cancellationToken = default)
+    public async Task<DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>> ExecuteAsync(GetPokedexPokemonInput input, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("About to get pokedex pokemon with input of: {@PokedexQueryInput}",
-            email);
+            input);
 
-        if (!email.HasInputProperties())
+        if (!input.HasInputProperties())
         {
             var result = await EntityFrameworkUtils
                 .TryDbOperation(() =>
@@ -52,10 +52,10 @@ internal sealed class GetDbPokedexPokemonCommand : IDomainCommand<GetPokedexPoke
 
         IReadOnlyCollection<PokedexPokemon> pokedexPokemon;
 
-        if (email.FetchMultiple)
+        if (input.FetchMultiple)
         {
             var dbRes = await EntityFrameworkUtils.TryDbOperation(() =>
-                _pokedexPokemonRepository.GetMany(email.ToLangNameDictionary()))
+                _pokedexPokemonRepository.GetMany(input.ToLangNameDictionary()))
                     ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 
             if (!dbRes.IsSuccessful || dbRes.Data.Count == 0)
@@ -69,7 +69,7 @@ internal sealed class GetDbPokedexPokemonCommand : IDomainCommand<GetPokedexPoke
         {
             var dbRes = await EntityFrameworkUtils
                 .TryDbOperation(() =>
-                    _pokedexPokemonRepository.GetOne(email.ToLangNameDictionary()))
+                    _pokedexPokemonRepository.GetOne(input.ToLangNameDictionary()))
                         ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 
             if (!dbRes.IsSuccessful || dbRes.Data is null)
