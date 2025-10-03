@@ -19,7 +19,7 @@ public sealed class GameSaveController: BaseController
         _gameSaveProcessingManager = gameSaveProcessingManager;
     }
 
-    [HttpPost("NewGameSave")]
+    [HttpPost("SaveNew")]
     public async Task<ActionResult<WebOutcome<GameSave>>> InstantiateNewGameAsync([FromBody]NewGameSaveInput input)
     {
         var currentUser = GetCurrentUser();
