@@ -24,9 +24,9 @@ internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, DomainComma
     }
     
     
-    public async Task<DomainCommandResult<Schemas.Game.User>> ExecuteAsync(SaveUserInput email, CancellationToken cancellationToken = default)
+    public async Task<DomainCommandResult<Schemas.Game.User>> ExecuteAsync(SaveUserInput input, CancellationToken cancellationToken = default)
     {
-        var parsedUser = email.ToUserModel();
+        var parsedUser = input.ToUserModel();
         
         await _validator.ValidateAndThrowAsync(parsedUser, cancellationToken);
 

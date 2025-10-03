@@ -25,13 +25,13 @@ internal sealed class CreateDbPokedexPokemonCommand : IDomainCommand<IReadOnlyCo
         _logger = logger;
     }
 
-    public async Task<DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>> ExecuteAsync(IReadOnlyCollection<PokedexPokemon> email, CancellationToken cancellationToken = default)
+    public async Task<DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>> ExecuteAsync(IReadOnlyCollection<PokedexPokemon> input, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Input contains {PokedexPokemonSaveCount} pokedex pokemon records...", email.Count);
+        _logger.LogInformation("Input contains {PokedexPokemonSaveCount} pokedex pokemon records...", input.Count);
 
         var existingPokedex = await EntityFrameworkUtils.TryDbOperation(() => _pokedexPokemonRepository.GetAll(), _logger) ?? throw new PokeGameApiServerException("Failed to get existing pokedex count");
 
-        var pokemonToCreate = email.FastArrayWhere(x => !existingPokedex.Data.Any(y => y.Equals(x))).ToArray();
+        var pokemonToCreate = input.FastArrayWhere(x => !existingPokedex.Data.Any(y => y.Equals(x))).ToArray();
 
         if (pokemonToCreate.Length == 0)
         {

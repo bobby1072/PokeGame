@@ -2,15 +2,15 @@
 using BT.Common.Services.Models;
 using Microsoft.Extensions.Logging;
 using PokeApiNet;
-using PokeGame.Core.Domain.Services.Pokedex.Abstract;
+using PokeGame.Core.Domain.Services.Abstract;
 
-namespace PokeGame.Core.Domain.Services.Pokedex.Concrete;
+namespace PokeGame.Core.Domain.Services.Concrete;
 
-internal sealed class AdvancedPokeApiClient : PokeApiClient, IAdvancedPokeApiClient
+internal sealed class PokeApiClient : PokeApiNet.PokeApiClient, IPokeApiClient
 {
-    private readonly ILogger<AdvancedPokeApiClient> _logger;
+    private readonly ILogger<PokeApiClient> _logger;
     private readonly ICachingService _cachingService;
-    public AdvancedPokeApiClient(ILogger<AdvancedPokeApiClient> logger, ICachingService cachingService, HttpClient httpClient) : base(httpClient)
+    public PokeApiClient(ILogger<PokeApiClient> logger, ICachingService cachingService, HttpClient httpClient) : base(httpClient)
     {
         _logger = logger;
         _cachingService = cachingService;

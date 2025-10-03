@@ -9,7 +9,9 @@ using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
+using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Domain.Services.Game.Commands;
+using PokeGame.Core.Domain.Services.Game.Concrete;
 using PokeGame.Core.Domain.Services.Pokedex.Abstract;
 using PokeGame.Core.Domain.Services.Pokedex.Commands;
 using PokeGame.Core.Domain.Services.Pokedex.Concrete;
@@ -59,7 +61,9 @@ public static class DomainServicesServiceCollectionExtensions
     private static IServiceCollection AddGameServices(this IServiceCollection services)
     {
         services
-            .AddScoped<InstantiateNewGameCommand>();
+            .AddScoped<InstantiateNewGameCommand>()
+            .AddScoped<GetGameSavesByUserCommand>()
+            .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>();
         
         return services;
     }
@@ -86,7 +90,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddHostedService<PokedexDataMigratorHostedService>();
 
         services
-            .AddHttpClient<IAdvancedPokeApiClient, AdvancedPokeApiClient>();
+            .AddHttpClient<IPokeApiClient, PokeApiClient>();
         
         healthCheckBuilder.AddCheck<IPokedexDataMigratorHealthCheck>(
             nameof(PokedexDataMigratorHealthCheck)
