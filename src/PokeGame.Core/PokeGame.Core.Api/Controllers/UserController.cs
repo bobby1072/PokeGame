@@ -20,7 +20,7 @@ public sealed class UserController: BaseController
     }
 
     [HttpGet("Get")]
-    public async Task<ActionResult<WebOutcome<User>>> GetUser(string email)
+    public async Task<ActionResult<WebOutcome<User>>> GetUserAsync(string email)
     {
         var result = await _userProcessingManager.GetUserAsync(email);
 
@@ -31,7 +31,7 @@ public sealed class UserController: BaseController
         };
     }
     [HttpPost("Save")]
-    public async Task<ActionResult<WebOutcome<User>>> SaveUser(SaveUserInput input)
+    public async Task<ActionResult<WebOutcome<User>>> SaveUserAsync(SaveUserInput input)
     {
         var result =  await _userProcessingManager.SaveUserAsync(input);
 
