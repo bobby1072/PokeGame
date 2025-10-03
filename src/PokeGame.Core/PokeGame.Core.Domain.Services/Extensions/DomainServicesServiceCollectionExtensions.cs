@@ -72,6 +72,7 @@ public static class DomainServicesServiceCollectionExtensions
         services
             .AddScoped<SaveUserCommand>()
             .AddScoped<GetUserByEmailCommand>()
+            .AddScoped<GetUserByIdCommand>()
             .AddScoped<IUserProcessingManager, UserProcessingManager>();
 
         return services;
