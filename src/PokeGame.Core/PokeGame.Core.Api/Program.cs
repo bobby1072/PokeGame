@@ -85,7 +85,10 @@ try
 
     app.UseAuthorization();
 
-    app.UseMiddleware<ExceptionHandlingMiddleware>().UseCorrelationIdMiddleware();
+    app
+        .UseMiddleware<ExceptionHandlingMiddleware>()
+        .UseCorrelationIdMiddleware()
+        .UseMiddleware<RequireValidUserIdHeaderMiddleware>();
 
     app.MapControllers();
 
