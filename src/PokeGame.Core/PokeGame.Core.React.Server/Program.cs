@@ -46,13 +46,6 @@ try
         };
     });
     
-    builder.Services
-        .AddControllers()
-        .AddJsonOptions(opts =>
-        {
-            opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        });
-    
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddResponseCompression();
     
@@ -63,9 +56,7 @@ try
     app.UseResponseCompression();
     
     app.UseHttpsRedirection();
-
-    app.UseAuthorization();
-
+    
     app.UseCorrelationIdMiddleware();
 
     app.UseHealthGetEndpoint();
