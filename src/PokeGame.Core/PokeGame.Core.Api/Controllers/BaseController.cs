@@ -10,11 +10,11 @@ namespace PokeGame.Core.Api.Controllers;
 [Route("Api/[controller]")]
 public abstract class BaseController : ControllerBase
 {
-    protected virtual Schemas.Game.User GetCurrentUser()
+    protected User GetCurrentUser()
     {
         var userIdHeader = HttpContext.Request.Headers["UserId"];
 
-        if (string.IsNullOrEmpty(userIdHeader) || !Guid.TryParse(userIdHeader, out var userId))
+        if (string.IsNullOrEmpty(userIdHeader) || !Guid.TryParse(userIdHeader, out _))
         {
             throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Invalid user id header");
         }

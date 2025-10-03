@@ -19,7 +19,6 @@ public sealed class UserController: BaseController
         _userProcessingManager = userProcessingManager;
     }
 
-    [RequireValidUserIdHeader]
     [HttpGet("Get")]
     public async Task<ActionResult<WebOutcome<User>>> GetUser(string email)
     {
