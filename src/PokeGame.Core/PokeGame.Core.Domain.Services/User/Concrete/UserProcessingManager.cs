@@ -14,7 +14,8 @@ internal sealed class UserProcessingManager : IUserProcessingManager
     {
         _commandExecutor = commandExecutor;
     }
-
+    public async Task<Schemas.Game.User> GetUserAsync(Guid id) => (await _commandExecutor
+        .RunCommandAsync<GetUserByIdCommand, Guid, DomainCommandResult<Schemas.Game.User>>(id)).CommandResult;
     public async Task<Schemas.Game.User> GetUserAsync(string email) => (await _commandExecutor
         .RunCommandAsync<GetUserByEmailCommand, string, DomainCommandResult<Schemas.Game.User>>(email)).CommandResult;
     public async Task<Schemas.Game.User> SaveUserAsync(SaveUserInput input) => (await _commandExecutor
