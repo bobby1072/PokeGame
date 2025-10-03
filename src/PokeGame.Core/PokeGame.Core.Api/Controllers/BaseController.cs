@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.User.Abstract;
+using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Api.Controllers;
 
@@ -9,7 +10,7 @@ namespace PokeGame.Core.Api.Controllers;
 [Route("Api/[controller]")]
 public abstract class BaseController : ControllerBase
 {
-    protected virtual async Task<Schemas.Game.User> GetCurrentUser()
+    protected virtual Schemas.Game.User GetCurrentUser()
     {
         var userIdHeader = HttpContext.Request.Headers["UserId"];
 
@@ -17,10 +18,12 @@ public abstract class BaseController : ControllerBase
         {
             throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Invalid user id header");
         }
-        var userService = HttpContext.RequestServices.GetRequiredService<IUserProcessingManager>();
 
-        var foundUser = await userService.GetUserAsync(userId);
+        if (!HttpContext.Items.TryGetValue(userIdHeader, out var foundUser))
+        {
+            throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Invalid user id");
+        }
         
-        return foundUser;
+        return foundUser as User ?? throw new PokeGameApiServerException("Failed to parse user from items");
     }
 }
