@@ -5,6 +5,7 @@ using Moq;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Game.Commands;
 using PokeGame.Core.Domain.Services.Models;
+using PokeGame.Core.Persistence.Entities;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas.Game;
 
@@ -33,7 +34,7 @@ public sealed class GetGameSavesByUserCommandTests
         var dbResult = new DbGetManyResult<GameSave>(expectedGameSaves);
 
         _mockGameSaveRepository
-            .Setup(x => x.GetMany(user.Id, "UserId"))
+            .Setup(x => x.GetMany<Guid>((Guid)user.Id!, nameof(GameSaveEntity.UserId)))
             .ReturnsAsync(dbResult);
 
         // Act
@@ -42,7 +43,7 @@ public sealed class GetGameSavesByUserCommandTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(expectedGameSaves, result.CommandResult);
-        _mockGameSaveRepository.Verify(x => x.GetMany(user.Id, "UserId"), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.GetMany<Guid>((Guid)user.Id!, nameof(GameSaveEntity.UserId)), Times.Once);
     }
 
     [Fact]
@@ -52,7 +53,7 @@ public sealed class GetGameSavesByUserCommandTests
         var user = _fixture.Create<User>();
 
         _mockGameSaveRepository
-            .Setup(x => x.GetMany(user.Id, "UserId"))
+            .Setup(x => x.GetMany<Guid>((Guid)user.Id!, nameof(GameSaveEntity.UserId)))
             .ReturnsAsync((DbGetManyResult<GameSave>)null!);
 
         // Act & Assert
@@ -61,7 +62,7 @@ public sealed class GetGameSavesByUserCommandTests
         );
 
         Assert.Equal("Failed to fetch game saves", exception.Message);
-        _mockGameSaveRepository.Verify(x => x.GetMany(user.Id, "UserId"), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.GetMany<Guid>((Guid)user.Id!, nameof(GameSaveEntity.UserId)), Times.Once);
     }
 
     [Fact]
@@ -72,7 +73,7 @@ public sealed class GetGameSavesByUserCommandTests
         var emptyResult = new DbGetManyResult<GameSave>(Array.Empty<GameSave>());
 
         _mockGameSaveRepository
-            .Setup(x => x.GetMany(user.Id, "UserId"))
+            .Setup(x => x.GetMany<Guid>((Guid)user.Id!, nameof(GameSaveEntity.UserId)))
             .ReturnsAsync(emptyResult);
 
         // Act
@@ -81,7 +82,7 @@ public sealed class GetGameSavesByUserCommandTests
         // Assert
         Assert.NotNull(result);
         Assert.Empty(result.CommandResult);
-        _mockGameSaveRepository.Verify(x => x.GetMany(user.Id, "UserId"), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.GetMany<Guid>((Guid)user.Id!, nameof(GameSaveEntity.UserId)), Times.Once);
     }
 
     [Fact]
