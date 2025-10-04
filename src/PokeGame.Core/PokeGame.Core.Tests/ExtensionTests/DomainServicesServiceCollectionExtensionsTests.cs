@@ -1,7 +1,6 @@
 using System.Text.Json;
 using AutoFixture;
 using BT.Common.Api.Helpers.Models;
-using BT.Common.Persistence.Shared.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;

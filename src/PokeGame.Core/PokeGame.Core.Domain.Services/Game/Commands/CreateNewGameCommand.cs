@@ -11,16 +11,22 @@ using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Domain.Services.Game.Commands;
 
-internal sealed class CreateNewGameCommand: IDomainCommand<(string CharacterName, Schemas.Game.User CurrentUser), DomainCommandResult<GameSave>>
+internal sealed class CreateNewGameCommand
+    : IDomainCommand<
+        (string CharacterName, Schemas.Game.User CurrentUser),
+        DomainCommandResult<GameSave>
+    >
 {
     public string CommandName => nameof(CreateNewGameCommand);
     private readonly IGameSaveRepository _gameSaveRepository;
     private readonly IValidatorService _gameSaveValidator;
     private readonly ILogger<CreateNewGameCommand> _logger;
-    
-    public CreateNewGameCommand(IGameSaveRepository gameSaveRepository, 
+
+    public CreateNewGameCommand(
+        IGameSaveRepository gameSaveRepository,
         IValidatorService gameSaveValidator,
-        ILogger<CreateNewGameCommand> logger)
+        ILogger<CreateNewGameCommand> logger
+    )
     {
         _gameSaveRepository = gameSaveRepository;
         _gameSaveValidator = gameSaveValidator;
@@ -29,7 +35,8 @@ internal sealed class CreateNewGameCommand: IDomainCommand<(string CharacterName
 
     public async Task<DomainCommandResult<GameSave>> ExecuteAsync(
         (string CharacterName, Schemas.Game.User CurrentUser) input,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var newGameSave = new GameSave
         {
@@ -40,21 +47,19 @@ internal sealed class CreateNewGameCommand: IDomainCommand<(string CharacterName
 
         await _gameSaveValidator.ValidateAndThrowAsync(newGameSave, cancellationToken);
 
-        var createdSave = await EntityFrameworkUtils
-            .TryDbOperation(() => _gameSaveRepository.Create(newGameSave), _logger)
-                ?? throw new  PokeGameApiServerException("Failed to save game save");
-        
+        var createdSave =
+            await EntityFrameworkUtils.TryDbOperation(
+                () => _gameSaveRepository.Create(newGameSave),
+                _logger
+            ) ?? throw new PokeGameApiServerException("Failed to save game save");
+
         _logger.LogDebug("Game save saved: {@GameSave}", newGameSave);
-        
+
         if (!createdSave.IsSuccessful || createdSave.Data.Count == 0)
         {
             throw new PokeGameApiServerException("Failed to save game save");
         }
 
-
-        return new DomainCommandResult<GameSave>
-        {
-            CommandResult = createdSave.FirstResult,
-        };
+        return new DomainCommandResult<GameSave> { CommandResult = createdSave.FirstResult };
     }
 }
