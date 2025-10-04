@@ -14,22 +14,22 @@ interface GameSaveCardProps {
     onSelect: (gameSave: GameSave) => void;
 }
 
-export const GameSaveCard: React.FC<GameSaveCardProps> = ({ gameSave, onSelect }) => {
+export const GameSaveCard: React.FC<GameSaveCardProps> = ({
+    gameSave,
+    onSelect,
+}) => {
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
+        const stringAsDate = new Date(dateString);
+        return `${stringAsDate.toLocaleDateString()} ${stringAsDate.toLocaleTimeString()}`;
     };
 
     const formatRelativeTime = (dateString: string) => {
         const date = new Date(dateString);
         const now = new Date();
-        const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-        
+        const diffInMinutes = Math.floor(
+            (now.getTime() - date.getTime()) / (1000 * 60)
+        );
+
         if (diffInMinutes < 60) {
             return `${diffInMinutes} minutes ago`;
         }
@@ -52,29 +52,64 @@ export const GameSaveCard: React.FC<GameSaveCardProps> = ({ gameSave, onSelect }
                 },
             }}
         >
-            <CardActionArea onClick={() => onSelect(gameSave)} sx={{ height: "100%" }}>
+            <CardActionArea
+                onClick={() => onSelect(gameSave)}
+                sx={{ height: "100%" }}
+            >
                 <CardContent>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 2,
+                        }}
+                    >
                         <Typography variant="h6" component="div" noWrap>
                             {gameSave.characterName}
                         </Typography>
-                        
-                        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <Typography variant="body2" color="text.secondary">
+
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 1,
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                }}
+                            >
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
                                     Created:
                                 </Typography>
                                 <Typography variant="body2">
                                     {formatDate(gameSave.dateCreated)}
                                 </Typography>
                             </Box>
-                            
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <Typography variant="body2" color="text.secondary">
+
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                }}
+                            >
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
                                     Last Played:
                                 </Typography>
-                                <Chip 
-                                    label={formatRelativeTime(gameSave.lastPlayed)}
+                                <Chip
+                                    label={formatRelativeTime(
+                                        gameSave.lastPlayed
+                                    )}
                                     size="small"
                                     color="primary"
                                     variant="outlined"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Paper,
     TextField,
@@ -16,26 +16,26 @@ interface NewGameFormProps {
     onCancel: () => void;
 }
 
-export const NewGameForm: React.FC<NewGameFormProps> = ({ onGameCreated, onCancel }) => {
+export const NewGameForm: React.FC<NewGameFormProps> = ({
+    onGameCreated,
+    onCancel,
+}) => {
     const [characterName, setCharacterName] = useState("");
-    const [isCreating, setIsCreating] = useState(false);
-    const saveNewGameMutation = useSaveNewGameMutation();
+    const { data, error, isPending, mutate } = useSaveNewGameMutation();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    useEffect(() => {
+        if (data) {
+            onGameCreated(data);
+        }
+    }, [data, onGameCreated]);
+
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!characterName.trim()) return;
 
-        setIsCreating(true);
-        try {
-            const newGameSave = await saveNewGameMutation.mutateAsync({
-                input: { newCharacterName: characterName.trim() }
-            });
-            onGameCreated(newGameSave);
-        } catch (error) {
-            console.error("Failed to create new game:", error);
-        } finally {
-            setIsCreating(false);
-        }
+        mutate({
+            input: { newCharacterName: characterName.trim() },
+        });
     };
 
     return (
@@ -52,7 +52,7 @@ export const NewGameForm: React.FC<NewGameFormProps> = ({ onGameCreated, onCance
             <Typography variant="h5" component="h3" gutterBottom>
                 Create New Game
             </Typography>
-            
+
             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
                 <TextField
                     fullWidth
@@ -61,18 +61,20 @@ export const NewGameForm: React.FC<NewGameFormProps> = ({ onGameCreated, onCance
                     value={characterName}
                     onChange={(e) => setCharacterName(e.target.value)}
                     placeholder="Enter your character name"
-                    disabled={isCreating}
+                    disabled={isPending}
                     required
                     inputProps={{ maxLength: 50 }}
                     sx={{ mb: 3 }}
                     helperText={`${characterName.length}/50 characters`}
                 />
-                
-                <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
+
+                <Box
+                    sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}
+                >
                     <Button
                         variant="outlined"
                         onClick={onCancel}
-                        disabled={isCreating}
+                        disabled={isPending}
                         size="large"
                     >
                         Cancel
@@ -80,16 +82,18 @@ export const NewGameForm: React.FC<NewGameFormProps> = ({ onGameCreated, onCance
                     <Button
                         type="submit"
                         variant="contained"
-                        disabled={!characterName.trim() || isCreating}
+                        disabled={!characterName.trim() || isPending}
                         size="large"
-                        startIcon={isCreating ? <CircularProgress size={20} /> : null}
+                        startIcon={
+                            isPending ? <CircularProgress size={20} /> : null
+                        }
                     >
-                        {isCreating ? "Creating..." : "Create Game"}
+                        {isPending ? "Creating..." : "Create Game"}
                     </Button>
                 </Box>
             </Box>
-            
-            <ErrorComponent error={saveNewGameMutation.error} />
+
+            <ErrorComponent error={error} />
         </Paper>
     );
 };
