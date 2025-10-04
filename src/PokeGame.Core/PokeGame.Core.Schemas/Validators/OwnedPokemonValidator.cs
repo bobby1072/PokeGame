@@ -14,8 +14,8 @@ internal sealed class OwnedPokemonValidator: BaseValidator<OwnedPokemon>
         RuleFor(x => x.CurrentHp).Must(x => x is >= 0).WithMessage("Current hp cannot be negative");
         RuleFor(x => x.MoveOneResourceName).NotEmpty().WithMessage("Move one resource name cannot be empty");
         RuleFor(x => x.MoveOneResourceName).Must(IsValidUri).WithMessage("Resource names must be valid Uris");
-        RuleFor(x => x.MoveTwoResourceName).Must(x => x is not null && IsValidUri(x)).WithMessage("Resource names must be valid Uris");
-        RuleFor(x => x.MoveThreeResourceName).Must(x => x is not null && IsValidUri(x)).WithMessage("Resource names must be valid Uris");
-        RuleFor(x => x.MoveFourResourceName).Must(x => x is not null && IsValidUri(x)).WithMessage("Resource names must be valid Uris");
+        RuleFor(x => x.MoveTwoResourceName).Must(x => x is null || IsValidUri(x)).WithMessage("Resource names must be valid Uris");
+        RuleFor(x => x.MoveThreeResourceName).Must(x => x is null || IsValidUri(x)).WithMessage("Resource names must be valid Uris");
+        RuleFor(x => x.MoveFourResourceName).Must(x => x is null || IsValidUri(x)).WithMessage("Resource names must be valid Uris");
     }
 }

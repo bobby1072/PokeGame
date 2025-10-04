@@ -321,7 +321,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         }
     }
 
-    private static void AssertServiceRegistration<TService>(ServiceLifetime expectedLifetime)
+    private void AssertServiceRegistration<TService>(ServiceLifetime expectedLifetime)
     {
         var descriptor = _services.FirstOrDefault(x => x.ServiceType == typeof(TService));
         Assert.NotNull(descriptor);
@@ -329,7 +329,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         Assert.Equal(typeof(TService), descriptor.ImplementationType);
     }
 
-    private static void AssertServiceRegistration<TInterface, TImplementation>(ServiceLifetime expectedLifetime)
+    private void AssertServiceRegistration<TInterface, TImplementation>(ServiceLifetime expectedLifetime)
     {
         var descriptor = _services.FirstOrDefault(x => x.ServiceType == typeof(TInterface));
         Assert.NotNull(descriptor);
