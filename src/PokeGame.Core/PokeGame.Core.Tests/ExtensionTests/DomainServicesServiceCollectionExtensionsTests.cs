@@ -141,8 +141,11 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         AssertServiceRegistration<StartGameSessionCommand>(ServiceLifetime.Scoped);
         AssertServiceRegistration<RemoveGameSessionCommand>(ServiceLifetime.Scoped);
 
-        // Assert - Game Processing Manager
+        // Assert - Game Processing Managers
         AssertServiceRegistration<IGameSaveProcessingManager, GameSaveProcessingManager>(
+            ServiceLifetime.Scoped
+        );
+        AssertServiceRegistration<IGameSessionProcessingManager, GameSessionProcessingManager>(
             ServiceLifetime.Scoped
         );
     }
@@ -234,6 +237,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         Assert.NotNull(serviceProvider.GetService<IDomainServiceCommandExecutor>());
         Assert.NotNull(serviceProvider.GetService<IValidatorService>());
         Assert.NotNull(serviceProvider.GetService<IGameSaveProcessingManager>());
+        Assert.NotNull(serviceProvider.GetService<IGameSessionProcessingManager>());
         Assert.NotNull(serviceProvider.GetService<IUserProcessingManager>());
         Assert.NotNull(serviceProvider.GetService<IPokedexDataMigratorHealthCheck>());
         Assert.NotNull(serviceProvider.GetService<IPokedexJsonFactory>());
@@ -289,6 +293,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
             typeof(IDomainServiceCommandExecutor),
             typeof(IValidatorService),
             typeof(IGameSaveProcessingManager),
+            typeof(IGameSessionProcessingManager),
             typeof(IUserProcessingManager),
             typeof(CreateNewGameCommand),
             typeof(GetGameSavesByUserCommand),
@@ -321,6 +326,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
             { typeof(IDomainServiceCommandExecutor), typeof(DomainServiceCommandExecutor) },
             { typeof(IValidatorService), typeof(ValidatorService) },
             { typeof(IGameSaveProcessingManager), typeof(GameSaveProcessingManager) },
+            { typeof(IGameSessionProcessingManager), typeof(GameSessionProcessingManager) },
             { typeof(IUserProcessingManager), typeof(UserProcessingManager) },
             { typeof(IPokedexDataMigratorHealthCheck), typeof(PokedexDataMigratorHealthCheck) },
         };
