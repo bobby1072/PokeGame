@@ -1,6 +1,8 @@
 import { createContext, useContext, useState } from "react";
 import { PokeGameUser } from "../models/PokeGameUser";
 import { LoginPage } from "../pages/LoginPage";
+import { GameSaveProvider } from "./GameSaveContext";
+import { GameSelectionWrapper } from "../components/GameSelectionWrapper";
 
 export const PokeGameUserContext = createContext<PokeGameUser | undefined>(
     undefined
@@ -23,11 +25,17 @@ export const PokeGameUserContextProvider: React.FC<{
         undefined
     );
 
+    // Step 1: If no user is logged in, show login page
     if (!currentUser) return <LoginPage setUser={(u) => setCurrentUser(u)} />;
 
+    // Step 2: If user is logged in, wrap with GameSaveProvider and show game save selection
     return (
         <PokeGameUserContext.Provider value={currentUser}>
-            {children}
+            <GameSaveProvider>
+                <GameSelectionWrapper>
+                    {children}
+                </GameSelectionWrapper>
+            </GameSaveProvider>
         </PokeGameUserContext.Provider>
     );
 };
