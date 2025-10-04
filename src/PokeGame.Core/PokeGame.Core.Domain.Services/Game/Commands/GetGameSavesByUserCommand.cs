@@ -27,7 +27,7 @@ internal sealed class GetGameSavesByUserCommand : IDomainCommand<Schemas.Game.Us
 
         var foundGameSaves =
             await EntityFrameworkUtils.TryDbOperation(() =>
-                _gameSaveRepository.GetMany(user.Id, nameof(GameSaveEntity.UserId)))
+                _gameSaveRepository.GetMany<Guid>((Guid)user.Id!, nameof(GameSaveEntity.UserId)))
                     ?? throw new PokeGameApiServerException("Failed to fetch game saves");
 
         return new DomainCommandResult<IReadOnlyCollection<GameSave>>

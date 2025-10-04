@@ -4,7 +4,6 @@ import {
     Button,
     Box,
     CircularProgress,
-    Fab,
     Alert,
     Container,
 } from "@mui/material";
@@ -181,21 +180,6 @@ export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({
                     </Box>
                 )}
 
-                {/* Floating Action Button for Quick New Game (when there are existing saves) */}
-                {gameSaves && gameSaves.length > 0 && !showNewGameForm && (
-                    <Fab
-                        color="primary"
-                        aria-label="create new game"
-                        onClick={() => setShowNewGameForm(true)}
-                        sx={{
-                            position: "fixed",
-                            bottom: 24,
-                            right: 24,
-                        }}
-                    >
-                        +
-                    </Fab>
-                )}
             </Container>
         </PageBase>
     );
