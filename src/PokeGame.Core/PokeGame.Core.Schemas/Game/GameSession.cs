@@ -4,6 +4,7 @@ public sealed class GameSession : PersistableDomainModel<GameSession, Guid?>
 {
     public required Guid GameSaveId { get; set; }
     public required Guid UserId { get; set; }
+    public DateTime StartedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation properties
     public GameSave? GameSave { get; set; }
@@ -13,6 +14,7 @@ public sealed class GameSession : PersistableDomainModel<GameSession, Guid?>
     {
         return Id?.Equals(other?.Id) is true
             && GameSaveId.Equals(other?.GameSaveId)
-            && UserId.Equals(other?.UserId);
+            && UserId.Equals(other?.UserId)
+            && StartedAt.Equals(other?.StartedAt);
     }
 }

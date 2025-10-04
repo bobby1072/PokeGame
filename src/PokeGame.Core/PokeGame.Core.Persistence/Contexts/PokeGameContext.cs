@@ -11,7 +11,7 @@ namespace PokeGame.Core.Persistence.Contexts;
 internal sealed class PokeGameContext : DbContext
 {
     public DbSet<UserEntity> Users { get; set; }
-    public DbSet<PokedexPokemonEntity> PokedexPokemons { get; set; }
+    public DbSet<PokedexPokemonEntity> PokedexPokemon { get; set; }
     public DbSet<GameSaveEntity> GameSaves { get; set; }
     public DbSet<OwnedPokemonEntity> OwnedPokemons { get; set; }
     public DbSet<ItemStackEntity> ItemStacks { get; set; }
@@ -94,6 +94,17 @@ internal sealed class PokeGameContext : DbContext
                     UpdateEntityDates<OwnedPokemonEntity, Guid?, OwnedPokemon>(
                         ownedPokemon,
                         [nameof(OwnedPokemonEntity.CaughtAt)],
+                        currentTime
+                    );
+                }
+            }
+            else if (updatedEnt.Entity is GameSessionEntity gameSession)
+            {
+                if (updatedEnt.State == EntityState.Added)
+                {
+                    UpdateEntityDates<GameSessionEntity, Guid?, GameSession>(
+                        gameSession,
+                        [nameof(GameSessionEntity.StartedAt)],
                         currentTime
                     );
                 }
