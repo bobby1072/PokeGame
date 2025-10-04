@@ -7,11 +7,24 @@ import { NewGameSaveInput } from "../models/NewGameSaveInput";
 
 export default class PokeGameCoreHttpClient {
     private readonly _axiosClient: AxiosInstance;
+    private _userId: string | null = null;
 
     public constructor(baseURL: string) {
         this._axiosClient = axios.create({
             baseURL,
         });
+    }
+
+    public setUserId(userId: string | null): void {
+        this._userId = userId;
+    }
+
+    private getHeadersWithUserId(): Record<string, string> {
+        const headers: Record<string, string> = {};
+        if (this._userId) {
+            headers['UserId'] = this._userId;
+        }
+        return headers;
     }
     public async SaveUser(input: SaveUserInput): Promise<PokeGameUser> {
         const { data } = await this._axiosClient.post<WebOutcome<PokeGameUser>>(
@@ -43,7 +56,10 @@ export default class PokeGameCoreHttpClient {
     public async SaveNewGame(input: NewGameSaveInput): Promise<GameSave> {
         const { data } = await this._axiosClient.post<WebOutcome<GameSave>>(
             "Api/GameSave/SaveNew",
-            input
+            input,
+            {
+                headers: this.getHeadersWithUserId()
+            }
         );
 
         if (!data.isSuccess || !data.data) {
@@ -55,7 +71,10 @@ export default class PokeGameCoreHttpClient {
 
     public async GetAllGameSavesForUser(): Promise<GameSave[]> {
         const { data } = await this._axiosClient.get<WebOutcome<GameSave[]>>(
-            "Api/GameSave/GetAllForSelf"
+            "Api/GameSave/GetAllForSelf",
+            {
+                headers: this.getHeadersWithUserId()
+            }
         );
 
         if (!data.isSuccess || !data.data) {

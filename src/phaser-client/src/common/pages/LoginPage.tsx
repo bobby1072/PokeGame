@@ -26,7 +26,7 @@ interface TabPanelProps {
     value: number;
 }
 
-function TabPanel(props: TabPanelProps) {
+const TabPanel: React.FC<TabPanelProps> = (props) => {
     const { children, value, index, ...other } = props;
 
     return (

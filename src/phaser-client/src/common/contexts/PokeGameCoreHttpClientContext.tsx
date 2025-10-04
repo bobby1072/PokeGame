@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo, useEffect } from "react";
 import PokeGameCoreHttpClient from "../utils/PokeGameCoreHttpClient";
 import { useGetAppSettingsContext } from "./AppSettingsContext";
 
@@ -16,15 +16,28 @@ export const useGetPokeGameHttpClientContext = () => {
     return value;
 };
 
-export const PokeGameCoreHttpClientContextProvider: React.FC<{
+interface PokeGameCoreHttpClientContextProviderProps {
     children: React.ReactNode;
-}> = ({ children }) => {
+    userId?: string;
+}
+
+export const PokeGameCoreHttpClientContextProvider: React.FC<PokeGameCoreHttpClientContextProviderProps> = ({ 
+    children, 
+    userId 
+}) => {
     const settings = useGetAppSettingsContext();
 
+    const httpClient = useMemo(() => {
+        return new PokeGameCoreHttpClient(settings.pokeGameCoreApiUrl);
+    }, [settings.pokeGameCoreApiUrl]);
+
+    // Update the user ID whenever it changes
+    useEffect(() => {
+        httpClient.setUserId(userId || null);
+    }, [httpClient, userId]);
+
     return (
-        <PokeGameCoreHttpClientContext.Provider
-            value={new PokeGameCoreHttpClient(settings.pokeGameCoreApiUrl)}
-        >
+        <PokeGameCoreHttpClientContext.Provider value={httpClient}>
             {children}
         </PokeGameCoreHttpClientContext.Provider>
     );
