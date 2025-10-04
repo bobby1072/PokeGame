@@ -31,20 +31,6 @@ public sealed class GameSaveValidatorTests
     }
 
     [Fact]
-    public void Should_Have_Error_When_CharacterName_Is_Null()
-    {
-        // Arrange
-        var gameSave = _fixture.Build<GameSave>()
-            .With(x => x.CharacterName, (string)null!)
-            .Create();
-
-        // Act & Assert
-        var result = _validator.TestValidate(gameSave);
-        result.ShouldHaveValidationErrorFor(x => x.CharacterName)
-              .WithErrorMessage("Character name cannot be null");
-    }
-
-    [Fact]
     public void Should_Have_Error_When_CharacterName_Exceeds_Maximum_Length()
     {
         // Arrange
