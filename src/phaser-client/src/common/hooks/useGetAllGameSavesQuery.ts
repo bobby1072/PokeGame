@@ -7,7 +7,7 @@ export const useGetAllGameSavesQuery = () => {
     const pokeGameHttpClient = useGetPokeGameHttpClientContext();
 
     return useQuery<GameSave[], Error>({
-        queryKey: [QueryKeys.GAME_SAVES],
+        queryKey: [QueryKeys.GetAllGameSavesForSelf],
         queryFn: () => pokeGameHttpClient.GetAllGameSavesForUser(),
     });
 };

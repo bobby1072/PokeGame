@@ -1,3 +1,3 @@
 export enum QueryKeys {
-    GAME_SAVES = "gameSaves",
+    GetAllGameSavesForSelf = "get-all-game-saves-for-self",
 }
