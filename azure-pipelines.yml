@@ -17,6 +17,8 @@ trigger:
     include:
       - master
 
+name: $(Date:yy).$(Month)$(DayOfYear).$(Rev:r)
+
 pr:
   branches:
     include:
