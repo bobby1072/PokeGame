@@ -76,8 +76,6 @@ stages:
             displayName: "Transform react app settings"
             inputs:
               folderPath: "$(Build.SourcesDirectory)/src/phaser-client/src/common/utils"
-              fileType: "json"
-              xmlTransformationRules:
               jsonTargetFiles: "reactappsettings.json"
 
           - task: Npm@1
@@ -105,8 +103,6 @@ stages:
             displayName: "Transform all configuration files"
             inputs:
               folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core"
-              fileType: "json"
-              xmlTransformationRules:
               jsonTargetFiles: |
                 PokeGame.Core.Api/appsettings.json
                 PokeGame.Core.React.Server/reactserversettings.json
