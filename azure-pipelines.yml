@@ -96,7 +96,6 @@ stages:
     condition: and(eq(variables.isMain, true), succeeded())
     jobs:
       - job: push_api_image
-        dependsOn: transform_configs
         steps:
           - checkout: self
             submodules: recursive
