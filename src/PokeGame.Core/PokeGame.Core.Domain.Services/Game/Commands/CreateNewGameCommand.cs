@@ -11,16 +11,16 @@ using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Domain.Services.Game.Commands;
 
-internal sealed class InstantiateNewGameCommand: IDomainCommand<(string CharacterName, Schemas.Game.User CurrentUser), DomainCommandResult<GameSave>>
+internal sealed class CreateNewGameCommand: IDomainCommand<(string CharacterName, Schemas.Game.User CurrentUser), DomainCommandResult<GameSave>>
 {
-    public string CommandName => nameof(InstantiateNewGameCommand);
+    public string CommandName => nameof(CreateNewGameCommand);
     private readonly IGameSaveRepository _gameSaveRepository;
     private readonly IValidatorService _gameSaveValidator;
-    private readonly ILogger<InstantiateNewGameCommand> _logger;
+    private readonly ILogger<CreateNewGameCommand> _logger;
     
-    public InstantiateNewGameCommand(IGameSaveRepository gameSaveRepository, 
+    public CreateNewGameCommand(IGameSaveRepository gameSaveRepository, 
         IValidatorService gameSaveValidator,
-        ILogger<InstantiateNewGameCommand> logger)
+        ILogger<CreateNewGameCommand> logger)
     {
         _gameSaveRepository = gameSaveRepository;
         _gameSaveValidator = gameSaveValidator;

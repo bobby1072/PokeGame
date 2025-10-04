@@ -12,19 +12,19 @@ using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Tests.DomainServiceTests.GameTests;
 
-public sealed class InstantiateNewGameCommandTests
+public sealed class CreateNewGameCommandTests
 {
     private static readonly Fixture _fixture = new();
     private readonly Mock<IGameSaveRepository> _mockGameSaveRepository = new();
     private readonly Mock<IValidatorService> _mockValidatorService = new();
-    private readonly InstantiateNewGameCommand _command;
+    private readonly CreateNewGameCommand _command;
 
-    public InstantiateNewGameCommandTests()
+    public CreateNewGameCommandTests()
     {
-        _command = new InstantiateNewGameCommand(
+        _command = new CreateNewGameCommand(
             _mockGameSaveRepository.Object,
             _mockValidatorService.Object,
-            new NullLogger<InstantiateNewGameCommand>()
+            new NullLogger<CreateNewGameCommand>()
         );
     }
 
@@ -176,6 +176,6 @@ public sealed class InstantiateNewGameCommandTests
     public void CommandName_Should_Return_Correct_Name()
     {
         // Act & Assert
-        Assert.Equal(nameof(InstantiateNewGameCommand), _command.CommandName);
+        Assert.Equal(nameof(CreateNewGameCommand), _command.CommandName);
     }
 }

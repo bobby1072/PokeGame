@@ -1,6 +1,7 @@
 using System.Text.Json;
 using AutoFixture;
 using BT.Common.Api.Helpers.Models;
+using BT.Common.Persistence.Shared.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -27,16 +28,13 @@ namespace PokeGame.Core.Tests.ExtensionTests;
 
 public sealed class DomainServicesServiceCollectionExtensionsTests
 {
-    private readonly Fixture _fixture;
-    private readonly IServiceCollection _services;
+    private static readonly Fixture _fixture = new();
+    private readonly IServiceCollection _services = new ServiceCollection();
     private readonly IConfiguration _configuration;
     private readonly IHostEnvironment _hostEnvironment;
 
     public DomainServicesServiceCollectionExtensionsTests()
     {
-        _fixture = new Fixture();
-        _services = new ServiceCollection();
-
         // Create test configuration with required ServiceInfo section
         var serviceInfo = new ServiceInfo { ReleaseName = "TestService", ReleaseVersion = "1.0.0" };
 
@@ -138,8 +136,9 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         _services.AddPokeGameApplicationServices(_configuration, _hostEnvironment);
 
         // Assert - Game Commands
-        AssertServiceRegistration<InstantiateNewGameCommand>(ServiceLifetime.Scoped);
+        AssertServiceRegistration<CreateNewGameCommand>(ServiceLifetime.Scoped);
         AssertServiceRegistration<GetGameSavesByUserCommand>(ServiceLifetime.Scoped);
+        AssertServiceRegistration<StartGameSessionCommand>(ServiceLifetime.Scoped);
 
         // Assert - Game Processing Manager
         AssertServiceRegistration<IGameSaveProcessingManager, GameSaveProcessingManager>(
@@ -239,8 +238,9 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         Assert.NotNull(serviceProvider.GetService<IPokedexJsonFactory>());
 
         // Assert - Commands can be resolved
-        Assert.NotNull(serviceProvider.GetService<InstantiateNewGameCommand>());
+        Assert.NotNull(serviceProvider.GetService<CreateNewGameCommand>());
         Assert.NotNull(serviceProvider.GetService<GetGameSavesByUserCommand>());
+        Assert.NotNull(serviceProvider.GetService<StartGameSessionCommand>());
         Assert.NotNull(serviceProvider.GetService<SaveUserCommand>());
         Assert.NotNull(serviceProvider.GetService<GetUserByEmailCommand>());
         Assert.NotNull(serviceProvider.GetService<GetUserByIdCommand>());
@@ -288,8 +288,9 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
             typeof(IValidatorService),
             typeof(IGameSaveProcessingManager),
             typeof(IUserProcessingManager),
-            typeof(InstantiateNewGameCommand),
+            typeof(CreateNewGameCommand),
             typeof(GetGameSavesByUserCommand),
+            typeof(StartGameSessionCommand),
             typeof(SaveUserCommand),
             typeof(GetUserByEmailCommand),
             typeof(GetUserByIdCommand),
@@ -346,8 +347,9 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         // Assert command services are registered as their concrete types (not interfaces)
         var commandTypes = new[]
         {
-            typeof(InstantiateNewGameCommand),
+            typeof(CreateNewGameCommand),
             typeof(GetGameSavesByUserCommand),
+            typeof(StartGameSessionCommand),
             typeof(SaveUserCommand),
             typeof(GetUserByEmailCommand),
             typeof(GetUserByIdCommand),

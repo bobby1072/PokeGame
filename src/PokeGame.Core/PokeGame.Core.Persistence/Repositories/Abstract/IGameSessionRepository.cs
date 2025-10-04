@@ -4,4 +4,7 @@ using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Persistence.Repositories.Abstract;
 
-public interface IGameSessionRepository : IRepository<GameSessionEntity, Guid?, GameSession> { }
+public interface IGameSessionRepository : IRepository<GameSessionEntity, Guid?, GameSession>
+{
+    Task DeleteAllCurrentSessionsAsync(Guid gameSaveId);
+}

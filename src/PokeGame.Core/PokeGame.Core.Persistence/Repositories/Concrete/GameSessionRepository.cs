@@ -23,4 +23,12 @@ internal sealed class GameSessionRepository
     {
         return gameSession.ToEntity();
     }
+
+    public async Task DeleteAllCurrentSessionsAsync(Guid gameSaveId)
+    {
+        await using var dbContext = await ContextFactory.CreateDbContextAsync();
+
+        var result = await TimeAndLogDbOperation(() =>
+            dbContext.GameSessions.Where(gs => gs.GameSaveId == gameSaveId).ExecuteDeleteAsync(), nameof(DeleteAllCurrentSessionsAsync));
+    }
 }
