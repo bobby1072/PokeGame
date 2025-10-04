@@ -3,5 +3,5 @@
 public abstract class PersistableDomainModel<TEquatable, TId> : DomainModel<TEquatable>
     where TEquatable : DomainModel<TEquatable>
 {
-    public required TId Id { get; set; }
+    public TId Id { get; set; }
 }
