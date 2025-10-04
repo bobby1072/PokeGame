@@ -22,7 +22,7 @@ public sealed class GameSaveController: BaseController
     [HttpPost("SaveNew")]
     public async Task<ActionResult<WebOutcome<GameSave>>> InstantiateNewGameAsync([FromBody]NewGameSaveInput input)
     {
-        var currentUser = GetCurrentUser();
+        var currentUser = await GetCurrentUserAsync();
         
         var newGame = await _gameSaveProcessingManager.SaveGameAsync(input.NewCharacterName, currentUser);
 
@@ -35,7 +35,7 @@ public sealed class GameSaveController: BaseController
     [HttpGet("GetAllForSelf")]
     public async Task<ActionResult<WebOutcome<IReadOnlyCollection<GameSave>>>> GetAllGameSavesForUserAsync()
     {
-        var currentUser = GetCurrentUser();
+        var currentUser = await GetCurrentUserAsync();
         
         var gameSaves = await _gameSaveProcessingManager.GetGameSavesForUserAsync(currentUser);
 

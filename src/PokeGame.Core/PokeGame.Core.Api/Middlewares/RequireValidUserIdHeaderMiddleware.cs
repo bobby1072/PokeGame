@@ -1,11 +1,12 @@
 ﻿using System.Net;
 using PokeGame.Core.Api.Attributes;
+using PokeGame.Core.Api.Extensions;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.User.Abstract;
 
 namespace PokeGame.Core.Api.Middlewares;
 
-public sealed class RequireValidUserIdHeaderMiddleware
+internal sealed class RequireValidUserIdHeaderMiddleware
 {
     private readonly RequestDelegate _next;
 
@@ -30,15 +31,8 @@ public sealed class RequireValidUserIdHeaderMiddleware
             var userService = context.RequestServices.GetRequiredService<IUserProcessingManager>();
 
             var foundUser = await userService.GetUserAsync(userId);
-
-            if (context.Items.TryAdd(userIdHeader, foundUser))
-            {
-                logger.LogInformation("Added user with id: {UserId} to request items", foundUser.Id);
-            }
-            else
-            {
-                logger.LogWarning("Failed to add user with id: {USerId} to request items", foundUser.Id);
-            }
+            
+            context.TryAddToItems(userIdHeader.ToString(), foundUser, logger);
         }
         await _next.Invoke(context);
     }
