@@ -1,4 +1,4 @@
-﻿using BT.Common.Persistence.Shared.Utils;
+using BT.Common.Persistence.Shared.Utils;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
@@ -6,17 +6,17 @@ using PokeGame.Core.Persistence.Repositories.Abstract;
 
 namespace PokeGame.Core.Domain.Services.Game.Commands;
 
-internal sealed class RemoveGameSessionByGameSaveIdCommand
-    : IDomainCommand<Guid, DomainCommandResult>
+internal sealed class RemoveGameSessionsByConnectionIdCommand
+    : IDomainCommand<string, DomainCommandResult>
 {
-    public string CommandName => nameof(RemoveGameSessionByGameSaveIdCommand);
+    public string CommandName => nameof(RemoveGameSessionsByConnectionIdCommand);
 
     private readonly IGameSessionRepository _gameSessionRepository;
-    private readonly ILogger<RemoveGameSessionByGameSaveIdCommand> _logger;
+    private readonly ILogger<RemoveGameSessionsByConnectionIdCommand> _logger;
 
-    public RemoveGameSessionByGameSaveIdCommand(
+    public RemoveGameSessionsByConnectionIdCommand(
         IGameSessionRepository gameSessionRepository,
-        ILogger<RemoveGameSessionByGameSaveIdCommand> logger
+        ILogger<RemoveGameSessionsByConnectionIdCommand> logger
     )
     {
         _gameSessionRepository = gameSessionRepository;
@@ -24,17 +24,17 @@ internal sealed class RemoveGameSessionByGameSaveIdCommand
     }
 
     public async Task<DomainCommandResult> ExecuteAsync(
-        Guid gameSaveId,
+        string connectionId,
         CancellationToken cancellationToken = default
     )
     {
         _logger.LogInformation(
-            "About to remove all game sessions for game save with id: {GameSaveId}...",
-            gameSaveId
+            "About to remove all game sessions for connection ID: {ConnectionId}...",
+            connectionId
         );
 
         await EntityFrameworkUtils.TryDbOperation(
-            () => _gameSessionRepository.DeleteAllSessionsByGameSaveIdAsync(gameSaveId),
+            () => _gameSessionRepository.DeleteAllSessionsByConnectionIdAsync(connectionId),
             _logger
         );
 

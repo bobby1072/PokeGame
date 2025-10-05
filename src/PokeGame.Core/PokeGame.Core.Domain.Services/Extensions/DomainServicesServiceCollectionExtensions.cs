@@ -64,12 +64,13 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<CreateNewGameCommand>()
             .AddScoped<GetGameSavesByUserCommand>()
             .AddScoped<StartGameSessionCommand>()
-            .AddScoped<RemoveGameSessionCommand>()
+            .AddScoped<RemoveGameSessionByGameSaveIdCommand>()
             .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>()
             .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>();
-        
+
         return services;
     }
+
     private static IServiceCollection AddUserServices(this IServiceCollection services)
     {
         services
@@ -93,9 +94,8 @@ public static class DomainServicesServiceCollectionExtensions
             .AddSingleton<IPokedexDataMigratorHealthCheck, PokedexDataMigratorHealthCheck>()
             .AddHostedService<PokedexDataMigratorHostedService>();
 
-        services
-            .AddHttpClient<IPokeApiClient, PokeApiClient>();
-        
+        services.AddHttpClient<IPokeApiClient, PokeApiClient>();
+
         healthCheckBuilder.AddCheck<IPokedexDataMigratorHealthCheck>(
             nameof(PokedexDataMigratorHealthCheck)
         );

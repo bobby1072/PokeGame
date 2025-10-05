@@ -138,7 +138,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         AssertServiceRegistration<CreateNewGameCommand>(ServiceLifetime.Scoped);
         AssertServiceRegistration<GetGameSavesByUserCommand>(ServiceLifetime.Scoped);
         AssertServiceRegistration<StartGameSessionCommand>(ServiceLifetime.Scoped);
-        AssertServiceRegistration<RemoveGameSessionCommand>(ServiceLifetime.Scoped);
+        AssertServiceRegistration<RemoveGameSessionByGameSaveIdCommand>(ServiceLifetime.Scoped);
 
         // Assert - Game Processing Managers
         AssertServiceRegistration<IGameSaveProcessingManager, GameSaveProcessingManager>(
@@ -245,7 +245,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         Assert.NotNull(serviceProvider.GetService<CreateNewGameCommand>());
         Assert.NotNull(serviceProvider.GetService<GetGameSavesByUserCommand>());
         Assert.NotNull(serviceProvider.GetService<StartGameSessionCommand>());
-        Assert.NotNull(serviceProvider.GetService<RemoveGameSessionCommand>());
+        Assert.NotNull(serviceProvider.GetService<RemoveGameSessionByGameSaveIdCommand>());
         Assert.NotNull(serviceProvider.GetService<SaveUserCommand>());
         Assert.NotNull(serviceProvider.GetService<GetUserByEmailCommand>());
         Assert.NotNull(serviceProvider.GetService<GetUserByIdCommand>());
@@ -297,7 +297,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
             typeof(CreateNewGameCommand),
             typeof(GetGameSavesByUserCommand),
             typeof(StartGameSessionCommand),
-            typeof(RemoveGameSessionCommand),
+            typeof(RemoveGameSessionByGameSaveIdCommand),
             typeof(SaveUserCommand),
             typeof(GetUserByEmailCommand),
             typeof(GetUserByIdCommand),
@@ -358,7 +358,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
             typeof(CreateNewGameCommand),
             typeof(GetGameSavesByUserCommand),
             typeof(StartGameSessionCommand),
-            typeof(RemoveGameSessionCommand),
+            typeof(RemoveGameSessionByGameSaveIdCommand),
             typeof(SaveUserCommand),
             typeof(GetUserByEmailCommand),
             typeof(GetUserByIdCommand),

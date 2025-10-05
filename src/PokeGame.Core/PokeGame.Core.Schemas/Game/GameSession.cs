@@ -4,6 +4,7 @@ public sealed class GameSession : PersistableDomainModel<GameSession, Guid?>
 {
     public required Guid GameSaveId { get; set; }
     public required Guid UserId { get; set; }
+    public required string ConnectionId { get; set; }
     public DateTime StartedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation properties

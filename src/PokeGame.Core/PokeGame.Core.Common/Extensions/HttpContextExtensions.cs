@@ -6,7 +6,7 @@ namespace PokeGame.Core.Common.Extensions;
 public static class HttpContextExtensions
 {
     public static string? GetStringFromRequestQuery(this HttpContext httpContext, string key)
-        => httpContext.Request.Query[key];
+        => httpContext.Request.Query[key].FirstOrDefault();
     
     
     public static void TryAddToItems<T>(this HttpContext context, string itemKey,T item, ILogger? logger = null)

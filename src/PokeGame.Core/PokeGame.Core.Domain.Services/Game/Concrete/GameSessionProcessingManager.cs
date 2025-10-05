@@ -1,12 +1,12 @@
 ﻿using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Domain.Services.Game.Commands;
-using PokeGame.Core.Schemas.Game;
 using PokeGame.Core.Domain.Services.Models;
+using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Domain.Services.Game.Concrete;
 
-internal sealed class GameSessionProcessingManager: IGameSessionProcessingManager
+internal sealed class GameSessionProcessingManager : IGameSessionProcessingManager
 {
     private readonly IDomainServiceCommandExecutor _domainServiceCommandExecutor;
 
@@ -15,14 +15,30 @@ internal sealed class GameSessionProcessingManager: IGameSessionProcessingManage
         _domainServiceCommandExecutor = domainServiceCommandExecutor;
     }
 
-    public async Task<GameSession> StartGameSession(Guid gameSaveId, Schemas.Game.User user) =>
-        (await _domainServiceCommandExecutor
-            .RunCommandAsync<StartGameSessionCommand, (Guid GameSaveId, Schemas.Game.User CurrentUser),
-                DomainCommandResult<GameSession>>
-            (
-                (gameSaveId, user)
-            )).CommandResult;
+    public async Task<GameSession> StartGameSession(
+        Guid gameSaveId,
+        string connectionId,
+        Schemas.Game.User user
+    ) =>
+        (
+            await _domainServiceCommandExecutor.RunCommandAsync<
+                StartGameSessionCommand,
+                (Guid GameSaveId, string ConnectionId, Schemas.Game.User CurrentUser),
+                DomainCommandResult<GameSession>
+            >((gameSaveId, connectionId, user))
+        ).CommandResult;
 
-    public Task DeleteAllGameSessionsForGameSave(Guid gameSaveId) => _domainServiceCommandExecutor
-        .RunCommandAsync<RemoveGameSessionCommand, Guid, DomainCommandResult>(gameSaveId);
+    public Task DeleteAllGameSessionsByConnectionId(string connectionId) =>
+        _domainServiceCommandExecutor.RunCommandAsync<
+            RemoveGameSessionsByConnectionIdCommand,
+            string,
+            DomainCommandResult
+        >(connectionId);
+
+    public Task DeleteAllGameSessionsByGameSave(Guid gameSaveId) =>
+        _domainServiceCommandExecutor.RunCommandAsync<
+            RemoveGameSessionByGameSaveIdCommand,
+            Guid,
+            DomainCommandResult
+        >(gameSaveId);
 }

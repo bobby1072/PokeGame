@@ -11,6 +11,7 @@ public static class GameSessionExtensions
             Id = gameSession.Id,
             GameSaveId = gameSession.GameSaveId,
             UserId = gameSession.UserId,
+            ConnectionId = gameSession.ConnectionId,
             StartedAt = gameSession.StartedAt,
             GameSave = gameSession.GameSave?.ToEntity(),
             User = gameSession.User?.ToEntity(),

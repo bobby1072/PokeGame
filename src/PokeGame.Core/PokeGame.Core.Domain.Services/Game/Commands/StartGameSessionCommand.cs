@@ -11,7 +11,7 @@ namespace PokeGame.Core.Domain.Services.Game.Commands;
 
 internal sealed class StartGameSessionCommand
     : IDomainCommand<
-        (Guid GameSaveId, Schemas.Game.User CurrentUser),
+        (Guid GameSaveId, string ConnectionId, Schemas.Game.User CurrentUser),
         DomainCommandResult<GameSession>
     >
 {
@@ -32,7 +32,7 @@ internal sealed class StartGameSessionCommand
     }
 
     public async Task<DomainCommandResult<GameSession>> ExecuteAsync(
-        (Guid GameSaveId, Schemas.Game.User CurrentUser) input,
+        (Guid GameSaveId, string ConnectionId, Schemas.Game.User CurrentUser) input,
         CancellationToken cancellationToken = default
     )
     {
@@ -64,7 +64,7 @@ internal sealed class StartGameSessionCommand
         }
 
         await EntityFrameworkUtils.TryDbOperation(
-            () => _gameSessionRepository.DeleteAllCurrentSessionsAsync(input.GameSaveId),
+            () => _gameSessionRepository.DeleteAllSessionsByGameSaveIdAsync(input.GameSaveId),
             _logger
         );
 
@@ -72,6 +72,7 @@ internal sealed class StartGameSessionCommand
         {
             GameSaveId = input.GameSaveId,
             UserId = (Guid)input.CurrentUser.Id!,
+            ConnectionId = input.ConnectionId,
         };
 
         var savedSession =
