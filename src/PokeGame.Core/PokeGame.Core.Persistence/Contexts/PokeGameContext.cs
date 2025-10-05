@@ -8,20 +8,19 @@ using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Persistence.Contexts;
 
-internal sealed class PokeGameContext: DbContext
+internal sealed class PokeGameContext : DbContext
 {
     public DbSet<UserEntity> Users { get; set; }
-    public DbSet<PokedexPokemonEntity> PokedexPokemons { get; set; }
+    public DbSet<PokedexPokemonEntity> PokedexPokemon { get; set; }
     public DbSet<GameSaveEntity> GameSaves { get; set; }
     public DbSet<OwnedPokemonEntity> OwnedPokemons { get; set; }
     public DbSet<ItemStackEntity> ItemStacks { get; set; }
-    public PokeGameContext(DbContextOptions<PokeGameContext> options) : base(options) {}
+    public DbSet<GameSessionEntity> GameSessions { get; set; }
 
+    public PokeGameContext(DbContextOptions<PokeGameContext> options)
+        : base(options) { }
 
-
-    public override Task<int> SaveChangesAsync(
-        CancellationToken cancellationToken = default
-    )
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         UpdateDatesOnNewlyAddedOrModified();
         return base.SaveChangesAsync(cancellationToken);
@@ -47,16 +46,14 @@ internal sealed class PokeGameContext: DbContext
         UpdateDatesOnNewlyAddedOrModified();
         return base.SaveChanges();
     }
+
     private void UpdateDatesOnNewlyAddedOrModified()
     {
         var currentTime = DateTime.UtcNow;
         var updatingEntries = ChangeTracker
             .Entries()
-            .FastArrayWhere(e =>
-                e.State is EntityState.Added or EntityState.Modified
-            )
+            .FastArrayWhere(e => e.State is EntityState.Added or EntityState.Modified)
             .ToArray();
-
 
         foreach (var updatedEnt in updatingEntries)
         {
@@ -66,10 +63,7 @@ internal sealed class PokeGameContext: DbContext
                 {
                     UpdateEntityDates<UserEntity, Guid?, User>(
                         userEntity,
-                        [
-                            nameof(UserEntity.DateCreated),
-                            nameof(UserEntity.DateModified)
-                        ],
+                        [nameof(UserEntity.DateCreated), nameof(UserEntity.DateModified)],
                         currentTime
                     );
                 }
@@ -77,9 +71,7 @@ internal sealed class PokeGameContext: DbContext
                 {
                     UpdateEntityDates<UserEntity, Guid?, User>(
                         userEntity,
-                        [
-                            nameof(UserEntity.DateModified)
-                        ],
+                        [nameof(UserEntity.DateModified)],
                         currentTime
                     );
                 }
@@ -90,9 +82,7 @@ internal sealed class PokeGameContext: DbContext
                 {
                     UpdateEntityDates<GameSaveEntity, Guid?, GameSave>(
                         gameSaveEntity,
-                        [
-                            nameof(GameSaveEntity.DateCreated)
-                        ],
+                        [nameof(GameSaveEntity.DateCreated)],
                         currentTime
                     );
                 }
@@ -103,16 +93,25 @@ internal sealed class PokeGameContext: DbContext
                 {
                     UpdateEntityDates<OwnedPokemonEntity, Guid?, OwnedPokemon>(
                         ownedPokemon,
-                        [
-                            nameof(OwnedPokemonEntity.CaughtAt)
-                        ],
+                        [nameof(OwnedPokemonEntity.CaughtAt)],
+                        currentTime
+                    );
+                }
+            }
+            else if (updatedEnt.Entity is GameSessionEntity gameSession)
+            {
+                if (updatedEnt.State == EntityState.Added)
+                {
+                    UpdateEntityDates<GameSessionEntity, Guid?, GameSession>(
+                        gameSession,
+                        [nameof(GameSessionEntity.StartedAt)],
                         currentTime
                     );
                 }
             }
         }
     }
-    
+
     private static void UpdateEntityDates<TEnt, TId, TRuntime>(
         TEnt ent,
         IReadOnlyCollection<string> propertyNames,
@@ -127,10 +126,7 @@ internal sealed class PokeGameContext: DbContext
             try
             {
                 var propertyToUpdate = entType.GetProperty(propName);
-                if (
-                    propertyToUpdate == null
-                    || propertyToUpdate.PropertyType != typeof(DateTime)
-                )
+                if (propertyToUpdate == null || propertyToUpdate.PropertyType != typeof(DateTime))
                 {
                     continue;
                 }
@@ -143,5 +139,4 @@ internal sealed class PokeGameContext: DbContext
             }
         }
     }
-    
 }

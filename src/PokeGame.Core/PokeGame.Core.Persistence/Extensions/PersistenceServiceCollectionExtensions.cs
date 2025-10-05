@@ -33,13 +33,11 @@ public static class PersistenceServiceCollectionExtensions
 
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
 
-        services
-            .AddSingleton<IDatabaseMigratorHealthCheck, DatabaseMigratorHealthCheck>();
-            
-        healthChecksBuilder
-            .AddCheck<IDatabaseMigratorHealthCheck>(
-                nameof(DatabaseMigratorHealthCheck)
-            );
+        services.AddSingleton<IDatabaseMigratorHealthCheck, DatabaseMigratorHealthCheck>();
+
+        healthChecksBuilder.AddCheck<IDatabaseMigratorHealthCheck>(
+            nameof(DatabaseMigratorHealthCheck)
+        );
 
         services
             .AddSingleton<IMigrator, DatabaseMigrator>(sp => new DatabaseMigrator(
@@ -71,9 +69,9 @@ public static class PersistenceServiceCollectionExtensions
             .AddScoped<IPokedexPokemonRepository, PokedexPokemonRepository>()
             .AddScoped<IGameSaveRepository, GameSaveRepository>()
             .AddScoped<IOwnedPokemonRepository, OwnedPokemonRepository>()
-            .AddScoped<IItemStackRepository, ItemStackRepository>();
+            .AddScoped<IItemStackRepository, ItemStackRepository>()
+            .AddScoped<IGameSessionRepository, GameSessionRepository>();
 
         return services;
     }
-    
 }

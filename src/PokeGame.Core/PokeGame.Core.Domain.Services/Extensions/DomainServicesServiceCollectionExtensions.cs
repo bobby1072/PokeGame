@@ -61,8 +61,11 @@ public static class DomainServicesServiceCollectionExtensions
     private static IServiceCollection AddGameServices(this IServiceCollection services)
     {
         services
-            .AddScoped<InstantiateNewGameCommand>()
+            .AddScoped<CreateNewGameCommand>()
             .AddScoped<GetGameSavesByUserCommand>()
+            .AddScoped<StartGameSessionCommand>()
+            .AddScoped<RemoveGameSessionCommand>()
+            .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>()
             .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>();
         
         return services;
