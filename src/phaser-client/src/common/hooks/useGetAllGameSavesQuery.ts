@@ -11,6 +11,5 @@ export const useGetAllGameSavesQuery = () => {
     return useQuery<GameSave[], Error>({
         queryKey: [QueryKeys.GetAllGameSavesForSelf, currentUser?.id],
         queryFn: () => pokeGameHttpClient.GetAllGameSavesForUser(),
-        enabled: !!currentUser?.id, // Only run query when we have a user ID
     });
 };

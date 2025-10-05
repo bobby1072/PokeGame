@@ -9,6 +9,7 @@ using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Domain.Services.Pokedex.Abstract;
 using PokeGame.Core.Domain.Services.Pokedex.Commands;
+using PokeGame.Core.Persistence.Configurations;
 using PokeGame.Core.Persistence.Migrations.Abstract;
 using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Extensions;
@@ -22,6 +23,7 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
     private readonly IDatabaseMigratorHealthCheck _databaseMigratorHealthCheck;
     private readonly IPokedexDataMigratorHealthCheck _pokedexDataMigratorHealthCheck;
     private readonly JsonDocument _pokedexJsonFile;
+    private readonly DbMigrationSettings _dbMigrationSettings;
     private readonly ILogger<PokedexDataMigratorHostedService> _logger;
 
     public PokedexDataMigratorHostedService(
@@ -29,6 +31,7 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         IDatabaseMigratorHealthCheck databaseMigratorHealthCheck,
         IPokedexDataMigratorHealthCheck pokedexDataMigratorHealthCheck,
         [FromKeyedServices(Constants.ServiceKeys.PokedexJsonFile)] JsonDocument pokedexJsonFile,
+        DbMigrationSettings dbMigrationSettings,
         ILogger<PokedexDataMigratorHostedService> logger
     )
     {
@@ -36,6 +39,7 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
         _databaseMigratorHealthCheck = databaseMigratorHealthCheck;
         _pokedexDataMigratorHealthCheck = pokedexDataMigratorHealthCheck;
         _pokedexJsonFile = pokedexJsonFile;
+        _dbMigrationSettings = dbMigrationSettings;
         _logger = logger;
     }
 
@@ -43,6 +47,13 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
     {
         _logger.LogInformation("PokedexDataMigratorHostedService starting...");
 
+        if (!_dbMigrationSettings.DoMigration)
+        {
+            _pokedexDataMigratorHealthCheck.SetDatabaseSeeded(true);
+            _logger.LogInformation("Migrations are disabled...");
+            return;
+        }
+        
         // Wait for database migration to complete
         while (
             (

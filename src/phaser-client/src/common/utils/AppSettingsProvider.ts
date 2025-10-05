@@ -4,6 +4,7 @@ enum AppSettingsKeys {
     serviceName = "serviceName",
     releaseVersion = "releaseVersion",
     pokeGameCoreApiUrl = "pokeGameCoreApiUrl",
+    pokeGameCoreSignalRUrl = "pokeGameCoreSignalRUrl",
 }
 
 export type AppSettings = {
