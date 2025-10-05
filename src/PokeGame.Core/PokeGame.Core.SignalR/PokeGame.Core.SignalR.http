@@ -1,0 +1,6 @@
+@PokeGame.Core.SignalR_HostAddress = http://localhost:5147
+
+GET {{PokeGame.Core.SignalR_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
