@@ -16,5 +16,9 @@ builder
     .AddProject<Projects.PokeGame_Core_Api>("PokeGame-Core-Api")
     .WithExternalHttpEndpoints();
 
+builder
+    .AddProject<Projects.PokeGame_Core_SignalR>("PokeGame-Core-SignalR")
+    .WithExternalHttpEndpoints();
+
 
 await builder.Build().RunAsync();
