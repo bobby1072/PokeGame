@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using PokeGame.Core.Api.Attributes;
-using PokeGame.Core.Api.Extensions;
 using PokeGame.Core.Common.Exceptions;
+using PokeGame.Core.Common.Extensions;
 using PokeGame.Core.Domain.Services.User.Abstract;
 
 namespace PokeGame.Core.Api.Middlewares;

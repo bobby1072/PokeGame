@@ -1,7 +1,14 @@
-﻿namespace PokeGame.Core.Api.Extensions;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
-internal static class HttpContextExtensions
+namespace PokeGame.Core.Common.Extensions;
+
+public static class HttpContextExtensions
 {
+    public static string? GetStringFromRequestQuery(this HttpContext httpContext, string key)
+        => httpContext.Request.Query[key];
+    
+    
     public static void TryAddToItems<T>(this HttpContext context, string itemKey,T item, ILogger? logger = null)
     {
         if (context.Items.TryAdd(itemKey, item))

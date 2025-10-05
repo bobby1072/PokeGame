@@ -58,7 +58,7 @@ try
         .UseCorrelationIdMiddleware();
     
     app
-        .UseHealthGetEndpoint();
+        .UseHealthGetEndpoints();
 
     await app.RunAsync();
 }

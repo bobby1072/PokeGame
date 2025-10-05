@@ -93,7 +93,7 @@ try
     app.MapControllers();
 
     app
-        .UseHealthGetEndpoint();
+        .UseHealthGetEndpoints();
 
     await app.RunAsync();
 }
