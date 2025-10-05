@@ -4,6 +4,7 @@ using BT.Common.Helpers;
 using Microsoft.AspNetCore.Http.Timeouts;
 using PokeGame.Core.Domain.Services.Extensions;
 using PokeGame.Core.SignalR.Extensions;
+using PokeGame.Core.SignalR.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +61,9 @@ try
     app
         .UseHealthGetEndpoints();
 
+    app
+        .MapHub<PokeGameSessionHub>("/Api/SignalR/PokeGameSession");
+    
     await app.RunAsync();
 }
 catch (Exception ex)

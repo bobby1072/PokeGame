@@ -105,6 +105,8 @@ public sealed class PokeGameSessionHub : Hub
 
         var gameSessionManager =
             _serviceProvider.GetRequiredService<IGameSessionProcessingManager>();
+
+        await gameSessionManager.DeleteAllGameSessionsByConnectionId(Context.ConnectionId);
     }
 
     private struct EventKeys
