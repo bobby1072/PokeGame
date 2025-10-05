@@ -12,4 +12,10 @@ public struct Constants
     {
         public const string PokedexJsonFile = "PokedexJsonFile";
     }
+
+    public struct ApiConstants
+    {
+        public const string UserIdHeaderKey =  "UserId";
+        public const string GameSaveIdHeaderKey =  "GameSaveId";
+    }
 }
