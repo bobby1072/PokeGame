@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using PokeGame.Core.Common;
+using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Common.Extensions;
 using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Domain.Services.User.Abstract;
@@ -39,6 +40,8 @@ public sealed class PokeGameSessionHub : Hub
                     "Game save id not included with connection request, aborting Signal R connection..."
                 );
 
+                await Clients.Caller.SendAsync(EventKeys.GameSessionConnectionFailed, new SignalRClientEvent{ ExceptionMessage = "No game save id attached to request query"});
+                
                 Context.Abort();
                 return;
             }
@@ -56,7 +59,9 @@ public sealed class PokeGameSessionHub : Hub
                     "User id not included with connection request, aborting Signal R connection for connectionId: {ConnectionId}...",
                     Context.ConnectionId
                 );
-
+                
+                await Clients.Caller.SendAsync(EventKeys.GameSessionConnectionFailed, new SignalRClientEvent{ ExceptionMessage = "No user id attached to request query"});
+                
                 Context.Abort();
                 return;
             }
@@ -86,14 +91,14 @@ public sealed class PokeGameSessionHub : Hub
                     Data = newGameSession,
                     ExtraData = new Dictionary<string, object>
                     {
-                        { "GameSessionId", newGameSession.Id! },
+                        { "EventKey", EventKeys.GameSessionStarted }
                     },
                 }
             );
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Exception occurred during Signal R connection attempt for connectionId: {ConnectionId}", Context.ConnectionId);
+            await HandleSignalRException(ex, EventKeys.GameSessionConnectionFailed);   
             Context.Abort();
         }
     }
@@ -124,8 +129,22 @@ public sealed class PokeGameSessionHub : Hub
         }
     }
 
+    private async Task HandleSignalRException(Exception exception, string eventKey)
+    {
+        if (exception is PokeGameApiUserException pokeGameApiUserException)
+        {
+            _logger.LogInformation(exception, "Poke game user exception occurred during Signal R invocation for connectionId: {ConnectionId}", Context.ConnectionId);
+            await Clients.Caller.SendAsync(eventKey, new SignalRClientEvent{ ExceptionMessage = pokeGameApiUserException.Message });
+        }
+        else if (exception is PokeGameApiServerException pokeGameApiServerException)
+        {
+            _logger.LogError(exception, "Poke game server exception occurred during Signal R invocation for connectionId: {ConnectionId}", Context.ConnectionId);
+            await Clients.Caller.SendAsync(eventKey, new SignalRClientEvent{ ExceptionMessage = Constants.ExceptionConstants.InternalError });
+        }
+    }
     private struct EventKeys
     {
         public const string GameSessionStarted = "GameSessionStarted";
+        public const string GameSessionConnectionFailed = "GameSessionConnectionFailed";
     }
 }
