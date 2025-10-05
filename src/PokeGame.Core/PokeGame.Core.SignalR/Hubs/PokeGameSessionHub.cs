@@ -22,91 +22,106 @@ public sealed class PokeGameSessionHub : Hub
     public override async Task OnConnectedAsync()
     {
         await base.OnConnectedAsync();
-
-        var httpContext = Context.GetHttpContext();
-
-        var foundGameSaveIdQueryString = httpContext?.GetStringFromRequestQuery(
-            Constants.ApiConstants.GameSaveIdHeaderKey
-        );
-
-        if (
-            string.IsNullOrWhiteSpace(foundGameSaveIdQueryString)
-            || !Guid.TryParse(foundGameSaveIdQueryString, out var foundGameSaveId)
-        )
+        try
         {
-            _logger.LogInformation(
-                "Game save id not included with connection request, aborting connection..."
+            var httpContext = Context.GetHttpContext();
+
+            var foundGameSaveIdQueryString = httpContext?.GetStringFromRequestQuery(
+                Constants.ApiConstants.GameSaveIdHeaderKey
             );
 
-            Context.Abort();
-            return;
-        }
-
-        var foundUserIdQueryString = httpContext?.GetStringFromRequestQuery(
-            Constants.ApiConstants.UserIdHeaderKey
-        );
-
-        if (
-            string.IsNullOrWhiteSpace(foundUserIdQueryString)
-            || !Guid.TryParse(foundUserIdQueryString, out var userId)
-        )
-        {
-            _logger.LogInformation(
-                "User id not included with connection request, aborting connection..."
-            );
-
-            Context.Abort();
-            return;
-        }
-
-        var userManager = _serviceProvider.GetRequiredService<IUserProcessingManager>();
-        var foundUser = await userManager.GetUserAsync(userId);
-
-        var gameSessionManager =
-            _serviceProvider.GetRequiredService<IGameSessionProcessingManager>();
-        var newGameSession = await gameSessionManager.StartGameSession(
-            foundGameSaveId,
-            Context.ConnectionId,
-            foundUser
-        );
-
-        _logger.LogInformation(
-            "User with id: {UserId} successfully started a new game session with id: {GameSessionId} for connectionId: {ConnectionId}",
-            userId,
-            newGameSession.Id,
-            Context.ConnectionId
-        );
-
-        await Clients.Caller.SendAsync(
-            EventKeys.GameSessionStarted,
-            new SignalRServerEvent<GameSession>
+            if (
+                string.IsNullOrWhiteSpace(foundGameSaveIdQueryString)
+                || !Guid.TryParse(foundGameSaveIdQueryString, out var foundGameSaveId)
+            )
             {
-                Data = newGameSession,
-                ExtraData = new Dictionary<string, object>
-                {
-                    { "GameSessionId", newGameSession.Id! },
-                },
+                _logger.LogInformation(
+                    "Game save id not included with connection request, aborting Signal R connection..."
+                );
+
+                Context.Abort();
+                return;
             }
-        );
+
+            var foundUserIdQueryString = httpContext?.GetStringFromRequestQuery(
+                Constants.ApiConstants.UserIdHeaderKey
+            );
+
+            if (
+                string.IsNullOrWhiteSpace(foundUserIdQueryString)
+                || !Guid.TryParse(foundUserIdQueryString, out var userId)
+            )
+            {
+                _logger.LogInformation(
+                    "User id not included with connection request, aborting Signal R connection for connectionId: {ConnectionId}...",
+                    Context.ConnectionId
+                );
+
+                Context.Abort();
+                return;
+            }
+
+            var userManager = _serviceProvider.GetRequiredService<IUserProcessingManager>();
+            var foundUser = await userManager.GetUserAsync(userId);
+
+            var gameSessionManager =
+                _serviceProvider.GetRequiredService<IGameSessionProcessingManager>();
+            var newGameSession = await gameSessionManager.StartGameSession(
+                foundGameSaveId,
+                Context.ConnectionId,
+                foundUser
+            );
+
+            _logger.LogInformation(
+                "User with id: {UserId} successfully started a new game session with id: {GameSessionId} for connectionId: {ConnectionId}",
+                userId,
+                newGameSession.Id,
+                Context.ConnectionId
+            );
+
+            await Clients.Caller.SendAsync(
+                EventKeys.GameSessionStarted,
+                new SignalRServerEvent<GameSession>
+                {
+                    Data = newGameSession,
+                    ExtraData = new Dictionary<string, object>
+                    {
+                        { "GameSessionId", newGameSession.Id! },
+                    },
+                }
+            );
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred during Signal R connection attempt for connectionId: {ConnectionId}", Context.ConnectionId);
+            Context.Abort();
+        }
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         await base.OnDisconnectedAsync(exception);
-
-        if (exception is not null)
+        try
         {
-            _logger.LogError(
-                exception,
-                "Unhandled exception is causing Signal R to abort connection with id: {ConnectionId}",
-                Context.ConnectionId
-            );
+
+            if (exception is not null)
+            {
+                _logger.LogError(
+                    exception,
+                    "Unhandled exception is causing Signal R to abort connection for connectionId: {ConnectionId}",
+                    Context.ConnectionId
+                );
+            }
+
+            var gameSessionManager =
+                _serviceProvider.GetRequiredService<IGameSessionProcessingManager>();
+
+            await gameSessionManager.DeleteAllGameSessionsByConnectionId(Context.ConnectionId);
         }
-
-        var gameSessionManager =
-            _serviceProvider.GetRequiredService<IGameSessionProcessingManager>();
-
-        await gameSessionManager.DeleteAllGameSessionsByConnectionId(Context.ConnectionId);
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred during Signal R disconnect attempt for connectionId: {ConnectionId}", Context.ConnectionId);
+        }
     }
 
     private struct EventKeys
