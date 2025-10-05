@@ -5,7 +5,7 @@ using PokeGame.Core.Persistence.Migrations.Abstract;
 
 namespace PokeGame.Core.Persistence.Migrations.Concrete
 {
-    internal sealed class DatabaseMigratorHostedService : IHostedService
+    internal sealed class DatabaseMigratorHostedService : BackgroundService
     {
         private readonly IEnumerable<IMigrator> _databaseMigrators;
         private readonly DbMigrationSettings _dbMigrationsConfiguration;
@@ -19,18 +19,20 @@ namespace PokeGame.Core.Persistence.Migrations.Concrete
             _dbMigrationsConfiguration = dbMigrationsConfiguration;
             _databaseMigratorHealthCheck = databaseMigratorHealthCheck;
         }
-        public async Task StartAsync(CancellationToken cancellationToken)
+
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            if (!_dbMigrationsConfiguration.DoMigration)
+            {
+                return;
+            }
+            
             await Task.Delay(2000, cancellationToken);
             var pipeline = _dbMigrationsConfiguration.ToPipeline();
             
             await pipeline.ExecuteAsync(async _ => await Migrate(), cancellationToken);
             
             _databaseMigratorHealthCheck.SetMigrationCompleted(true);
-        }
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
         }
 
         private async Task Migrate()

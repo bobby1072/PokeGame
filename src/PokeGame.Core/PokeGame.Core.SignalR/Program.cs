@@ -1,23 +1,73 @@
+using System.Text.Json;
+using BT.Common.Api.Helpers.Extensions;
+using BT.Common.Helpers;
+using Microsoft.AspNetCore.Http.Timeouts;
+using PokeGame.Core.Domain.Services.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var localLogger = LoggingHelper.CreateLogger();
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+try
 {
-    app.MapOpenApi();
+    builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
+
+    builder.Services.AddPokeGameApplicationServices(builder.Configuration, builder.Environment);
+
+    var requestTimeout = builder.Configuration.GetValue<int>("RequestTimeout");
+
+    builder.Services.AddRequestTimeouts(opts =>
+    {
+        opts.DefaultPolicy = new RequestTimeoutPolicy
+        {
+            Timeout = TimeSpan.FromSeconds(requestTimeout > 0 ? requestTimeout : 30),
+        };
+    });
+
+    builder.Services.AddLogging(opts =>
+    {
+        opts.ClearProviders();
+        opts.AddJsonConsole(ctx =>
+        {
+            ctx.IncludeScopes = true;
+            ctx.UseUtcTimestamp = true;
+        });
+    });
+
+    builder.Services.AddResponseCompression();
+
+    localLogger.LogInformation(
+        "About to build application with {NumberOfServices} services",
+        builder.Services.Count
+    );
+    
+    var app = builder.Build();
+    
+    app.UseRouting();
+
+    app.UseResponseCompression();
+
+    app.UseHttpsRedirection();
+
+    app.UseAuthorization();
+
+    app
+        .UseCorrelationIdMiddleware();
+    
+    app
+        .UseHealthGetEndpoint();
+
+    await app.RunAsync();
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    localLogger.LogCritical(
+        ex,
+        "Unhandled exception in application with message: {ExMessage}",
+        ex.Message
+    );
+}
+finally
+{
+    localLogger.LogInformation("Application is exiting...");
+}

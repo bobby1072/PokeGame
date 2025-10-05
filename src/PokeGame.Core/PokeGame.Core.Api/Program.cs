@@ -93,8 +93,7 @@ try
     app.MapControllers();
 
     app
-        .UseHealthGetEndpoint()
-        .UseHealthChecks("/Api/Healthz");
+        .UseHealthGetEndpoint();
 
     await app.RunAsync();
 }
