@@ -40,7 +40,14 @@ public sealed class PokeGameSessionHub : Hub
                     "Game save id not included with connection request, aborting Signal R connection..."
                 );
 
-                await Clients.Caller.SendAsync(EventKeys.GameSessionConnectionFailed, new SignalRClientEvent{ ExceptionMessage = "No game save id attached to request query"});
+                await Clients.Caller.SendAsync(EventKeys.GameSessionConnectionFailed, new SignalRClientEvent
+                {
+                    ExceptionMessage = "No game save id attached to request query",
+                    ExtraData = new Dictionary<string, object>
+                    {
+                        { "EventKey", EventKeys.GameSessionConnectionFailed }
+                    }
+                });
                 
                 Context.Abort();
                 return;
@@ -60,7 +67,14 @@ public sealed class PokeGameSessionHub : Hub
                     Context.ConnectionId
                 );
                 
-                await Clients.Caller.SendAsync(EventKeys.GameSessionConnectionFailed, new SignalRClientEvent{ ExceptionMessage = "No user id attached to request query"});
+                await Clients.Caller.SendAsync(EventKeys.GameSessionConnectionFailed, new SignalRClientEvent
+                {
+                    ExceptionMessage = "No user id attached to request query",
+                    ExtraData = new Dictionary<string, object>
+                    {
+                        { "EventKey", EventKeys.GameSessionConnectionFailed }
+                    }
+                });
                 
                 Context.Abort();
                 return;
@@ -133,12 +147,12 @@ public sealed class PokeGameSessionHub : Hub
     {
         if (exception is PokeGameApiUserException pokeGameApiUserException)
         {
-            _logger.LogInformation(exception, "Poke game user exception occurred during Signal R invocation for connectionId: {ConnectionId}", Context.ConnectionId);
+            _logger.LogInformation(pokeGameApiUserException, "Poke game user exception occurred during Signal R invocation for connectionId: {ConnectionId}", Context.ConnectionId);
             await Clients.Caller.SendAsync(eventKey, new SignalRClientEvent{ ExceptionMessage = pokeGameApiUserException.Message });
         }
         else if (exception is PokeGameApiServerException pokeGameApiServerException)
         {
-            _logger.LogError(exception, "Poke game server exception occurred during Signal R invocation for connectionId: {ConnectionId}", Context.ConnectionId);
+            _logger.LogError(pokeGameApiServerException, "Poke game server exception occurred during Signal R invocation for connectionId: {ConnectionId}", Context.ConnectionId);
             await Clients.Caller.SendAsync(eventKey, new SignalRClientEvent{ ExceptionMessage = Constants.ExceptionConstants.InternalError });
         }
     }
