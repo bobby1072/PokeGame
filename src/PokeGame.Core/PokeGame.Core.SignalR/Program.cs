@@ -6,12 +6,14 @@ using PokeGame.Core.Domain.Services.Extensions;
 using PokeGame.Core.SignalR.Extensions;
 using PokeGame.Core.SignalR.Hubs;
 
-var builder = WebApplication.CreateBuilder(args);
 
 var localLogger = LoggingHelper.CreateLogger();
 
 try
 {
+    localLogger.LogInformation("Application starting...");
+    
+    var builder = WebApplication.CreateBuilder(args);
     builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
     builder.Services.AddPokeGameApplicationServices(builder.Configuration, builder.Environment);
@@ -26,15 +28,7 @@ try
         };
     });
 
-    builder.Services.AddLogging(opts =>
-    {
-        opts.ClearProviders();
-        opts.AddJsonConsole(ctx =>
-        {
-            ctx.IncludeScopes = true;
-            ctx.UseUtcTimestamp = true;
-        });
-    });
+    builder.Services.AddJsonLogging();
 
     builder.Services.AddResponseCompression();
 

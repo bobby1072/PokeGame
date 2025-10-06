@@ -27,15 +27,7 @@ try
         };
     });
 
-    builder.Services.AddLogging(opts =>
-    {
-        opts.ClearProviders();
-        opts.AddJsonConsole(ctx =>
-        {
-            ctx.IncludeScopes = true;
-            ctx.UseUtcTimestamp = true;
-        });
-    });
+    builder.Services.AddJsonLogging();
 
     builder
         .Services.AddControllers()

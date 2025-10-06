@@ -5,13 +5,13 @@ namespace PokeGame.Core.Common.Helpers;
 
 public static class CorsHelpers
 {
-    private const string developmentCorsPolicy = "DevelopmentCorsPolicy";
+    private const string _developmentCorsPolicy = "DevelopmentCorsPolicy";
     public static IServiceCollection AddLocalDevelopmentCorsPolicy(this IServiceCollection services)
     {
         services.AddCors(p =>
         {
             p.AddPolicy(
-                developmentCorsPolicy,
+                _developmentCorsPolicy,
                 opts =>
                 {
                     opts.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
@@ -28,7 +28,7 @@ public static class CorsHelpers
 
     public static IApplicationBuilder UseLocalDevelopmentCorsPolicy(this IApplicationBuilder app)
     {
-        app.UseCors(developmentCorsPolicy);
+        app.UseCors(_developmentCorsPolicy);
         
         return app;
     }
