@@ -68,7 +68,7 @@ try
 
     app.UseCorrelationIdMiddleware();
 
-    app.UseHealthGetEndpoint();
+    app.UseHealthGetEndpoints();
     
     #pragma warning disable ASP0014
     app.UseEndpoints(endpoint =>

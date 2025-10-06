@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using PokeGame.Core.Api.Extensions;
 using PokeGame.Core.Common.Exceptions;
+using PokeGame.Core.Common.Extensions;
 using PokeGame.Core.Domain.Services.User.Abstract;
 using PokeGame.Core.Schemas.Game;
 

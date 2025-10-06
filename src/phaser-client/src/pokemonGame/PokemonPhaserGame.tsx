@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
 import StartPokemonGame from "./main";
-import { EventBus } from "../game/EventBus";
+import { EventBus } from "./EventBus";
 
 export interface IRefPokemonPhaserGame {
     game: Phaser.Game | null;

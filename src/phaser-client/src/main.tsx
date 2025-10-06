@@ -7,6 +7,7 @@ import { PokeGameThemeProvider } from "./common/contexts/ThemeContext.tsx";
 import { PokeGameUserContextProvider } from "./common/contexts/PokeGameUserContext.tsx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PokemonPage from "./pokemonGame/PokemonPage";
+import { SignalRGameSessionProvider } from "./common/contexts/SignalRGameSessionContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
@@ -15,15 +16,17 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 <PokeGameCoreHttpClientContextProvider>
                     <QueryClientProvider client={new QueryClient()}>
                         <PokeGameUserContextProvider>
-                            <BrowserRouter>
-                                <Routes>
-                                    <Route path="/" element={<PokemonPage />} />
-                                    <Route
-                                        path="/pokemon"
-                                        element={<PokemonPage />}
-                                    />
-                                </Routes>
-                            </BrowserRouter>
+                            <SignalRGameSessionProvider>
+                                <BrowserRouter>
+                                    <Routes>
+                                        <Route path="/" element={<PokemonPage />} />
+                                        <Route
+                                            path="/pokemon"
+                                            element={<PokemonPage />}
+                                        />
+                                    </Routes>
+                                </BrowserRouter>
+                            </SignalRGameSessionProvider>
                         </PokeGameUserContextProvider>
                     </QueryClientProvider>
                 </PokeGameCoreHttpClientContextProvider>

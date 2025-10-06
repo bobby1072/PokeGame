@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using PokeGame.Core.Api.Attributes;
-using PokeGame.Core.Api.Extensions;
+using PokeGame.Core.Common;
 using PokeGame.Core.Common.Exceptions;
+using PokeGame.Core.Common.Extensions;
 using PokeGame.Core.Domain.Services.User.Abstract;
 
 namespace PokeGame.Core.Api.Middlewares;
@@ -22,7 +23,7 @@ internal sealed class RequireValidUserIdHeaderMiddleware
 
         if (endpointMetadata?.GetMetadata<RequireValidUserIdHeaderAttribute>() is not null)
         {
-            var userIdHeader = context.Request.Headers["UserId"];
+            var userIdHeader = context.Request.Headers[Constants.ApiConstants.UserIdHeaderKey];
 
             if (string.IsNullOrEmpty(userIdHeader) || !Guid.TryParse(userIdHeader, out var userId))
             {

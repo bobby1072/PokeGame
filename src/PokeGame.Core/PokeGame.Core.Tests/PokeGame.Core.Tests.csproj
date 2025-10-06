@@ -30,6 +30,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\PokeGame.Core.Domain.Services\PokeGame.Core.Domain.Services.csproj" />
+      <ProjectReference Include="..\PokeGame.Core.SignalR\PokeGame.Core.SignalR.csproj" />
     </ItemGroup>
 
     <ItemGroup>

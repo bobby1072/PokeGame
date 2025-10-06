@@ -4,6 +4,11 @@ namespace PokeGame.Core.Domain.Services.Game.Abstract;
 
 public interface IGameSessionProcessingManager
 {
-    Task<GameSession> StartGameSession(Guid gameSaveId, Schemas.Game.User user);
-    Task DeleteAllGameSessionsForGameSave(Guid gameSaveId);
+    Task<GameSession> StartGameSession(
+        Guid gameSaveId,
+        string connectionId,
+        Schemas.Game.User user
+    );
+    Task DeleteAllGameSessionsByGameSave(Guid gameSaveId);
+    Task DeleteAllGameSessionsByConnectionId(string connectionId);
 }

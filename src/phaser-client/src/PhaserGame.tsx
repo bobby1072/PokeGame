@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
-import StartGame from './game/main';
-import { EventBus } from './game/EventBus';
+import { EventBus } from './pokemonGame/EventBus';
+import StartPokemonGame from './pokemonGame/main';
 
 export interface IRefPhaserGame
 {
@@ -22,7 +22,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(function PhaserGame
         if (game.current === null)
         {
 
-            game.current = StartGame("game-container");
+            game.current = StartPokemonGame("game-container");
 
             if (typeof ref === 'function')
             {

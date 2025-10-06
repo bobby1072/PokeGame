@@ -6,16 +6,17 @@ using PokeGame.Core.Persistence.Repositories.Abstract;
 
 namespace PokeGame.Core.Domain.Services.Game.Commands;
 
-internal sealed class RemoveGameSessionCommand : IDomainCommand<Guid, DomainCommandResult>
+internal sealed class RemoveGameSessionByGameSaveIdCommand
+    : IDomainCommand<Guid, DomainCommandResult>
 {
-    public string CommandName => nameof(RemoveGameSessionCommand);
+    public string CommandName => nameof(RemoveGameSessionByGameSaveIdCommand);
 
     private readonly IGameSessionRepository _gameSessionRepository;
-    private readonly ILogger<RemoveGameSessionCommand> _logger;
+    private readonly ILogger<RemoveGameSessionByGameSaveIdCommand> _logger;
 
-    public RemoveGameSessionCommand(
+    public RemoveGameSessionByGameSaveIdCommand(
         IGameSessionRepository gameSessionRepository,
-        ILogger<RemoveGameSessionCommand> logger
+        ILogger<RemoveGameSessionByGameSaveIdCommand> logger
     )
     {
         _gameSessionRepository = gameSessionRepository;
@@ -33,7 +34,7 @@ internal sealed class RemoveGameSessionCommand : IDomainCommand<Guid, DomainComm
         );
 
         await EntityFrameworkUtils.TryDbOperation(
-            () => _gameSessionRepository.DeleteAllCurrentSessionsAsync(gameSaveId),
+            () => _gameSessionRepository.DeleteAllSessionsByGameSaveIdAsync(gameSaveId),
             _logger
         );
 

@@ -1,4 +1,4 @@
-import { EventBus } from "../../game/EventBus";
+import { EventBus } from "../EventBus";
 import { BasePlayableFreeroamScene } from "./BasePlayableFreeroamScene";
 
 export class BasiliaTownScene extends BasePlayableFreeroamScene {

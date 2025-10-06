@@ -3,6 +3,7 @@ using BT.Common.Api.Helpers.Extensions;
 using BT.Common.Helpers;
 using Microsoft.AspNetCore.Http.Timeouts;
 using PokeGame.Core.Api.Middlewares;
+using PokeGame.Core.Common.Helpers;
 using PokeGame.Core.Domain.Services.Extensions;
 
 var localLogger = LoggingHelper.CreateLogger();
@@ -26,15 +27,7 @@ try
         };
     });
 
-    builder.Services.AddLogging(opts =>
-    {
-        opts.ClearProviders();
-        opts.AddJsonConsole(ctx =>
-        {
-            ctx.IncludeScopes = true;
-            ctx.UseUtcTimestamp = true;
-        });
-    });
+    builder.Services.AddJsonLogging();
 
     builder
         .Services.AddControllers()
@@ -47,22 +40,7 @@ try
     builder.Services.AddSwaggerGen();
     builder.Services.AddResponseCompression();
 
-    const string developmentCorsPolicy = "DevelopmentCorsPolicy";
-
-    builder.Services.AddCors(p =>
-    {
-        p.AddPolicy(
-            developmentCorsPolicy,
-            opts =>
-            {
-                opts.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-
-                opts.WithOrigins("http://localhost:3000").AllowCredentials();
-                opts.WithOrigins("http://localhost:8080").AllowCredentials();
-                opts.WithOrigins("https://localhost:7070").AllowCredentials();
-            }
-        );
-    });
+    builder.Services.AddLocalDevelopmentCorsPolicy();
 
     localLogger.LogInformation(
         "About to build application with {NumberOfServices} services",
@@ -75,7 +53,7 @@ try
     {
         app.UseSwagger();
         app.UseSwaggerUI();
-        app.UseCors(developmentCorsPolicy);
+        app.UseLocalDevelopmentCorsPolicy();
     }
     app.UseRouting();
 
@@ -93,8 +71,7 @@ try
     app.MapControllers();
 
     app
-        .UseHealthGetEndpoint()
-        .UseHealthChecks("/Api/Healthz");
+        .UseHealthGetEndpoints();
 
     await app.RunAsync();
 }
