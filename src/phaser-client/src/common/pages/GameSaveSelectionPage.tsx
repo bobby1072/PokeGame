@@ -3,7 +3,6 @@ import {
     Typography,
     Button,
     Box,
-    CircularProgress,
     Alert,
     Container,
 } from "@mui/material";
@@ -12,6 +11,7 @@ import { useGameSaveContext } from "../contexts/GameSaveContext";
 import { GameSaveCard } from "../components/GameSaveCard";
 import { NewGameForm } from "../components/NewGameForm";
 import { PageBase } from "../components/PageBase";
+import { LoadingComponent } from "../components/LoadingComponent";
 import { GameSave } from "../models/GameSave";
 
 interface GameSaveSelectionPageProps {
@@ -43,21 +43,10 @@ export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({
     if (isLoading) {
         return (
             <PageBase>
-                <Box 
-                    sx={{ 
-                        display: "flex", 
-                        flexDirection: "column",
-                        justifyContent: "center", 
-                        alignItems: "center", 
-                        minHeight: "400px",
-                        gap: 2
-                    }}
-                >
-                    <CircularProgress size={60} />
-                    <Typography variant="h6" color="text.secondary">
-                        Loading game saves...
-                    </Typography>
-                </Box>
+                <LoadingComponent 
+                    variant="page-section" 
+                    message="Loading game saves..." 
+                />
             </PageBase>
         );
     }
