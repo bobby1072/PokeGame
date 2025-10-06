@@ -40,15 +40,18 @@ public sealed class PokeGameSessionHub : Hub
                     "Game save id not included with connection request, aborting Signal R connection..."
                 );
 
-                await Clients.Caller.SendAsync(EventKeys.GameSessionConnectionFailed, new SignalRClientEvent
-                {
-                    ExceptionMessage = "No game save id attached to request query",
-                    ExtraData = new Dictionary<string, object>
+                await Clients.Caller.SendAsync(
+                    EventKeys.GameSessionConnectionFailed,
+                    new SignalRClientEvent
                     {
-                        { "EventKey", EventKeys.GameSessionConnectionFailed }
+                        ExceptionMessage = "No game save id attached to request query",
+                        ExtraData = new Dictionary<string, object>
+                        {
+                            { "EventKey", EventKeys.GameSessionConnectionFailed },
+                        },
                     }
-                });
-                
+                );
+
                 Context.Abort();
                 return;
             }
@@ -66,16 +69,19 @@ public sealed class PokeGameSessionHub : Hub
                     "User id not included with connection request, aborting Signal R connection for connectionId: {ConnectionId}...",
                     Context.ConnectionId
                 );
-                
-                await Clients.Caller.SendAsync(EventKeys.GameSessionConnectionFailed, new SignalRClientEvent
-                {
-                    ExceptionMessage = "No user id attached to request query",
-                    ExtraData = new Dictionary<string, object>
+
+                await Clients.Caller.SendAsync(
+                    EventKeys.GameSessionConnectionFailed,
+                    new SignalRClientEvent
                     {
-                        { "EventKey", EventKeys.GameSessionConnectionFailed }
+                        ExceptionMessage = "No user id attached to request query",
+                        ExtraData = new Dictionary<string, object>
+                        {
+                            { "EventKey", EventKeys.GameSessionConnectionFailed },
+                        },
                     }
-                });
-                
+                );
+
                 Context.Abort();
                 return;
             }
@@ -105,14 +111,14 @@ public sealed class PokeGameSessionHub : Hub
                     Data = newGameSession,
                     ExtraData = new Dictionary<string, object>
                     {
-                        { "EventKey", EventKeys.GameSessionStarted }
+                        { "EventKey", EventKeys.GameSessionStarted },
                     },
                 }
             );
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            await HandleSignalRException(ex, EventKeys.GameSessionConnectionFailed);   
+            await HandleSignalRException(ex, EventKeys.GameSessionConnectionFailed);
             Context.Abort();
         }
     }
@@ -122,7 +128,6 @@ public sealed class PokeGameSessionHub : Hub
         await base.OnDisconnectedAsync(exception);
         try
         {
-
             if (exception is not null)
             {
                 _logger.LogError(
@@ -137,9 +142,13 @@ public sealed class PokeGameSessionHub : Hub
 
             await gameSessionManager.DeleteAllGameSessionsByConnectionId(Context.ConnectionId);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception occurred during Signal R disconnect attempt for connectionId: {ConnectionId}", Context.ConnectionId);
+            _logger.LogError(
+                ex,
+                "Exception occurred during Signal R disconnect attempt for connectionId: {ConnectionId}",
+                Context.ConnectionId
+            );
         }
     }
 
@@ -147,15 +156,38 @@ public sealed class PokeGameSessionHub : Hub
     {
         if (exception is PokeGameApiUserException pokeGameApiUserException)
         {
-            _logger.LogInformation(pokeGameApiUserException, "Poke game user exception occurred during Signal R invocation for connectionId: {ConnectionId}", Context.ConnectionId);
-            await Clients.Caller.SendAsync(eventKey, new SignalRClientEvent{ ExceptionMessage = pokeGameApiUserException.Message });
+            _logger.LogInformation(
+                pokeGameApiUserException,
+                "Poke game user exception occurred during Signal R invocation for connectionId: {ConnectionId}",
+                Context.ConnectionId
+            );
+            await Clients.Caller.SendAsync(
+                eventKey,
+                new SignalRClientEvent
+                {
+                    ExceptionMessage = pokeGameApiUserException.Message,
+                    ExtraData = new Dictionary<string, object> { { "EventKey", eventKey } },
+                }
+            );
         }
         else if (exception is PokeGameApiServerException pokeGameApiServerException)
         {
-            _logger.LogError(pokeGameApiServerException, "Poke game server exception occurred during Signal R invocation for connectionId: {ConnectionId}", Context.ConnectionId);
-            await Clients.Caller.SendAsync(eventKey, new SignalRClientEvent{ ExceptionMessage = Constants.ExceptionConstants.InternalError });
+            _logger.LogError(
+                pokeGameApiServerException,
+                "Poke game server exception occurred during Signal R invocation for connectionId: {ConnectionId}",
+                Context.ConnectionId
+            );
+            await Clients.Caller.SendAsync(
+                eventKey,
+                new SignalRClientEvent
+                {
+                    ExceptionMessage = Constants.ExceptionConstants.InternalError,
+                    ExtraData = new Dictionary<string, object> { { "EventKey", eventKey } },
+                }
+            );
         }
     }
+
     private struct EventKeys
     {
         public const string GameSessionStarted = "GameSessionStarted";
