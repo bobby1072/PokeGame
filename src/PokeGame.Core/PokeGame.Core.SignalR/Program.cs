@@ -1,4 +1,3 @@
-using System.Text.Json;
 using BT.Common.Api.Helpers.Extensions;
 using BT.Common.Helpers;
 using Microsoft.AspNetCore.Http.Timeouts;
@@ -40,12 +39,35 @@ try
 
     builder.Services.AddPokeGameSignalR(requestTimeoutSpan);
     
+    const string developmentCorsPolicy = "DevelopmentCorsPolicy";
+
+    builder.Services.AddCors(p =>
+    {
+        p.AddPolicy(
+            developmentCorsPolicy,
+            opts =>
+            {
+                opts.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+
+                opts.WithOrigins("http://localhost:3000").AllowCredentials();
+                opts.WithOrigins("http://localhost:8080").AllowCredentials();
+                opts.WithOrigins("https://localhost:7070").AllowCredentials();
+            }
+        );
+    });
+    
+    
     localLogger.LogInformation(
         "About to build application with {NumberOfServices} services",
         builder.Services.Count
     );
     
     var app = builder.Build();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseCors(developmentCorsPolicy);
+    }
     
     app.UseRouting();
 
