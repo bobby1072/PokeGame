@@ -2,7 +2,7 @@ import { HubConnection } from "@microsoft/signalr";
 import { createContext } from "react";
 import { GameSession } from "../models/GameSession";
 import { useConnectToSignalRQuery } from "../hooks/useConnectToSignalR";
-import { Box, CircularProgress } from "@mui/material";
+import { LoadingComponent } from "../components/LoadingComponent";
 import { ErrorComponent } from "../components/ErrorComponent";
 
 const SignalRGameSessionContext = createContext<
@@ -15,16 +15,7 @@ export const SignalRGameSessionProvider: React.FC<{
     const { data, error, isLoading } = useConnectToSignalRQuery();
 
     if (isLoading) {
-        return (
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                minHeight="100vh"
-            >
-                <CircularProgress />
-            </Box>
-        );
+        return <LoadingComponent variant="fullscreen" />;
     }
 
     if (error) {

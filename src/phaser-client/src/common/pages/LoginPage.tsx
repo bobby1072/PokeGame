@@ -11,7 +11,6 @@ import {
     Alert,
     Tabs,
     Tab,
-    CircularProgress,
 } from "@mui/material";
 import { PokeGameUser } from "../models/PokeGameUser";
 import { SaveUserInput } from "../models/SaveUserInput";
@@ -19,6 +18,7 @@ import { useGetUserMutation } from "../hooks/useGetUserMutation";
 import { useSaveUserMutation } from "../hooks/useSaveUserMutation";
 import { PageBase } from "../components/PageBase";
 import { ErrorComponent } from "../components/ErrorComponent";
+import { LoadingComponent } from "../components/LoadingComponent";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -209,7 +209,7 @@ export const LoginPage: React.FC<{
                                 disabled={!loginIsDirty || isLoginLoading}
                             >
                                 {isLoginLoading ? (
-                                    <CircularProgress size={24} />
+                                    <LoadingComponent variant="inline" size={24} />
                                 ) : (
                                     "Login"
                                 )}
@@ -264,7 +264,7 @@ export const LoginPage: React.FC<{
                                 disabled={!registerIsDirty || isRegisterLoading}
                             >
                                 {isRegisterLoading ? (
-                                    <CircularProgress size={24} />
+                                    <LoadingComponent variant="inline" size={24} />
                                 ) : (
                                     "Register"
                                 )}
