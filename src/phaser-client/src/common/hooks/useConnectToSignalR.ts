@@ -31,7 +31,7 @@ export const useConnectToSignalRQuery = () => {
     const [state, setState] = useState<SignalRState>({
         isWaitingForGameSession: false,
     });
-    
+
     const query = useQuery<HubConnection, Error>({
         queryKey: [QueryKeys.ConnectToSignalR],
         queryFn: async () => {
@@ -47,57 +47,40 @@ export const useConnectToSignalRQuery = () => {
         throwOnError: false,
     });
 
-    // Handle successful connection
     useEffect(() => {
-        if (query.data && !state.hubConnection) {
+        if (query.data) {
             setState((prev) => ({
                 ...prev,
                 hubConnection: query.data,
                 isWaitingForGameSession: true,
             }));
         }
-    }, [query.data, state.hubConnection]);
+    }, [query.data]);
 
-    // Handle query error
-    useEffect(() => {
-        if (query.error) {
-            setState((prev) => ({ 
-                ...prev, 
-                error: query.error,
-                isWaitingForGameSession: false,
-            }));
-        }
-    }, [query.error]);
-
-    // Setup SignalR event listeners
     useEffect(() => {
         if (state.hubConnection) {
-            const handleGameSessionStarted = (data: WebOutcome<GameSession>) => {
-                setState((prev) => ({
-                    ...prev,
-                    gameSession:
-                        data.isSuccess && data.data ? data.data : undefined,
-                    isWaitingForGameSession: false,
-                }));
-            };
-
-            const handleGameSessionConnectionFailed = (data: BaseWebOutcome) => {
-                setState((prev) => ({
-                    ...prev,
-                    error: new Error(
-                        data.exceptionMessage || "Unknown error"
-                    ),
-                    isWaitingForGameSession: false,
-                }));
-            };
-
             state.hubConnection.on(
                 SignalREventKeys.GameSessionStarted,
-                handleGameSessionStarted
+                (data: WebOutcome<GameSession>) => {
+                    setState((prev) => ({
+                        ...prev,
+                        gameSession:
+                            data.isSuccess && data.data ? data.data : undefined,
+                        isWaitingForGameSession: false,
+                    }));
+                }
             );
             state.hubConnection.on(
                 SignalREventKeys.GameSessionConnectionFailed,
-                handleGameSessionConnectionFailed
+                (data: BaseWebOutcome) => {
+                    setState((prev) => ({
+                        ...prev,
+                        error: new Error(
+                            data.exceptionMessage || "Unknown error"
+                        ),
+                        isWaitingForGameSession: false,
+                    }));
+                }
             );
         }
     }, [state.hubConnection]);

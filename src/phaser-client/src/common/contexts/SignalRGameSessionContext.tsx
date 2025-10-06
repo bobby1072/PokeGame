@@ -31,7 +31,6 @@ export const SignalRGameSessionProvider: React.FC<{
         return <ErrorComponent error={error} />;
     }
 
-    // Ensure both hubConnection and gameSession are available
     if (!data || !data.hubConnection || !data.gameSession) {
         return (
             <ErrorComponent error="Failed to establish SignalR connection" />
