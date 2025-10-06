@@ -1,5 +1,4 @@
-export enum SignalREventKeys {
-    GameSessionStarted = "GameSessionStarted",
-
-    GameSessionConnectionFailed = "GameSessionConnectionFailed",
+export abstract class SignalREventKeys {
+    public static readonly GameSessionStarted = "GameSessionStarted";
+    public static readonly GameSessionConnectionFailed = "GameSessionConnectionFailed";
 }

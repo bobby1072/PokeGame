@@ -31,10 +31,10 @@ export const useConnectToSignalRQuery = () => {
     const [state, setState] = useState<SignalRState>({
         isWaitingForGameSession: false,
     });
+    
     const query = useQuery<HubConnection, Error>({
         queryKey: [QueryKeys.ConnectToSignalR],
         queryFn: async () => {
-            setState((prev) => ({ ...prev, isWaitingForGameSession: true }));
             const localHub = hubConnectBuilder
                 .withUrl(
                     `${applicationSettings.pokeGameCoreSignalRUrl}/Api/SignalR/PokeGameSession?GameSaveId=${gameSave.currentGameSave?.id}&UserId=${gameSave.currentGameSave?.userId}`
@@ -44,42 +44,60 @@ export const useConnectToSignalRQuery = () => {
             await localHub.start();
             return localHub;
         },
-        select: (data) => {
+        throwOnError: false,
+    });
+
+    // Handle successful connection
+    useEffect(() => {
+        if (query.data && !state.hubConnection) {
             setState((prev) => ({
                 ...prev,
-                hubConnection: data,
+                hubConnection: query.data,
+                isWaitingForGameSession: true,
             }));
-            return data;
-        },
-        throwOnError: (qError, _) => {
-            setState((prev) => ({ ...prev, error: qError }));
+        }
+    }, [query.data, state.hubConnection]);
 
-            return false;
-        },
-    });
+    // Handle query error
+    useEffect(() => {
+        if (query.error) {
+            setState((prev) => ({ 
+                ...prev, 
+                error: query.error,
+                isWaitingForGameSession: false,
+            }));
+        }
+    }, [query.error]);
+
+    // Setup SignalR event listeners
     useEffect(() => {
         if (state.hubConnection) {
+            const handleGameSessionStarted = (data: WebOutcome<GameSession>) => {
+                setState((prev) => ({
+                    ...prev,
+                    gameSession:
+                        data.isSuccess && data.data ? data.data : undefined,
+                    isWaitingForGameSession: false,
+                }));
+            };
+
+            const handleGameSessionConnectionFailed = (data: BaseWebOutcome) => {
+                setState((prev) => ({
+                    ...prev,
+                    error: new Error(
+                        data.exceptionMessage || "Unknown error"
+                    ),
+                    isWaitingForGameSession: false,
+                }));
+            };
+
             state.hubConnection.on(
                 SignalREventKeys.GameSessionStarted,
-                (data: WebOutcome<GameSession>) => {
-                    setState((prev) => ({
-                        ...prev,
-                        gameSession:
-                            data.isSuccess && data.data ? data.data : undefined,
-                        isWaitingForGameSession: false,
-                    }));
-                }
+                handleGameSessionStarted
             );
             state.hubConnection.on(
                 SignalREventKeys.GameSessionConnectionFailed,
-                (data: BaseWebOutcome) => {
-                    setState((prev) => ({
-                        ...prev,
-                        error: new Error(
-                            data.exceptionMessage || "Unknown error"
-                        ),
-                    }));
-                }
+                handleGameSessionConnectionFailed
             );
         }
     }, [state.hubConnection]);
@@ -90,7 +108,7 @@ export const useConnectToSignalRQuery = () => {
             hubConnection: state.hubConnection,
             gameSession: state.gameSession,
         },
-        error: state.error,
+        error: state.error || query.error,
         isLoading: query.isLoading || state.isWaitingForGameSession,
     };
 };
