@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
 using PokeGame.Core.Domain.Services.Game.Abstract;
@@ -51,16 +52,25 @@ public static class DomainServicesServiceCollectionExtensions
         services
             .AddUserServices()
             .AddPokemonServices(healthCheckBuilder)
-            .AddGameServices()
+            .AddGameServices(configuration)
             .AddScoped<IDomainServiceCommandExecutor, DomainServiceCommandExecutor>()
             .AddScoped<IValidatorService, ValidatorService>();
 
         return services;
     }
 
-    private static IServiceCollection AddGameServices(this IServiceCollection services)
+    private static IServiceCollection AddGameServices(this IServiceCollection services, IConfiguration configuration)
     {
+        var pokeGameRulesSection = configuration.GetSection(PokeGameRules.Key);
+
+        if (!pokeGameRulesSection.Exists())
+        {
+            throw new ArgumentNullException(PokeGameRules.Key);
+        }
+
+        
         services
+            .ConfigureSingletonOptions<PokeGameRules>(pokeGameRulesSection)
             .AddScoped<CreateNewGameCommand>()
             .AddScoped<GetGameSavesByUserCommand>()
             .AddScoped<StartGameSessionCommand>()
