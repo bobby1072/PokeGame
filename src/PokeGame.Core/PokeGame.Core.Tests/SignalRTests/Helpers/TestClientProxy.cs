@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace PokeGame.Core.Tests.SignalRTests.Helpers;
 
-public class TestClientProxy : IClientProxy
+internal sealed class TestClientProxy : IClientProxy
 {
     private readonly List<(string MethodName, object?[] Arguments)> _invocations = new();
 

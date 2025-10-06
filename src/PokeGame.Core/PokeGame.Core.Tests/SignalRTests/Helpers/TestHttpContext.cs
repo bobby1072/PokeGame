@@ -5,7 +5,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace PokeGame.Core.Tests.SignalRTests.Helpers;
 
-public class TestHttpContext : HttpContext
+internal sealed class TestHttpContext : HttpContext
 {
     private readonly Dictionary<string, StringValues> _queryParams = new();
     private readonly Dictionary<object, object?> _items = new();
@@ -46,7 +46,7 @@ public class TestHttpContext : HttpContext
     #endregion
 }
 
-public class TestHttpRequest : HttpRequest
+internal sealed class TestHttpRequest : HttpRequest
 {
     private readonly TestHttpContext _context;
 

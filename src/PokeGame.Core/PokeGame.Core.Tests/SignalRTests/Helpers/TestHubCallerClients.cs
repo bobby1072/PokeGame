@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace PokeGame.Core.Tests.SignalRTests.Helpers;
 
-public class TestHubCallerClients : IHubCallerClients, IHubCallerClients<IClientProxy>
+internal sealed class TestHubCallerClients : IHubCallerClients, IHubCallerClients<IClientProxy>
 {
     public TestHubCallerClients(TestClientProxy caller)
     {
