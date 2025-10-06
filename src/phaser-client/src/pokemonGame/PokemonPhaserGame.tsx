@@ -1,4 +1,10 @@
-import { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
+import {
+    ForwardedRef,
+    forwardRef,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+} from "react";
 import StartPokemonGame from "./main";
 import { EventBus } from "./EventBus";
 
@@ -11,7 +17,10 @@ interface IProps {
     currentActiveScene?: (scene_instance: Phaser.Scene) => void;
 }
 
-export const PokemonPhaserGame = forwardRef<IRefPokemonPhaserGame, IProps>(function PokemonPhaserGame({ currentActiveScene }, ref) {
+const ActualPokemonPhaserGame = (
+    { currentActiveScene }: IProps,
+    ref: ForwardedRef<IRefPokemonPhaserGame>
+) => {
     const game = useRef<Phaser.Game | null>(null!);
 
     useLayoutEffect(() => {
@@ -37,7 +46,10 @@ export const PokemonPhaserGame = forwardRef<IRefPokemonPhaserGame, IProps>(funct
 
     useEffect(() => {
         EventBus.on("current-scene-ready", (scene_instance: Phaser.Scene) => {
-            if (currentActiveScene && typeof currentActiveScene === "function") {
+            if (
+                currentActiveScene &&
+                typeof currentActiveScene === "function"
+            ) {
                 currentActiveScene(scene_instance);
             }
 
@@ -52,5 +64,14 @@ export const PokemonPhaserGame = forwardRef<IRefPokemonPhaserGame, IProps>(funct
         };
     }, [currentActiveScene, ref]);
 
-    return <div id="pokemon-game-container" style={{ width: 1024, height: 768 }}></div>;
-});
+    return (
+        <div
+            id="pokemon-game-container"
+            style={{ width: 1024, height: 768 }}
+        ></div>
+    );
+};
+
+export const PokemonPhaserGame = forwardRef<IRefPokemonPhaserGame, IProps>(
+    ActualPokemonPhaserGame
+);
