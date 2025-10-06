@@ -44,7 +44,6 @@ export const useConnectToSignalRQuery = () => {
             await localHub.start();
             return localHub;
         },
-        throwOnError: false,
     });
 
     useEffect(() => {
