@@ -1,9 +1,10 @@
+using PokeGame.Core.Schemas.PokeApi;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PokeApiNet
+namespace PokeGame.Core.Domain.Services.Abstract
 {
     /// <summary>
     /// Interface for getting data from the PokeAPI service

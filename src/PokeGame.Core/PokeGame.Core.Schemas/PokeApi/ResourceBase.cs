@@ -1,4 +1,4 @@
-﻿namespace PokeApiNet
+﻿namespace PokeGame.Core.Schemas.PokeApi
 {
     /// <summary>
     /// The base class for classes that have an API endpoint. These

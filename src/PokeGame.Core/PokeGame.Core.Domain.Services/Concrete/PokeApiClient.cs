@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PokeGame.Core.Domain.Services.Abstract;
+using PokeGame.Core.Schemas.PokeApi;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -10,7 +12,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PokeApiNet
+namespace PokeGame.Core.Domain.Services.Concrete
 {
     public sealed class PokeApiClient : IPokeApiClient
     {
@@ -55,7 +57,7 @@ namespace PokeApiNet
         public async Task<List<T>> GetResourceAsync<T>(IEnumerable<UrlNavigation<T>> collection)
             where T : ResourceBase
         {
-            return await GetResourceAsync<T>(collection, CancellationToken.None);
+            return await GetResourceAsync(collection, CancellationToken.None);
         }
 
         public async Task<List<T>> GetResourceAsync<T>(
@@ -237,7 +239,7 @@ namespace PokeApiNet
             return result ?? throw new InvalidOperationException("Failed to deserialize response");
         }
 
-        private T? DeserializeStream<T>(System.IO.Stream stream)
+        private T? DeserializeStream<T>(Stream stream)
         {
             return JsonSerializer.Deserialize<T>(
                 stream,

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PokeApiNet
+namespace PokeGame.Core.Schemas.PokeApi
 {
     /// <summary>
     /// Methods by which the player might can encounter Pokémon

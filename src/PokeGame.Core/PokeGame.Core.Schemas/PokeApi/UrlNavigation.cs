@@ -1,4 +1,4 @@
-﻿namespace PokeApiNet
+﻿namespace PokeGame.Core.Schemas.PokeApi
 {
     /// <summary>
     /// Allows for automatic fetching of a resource via a url

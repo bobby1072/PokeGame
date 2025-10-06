@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PokeApiNet
+namespace PokeGame.Core.Schemas.PokeApi
 {
     /// <summary>
     /// Locations that can be visited within the games. Locations make

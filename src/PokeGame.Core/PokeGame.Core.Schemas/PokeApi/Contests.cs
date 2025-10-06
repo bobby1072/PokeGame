@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PokeApiNet
+namespace PokeGame.Core.Schemas.PokeApi
 {
     /// <summary>
     /// Contest types are categories judges used to weigh

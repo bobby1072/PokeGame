@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PokeApiNet
+namespace PokeGame.Core.Schemas.PokeApi
 {
     /// <summary>
     /// Abilities provide passive effects for Pokémon in battle or in

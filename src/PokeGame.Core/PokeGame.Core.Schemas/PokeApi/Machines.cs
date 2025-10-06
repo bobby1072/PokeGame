@@ -1,4 +1,4 @@
-﻿namespace PokeApiNet
+﻿namespace PokeGame.Core.Schemas.PokeApi
 {
     /// <summary>
     /// Machines are the representation of items that teach moves
