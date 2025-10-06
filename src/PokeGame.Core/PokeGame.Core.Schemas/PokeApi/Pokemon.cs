@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Text.Json.Serialization;
 
 namespace PokeGame.Core.Schemas.PokeApi
 {
@@ -14,7 +14,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "ability";
+        internal static new string ApiEndpoint { get; } = "ability";
 
         /// <summary>
         /// The name for this resource.
@@ -138,7 +138,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "characteristic";
+        internal static new string ApiEndpoint { get; } = "characteristic";
 
         /// <summary>
         /// The remainder of the highest stat/IV divided by 5.
@@ -176,7 +176,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "egg-group";
+        internal static new string ApiEndpoint { get; } = "egg-group";
 
         /// <summary>
         /// The name for this resource.
@@ -207,7 +207,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "gender";
+        internal static new string ApiEndpoint { get; } = "gender";
 
         /// <summary>
         /// The name for this resource.
@@ -257,7 +257,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "growth-rate";
+        internal static new string ApiEndpoint { get; } = "growth-rate";
 
         /// <summary>
         /// The name for this resource.
@@ -314,7 +314,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "nature";
+        internal static new string ApiEndpoint { get; } = "nature";
 
         /// <summary>
         /// The name for this resource.
@@ -419,7 +419,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "pokeathlon-stat";
+        internal static new string ApiEndpoint { get; } = "pokeathlon-stat";
 
         /// <summary>
         /// The name for this resource.
@@ -452,7 +452,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// A list of natures and how they change the referenced Pokéathlon stat.
         /// </summary>
-        public List<NaturePokeathlonStatAffect> Decrease{ get; set; }
+        public List<NaturePokeathlonStatAffect> Decrease { get; set; }
     }
 
     /// <summary>
@@ -486,7 +486,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "pokemon";
+        internal static new string ApiEndpoint { get; } = "pokemon";
 
         /// <summary>
         /// The name for this resource.
@@ -881,7 +881,7 @@ namespace PokeGame.Core.Schemas.PokeApi
                 /// </summary>
                 [JsonPropertyName("front_default")]
                 public string FrontDefault { get; set; }
-                
+
                 /// <summary>
                 /// The shiny depiction of this Pokémon from the front in battle.
                 /// </summary>
@@ -1053,7 +1053,6 @@ namespace PokeGame.Core.Schemas.PokeApi
                     /// </summary>
                     [JsonPropertyName("front_transparent")]
                     public string FrontTransparent { get; set; }
-
                 }
 
                 /// <summary>
@@ -1171,7 +1170,6 @@ namespace PokeGame.Core.Schemas.PokeApi
                     /// </summary>
                     [JsonPropertyName("front_transparent")]
                     public string FrontTransparent { get; set; }
-
                 }
 
                 /// <summary>
@@ -1735,7 +1733,6 @@ namespace PokeGame.Core.Schemas.PokeApi
                     [JsonPropertyName("front_shiny_female")]
                     public string FrontShinyFemale { get; set; }
                 }
-
             }
 
             /// <summary>
@@ -1866,7 +1863,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "pokemon-color";
+        internal static new string ApiEndpoint { get; } = "pokemon-color";
 
         /// <summary>
         /// The name for this resource.
@@ -1898,7 +1895,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "pokemon-form";
+        internal static new string ApiEndpoint { get; } = "pokemon-form";
 
         /// <summary>
         /// The name for this resource.
@@ -2018,7 +2015,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "pokemon-habitat";
+        internal static new string ApiEndpoint { get; } = "pokemon-habitat";
 
         /// <summary>
         /// The name for this resource.
@@ -2047,7 +2044,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "pokemon-shape";
+        internal static new string ApiEndpoint { get; } = "pokemon-shape";
 
         /// <summary>
         /// The name for this resource.
@@ -2105,7 +2102,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "pokemon-species";
+        internal static new string ApiEndpoint { get; } = "pokemon-species";
 
         /// <summary>
         /// The name for this resource.
@@ -2373,7 +2370,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "stat";
+        internal static new string ApiEndpoint { get; } = "stat";
 
         /// <summary>
         /// The name for this resource.
@@ -2483,7 +2480,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// </summary>
         public override int Id { get; set; }
 
-        internal new static string ApiEndpoint { get; } = "type";
+        internal static new string ApiEndpoint { get; } = "type";
 
         /// <summary>
         /// The name for this resource.

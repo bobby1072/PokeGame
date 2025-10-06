@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.Services", "..\Su
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokeGame.Core.SignalR", "PokeGame.Core.SignalR\PokeGame.Core.SignalR.csproj", "{35448ED4-6279-4175-9D37-DCBB790AF0F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BT.Common.Http", "..\Submodules\BT\src\BT.Common\BT.Common.Http\BT.Common.Http.csproj", "{0D346278-2CCF-4F9C-9096-8FCA4732ACF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{35448ED4-6279-4175-9D37-DCBB790AF0F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35448ED4-6279-4175-9D37-DCBB790AF0F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35448ED4-6279-4175-9D37-DCBB790AF0F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D346278-2CCF-4F9C-9096-8FCA4732ACF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D346278-2CCF-4F9C-9096-8FCA4732ACF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D346278-2CCF-4F9C-9096-8FCA4732ACF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D346278-2CCF-4F9C-9096-8FCA4732ACF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -134,6 +140,7 @@ Global
 		{912E2A50-737A-47CE-8729-563F463900AB} = {65E0A736-C581-45FD-B125-E28E5B75E06E}
 		{CF9BD9BD-E2DF-4EED-8A22-CA5E45208D18} = {7870B4D1-9D51-4166-AE81-C3AF7571C815}
 		{35448ED4-6279-4175-9D37-DCBB790AF0F6} = {65E0A736-C581-45FD-B125-E28E5B75E06E}
+		{0D346278-2CCF-4F9C-9096-8FCA4732ACF9} = {7870B4D1-9D51-4166-AE81-C3AF7571C815}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C122D0E2-872C-45D3-AB0F-E1FA14AFCE8E}

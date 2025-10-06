@@ -1,27 +1,32 @@
-﻿using PokeGame.Core.Domain.Services.Abstract;
-using PokeGame.Core.Schemas.PokeApi;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http.Json;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using BT.Common.Http.Extensions;
+using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Exceptions;
+using PokeGame.Core.Domain.Services.Abstract;
+using PokeGame.Core.Schemas.PokeApi;
 
 namespace PokeGame.Core.Domain.Services.Concrete
 {
     public sealed class PokeApiClient : IPokeApiClient
     {
         private readonly HttpClient _client;
+        private readonly string _baseUrl;
+        private readonly ILogger<PokeApiClient> _logger;
+        private static JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        };
 
-        public PokeApiClient(HttpClient httpClient, string baseUrl)
+        public PokeApiClient(HttpClient httpClient, string baseUrl, ILogger<PokeApiClient> logger)
         {
             _client = httpClient;
-            _client.BaseAddress = new Uri(baseUrl);
+            _baseUrl = baseUrl;
+            _logger = logger;
         }
 
         public async Task<T> GetResourceAsync<T>(int id)
@@ -45,9 +50,19 @@ namespace PokeGame.Core.Domain.Services.Concrete
         public async Task<T> GetResourceAsync<T>(string name, CancellationToken cancellationToken)
             where T : NamedApiResource
         {
+            _logger.LogInformation(
+                "Getting resource of type {Type} by name {Name}",
+                typeof(T).Name,
+                name
+            );
             string sanitizedName = name.Replace(" ", "-") // no resource can have a space in the name; API uses -'s in their place
                 .Replace("'", "") // looking at you, Farfetch'd
                 .Replace(".", ""); // looking at you, Mime Jr. and Mr. Mime
+            _logger.LogDebug(
+                "Sanitized resource name from {OriginalName} to {SanitizedName}",
+                name,
+                sanitizedName
+            );
 
             // Nidoran is interesting as the API wants 'nidoran-f' or 'nidoran-m'
 
@@ -117,16 +132,31 @@ namespace PokeGame.Core.Domain.Services.Concrete
         )
             where T : NamedApiResource
         {
+            _logger.LogInformation("Getting all named resources of type {Type}", typeof(T).Name);
             string url = GetApiEndpointString<T>();
             bool isLastPage;
+            int pageCount = 0;
 
             do
             {
+                pageCount++;
+                _logger.LogDebug("Fetching page {PageNumber} from {Url}", pageCount, url);
                 var page = await GetAsync<NamedApiResourceList<T>>(url, cancellationToken);
+                _logger.LogDebug(
+                    "Retrieved {Count} resources from page {PageNumber}",
+                    page?.Results?.Count() ?? 0,
+                    pageCount
+                );
                 foreach (var resource in page?.Results ?? Enumerable.Empty<NamedApiResource<T>>())
                 {
                     if (cancellationToken.IsCancellationRequested)
+                    {
+                        _logger.LogInformation(
+                            "Cancellation requested while processing page {PageNumber}",
+                            pageCount
+                        );
                         break;
+                    }
                     yield return resource;
                 }
 
@@ -227,24 +257,29 @@ namespace PokeGame.Core.Domain.Services.Concrete
 
         private async Task<T> GetAsync<T>(string url, CancellationToken cancellationToken)
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, url);
-            using var response = await _client.SendAsync(
-                request,
-                HttpCompletionOption.ResponseContentRead,
-                cancellationToken
-            );
+            var tType = typeof(T);
 
-            response.EnsureSuccessStatusCode();
-            var result = DeserializeStream<T>(await response.Content.ReadAsStreamAsync());
-            return result ?? throw new InvalidOperationException("Failed to deserialize response");
-        }
+            _logger.LogInformation("Making GET request to {Url} for type {Type}", url, tType.Name);
 
-        private T? DeserializeStream<T>(Stream stream)
-        {
-            return JsonSerializer.Deserialize<T>(
-                stream,
-                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower }
+            var result = await _baseUrl
+                .AppendPathSegment(url)
+                .GetJsonAsync<T>(_client, _jsonSerializerOptions, cancellationToken);
+
+            if (result == null)
+            {
+                _logger.LogError(
+                    "Failed to deserialize response from {Url} to type {Type}",
+                    url,
+                    tType.Name
+                );
+                throw new PokeGameApiServerException("Failed to deserialize response");
+            }
+            _logger.LogDebug(
+                "Successfully deserialized response from {Url} to {@ResponseData}",
+                url,
+                result
             );
+            return result;
         }
 
         private static string AddPaginationParamsToUrl(
@@ -275,7 +310,7 @@ namespace PokeGame.Core.Domain.Services.Concrete
                 BindingFlags.Static | BindingFlags.NonPublic
             );
             return propertyInfo?.GetValue(null)?.ToString()
-                ?? throw new InvalidOperationException(
+                ?? throw new PokeGameApiServerException(
                     $"ApiEndpoint property not found for type {typeof(T).Name}"
                 );
         }

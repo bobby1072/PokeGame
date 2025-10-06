@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace PokeGame.Core.Schemas.PokeApi
 {
     /// <summary>

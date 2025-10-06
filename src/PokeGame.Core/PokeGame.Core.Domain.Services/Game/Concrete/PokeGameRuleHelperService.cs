@@ -16,11 +16,11 @@ internal sealed class PokeGameRuleHelperService
 
     public OwnedPokemon AddXpToOwnedPokemon(OwnedPokemon ownedPokemon)
     {
-        
+        throw new NotImplementedException();
     }
 
     public OwnedPokemon RefillOwnedPokemonHp(OwnedPokemon ownedPokemon)
     {
-        
+        throw new NotImplementedException();
     }
 }

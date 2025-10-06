@@ -1,4 +1,6 @@
-﻿namespace PokeGame.Core.Schemas.PokeApi
+﻿using System.Text.Json.Serialization;
+
+namespace PokeGame.Core.Schemas.PokeApi
 {
     /// <summary>
     /// Machines are the representation of items that teach moves
