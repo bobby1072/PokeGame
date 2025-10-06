@@ -16,6 +16,7 @@ interface SignalRState {
     error?: Error;
     hubConnection?: HubConnection;
     gameSession?: GameSession;
+    isWaitingForGameSession: boolean;
 }
 
 const hubConnectBuilder = new HubConnectionBuilder()
@@ -27,10 +28,13 @@ const hubConnectBuilder = new HubConnectionBuilder()
 export const useConnectToSignalRQuery = () => {
     const applicationSettings = useGetAppSettingsContext();
     const gameSave = useGameSaveContext();
-    const [state, setState] = useState<SignalRState>({});
+    const [state, setState] = useState<SignalRState>({
+        isWaitingForGameSession: false,
+    });
     const query = useQuery<HubConnection, Error>({
         queryKey: [QueryKeys.ConnectToSignalR],
         queryFn: async () => {
+            setState((prev) => ({ ...prev, isWaitingForGameSession: true }));
             const localHub = hubConnectBuilder
                 .withUrl(
                     `${applicationSettings.pokeGameCoreSignalRUrl}/Api/SignalR/PokeGameSession?GameSaveId=${gameSave.currentGameSave?.id}&UserId=${gameSave.currentGameSave?.userId}`
@@ -41,15 +45,18 @@ export const useConnectToSignalRQuery = () => {
             return localHub;
         },
         select: (data) => {
-            setState((prev) => ({ ...prev, hubConnection: data }));
+            setState((prev) => ({
+                ...prev,
+                hubConnection: data,
+            }));
             return data;
         },
+        throwOnError: (qError, _) => {
+            setState((prev) => ({ ...prev, error: qError }));
+
+            return false;
+        },
     });
-    useEffect(() => {
-        if (query.error) {
-            setState((prev) => ({ ...prev, error: query.error }));
-        }
-    }, [query.error]);
     useEffect(() => {
         if (state.hubConnection) {
             state.hubConnection.on(
@@ -59,6 +66,7 @@ export const useConnectToSignalRQuery = () => {
                         ...prev,
                         gameSession:
                             data.isSuccess && data.data ? data.data : undefined,
+                        isWaitingForGameSession: false,
                     }));
                 }
             );
@@ -83,5 +91,6 @@ export const useConnectToSignalRQuery = () => {
             gameSession: state.gameSession,
         },
         error: state.error,
+        isLoading: query.isLoading || state.isWaitingForGameSession,
     };
 };
