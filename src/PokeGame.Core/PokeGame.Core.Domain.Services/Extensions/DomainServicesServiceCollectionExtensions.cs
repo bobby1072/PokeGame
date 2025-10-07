@@ -86,6 +86,8 @@ public static class DomainServicesServiceCollectionExtensions
             pokeApiSettings
         );
 
+        services.AddScoped<IPokeGameRuleHelperService, PokeGameRuleHelperService>();
+
         services
             .ConfigureSingletonOptions<PokeGameRules>(pokeGameRulesSection)
             .AddScoped<CreateNewGameCommand>()
@@ -93,9 +95,8 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<StartGameSessionCommand>()
             .AddScoped<RemoveGameSessionByGameSaveIdCommand>()
             .AddScoped<RemoveGameSessionsByConnectionIdCommand>()
-            .AddScoped<IPokeGameRuleHelperService, PokeGameRuleHelperService>()
-            .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>()
-            .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>();
+            .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>()
+            .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>();
 
         return services;
     }
