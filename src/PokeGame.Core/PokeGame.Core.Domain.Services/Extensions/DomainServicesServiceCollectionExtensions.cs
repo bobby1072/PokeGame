@@ -86,7 +86,7 @@ public static class DomainServicesServiceCollectionExtensions
             pokeApiSettings
         );
 
-        services.AddScoped<IPokeGameRuleHelperService, PokeGameRuleHelperService>();
+        services.AddSingleton<IPokeGameRuleHelperService, PokeGameRuleHelperService>();
 
         services
             .ConfigureSingletonOptions<PokeGameRules>(pokeGameRulesSection)
