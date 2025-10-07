@@ -1,15 +1,20 @@
 ﻿using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
+using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Domain.Services.Game.Concrete;
 
-internal sealed class PokeGameRuleHelperService
+internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 {
     private readonly PokeGameRules _pokeGameRules;
     private readonly ILogger<PokeGameRuleHelperService> _logger;
-    public PokeGameRuleHelperService(PokeGameRules pokeGameRules, ILogger<PokeGameRuleHelperService> logger)
+
+    public PokeGameRuleHelperService(
+        PokeGameRules pokeGameRules,
+        ILogger<PokeGameRuleHelperService> logger
+    )
     {
         _pokeGameRules = pokeGameRules;
         _logger = logger;
@@ -41,11 +46,23 @@ internal sealed class PokeGameRuleHelperService
         return ownedPokemon;
     }
 
-    private  int GetPokemonMaxHp(OwnedPokemon ownedPokemon)
+    private int GetPokemonMaxHp(OwnedPokemon ownedPokemon)
     {
         int evTerm = _pokeGameRules.HpCalculationStats.DefaultEV / 4; // floor division automatically
-        double core = (2 *(ownedPokemon.PokedexPokemon?.Stats.Hp ?? throw new PokeGameApiServerException("Pokedex pokemon not attached owned pokemon"))
-            + _pokeGameRules.HpCalculationStats.DefaultIV + evTerm) * ownedPokemon.PokemonLevel / 100.0;
+        double core =
+            (
+                2
+                    * (
+                        ownedPokemon.PokedexPokemon?.Stats.Hp
+                        ?? throw new PokeGameApiServerException(
+                            "Pokedex pokemon not attached owned pokemon"
+                        )
+                    )
+                + _pokeGameRules.HpCalculationStats.DefaultIV
+                + evTerm
+            )
+            * ownedPokemon.PokemonLevel
+            / 100.0;
         int hp = (int)Math.Floor(core) + ownedPokemon.PokemonLevel + 10;
         return hp;
     }
