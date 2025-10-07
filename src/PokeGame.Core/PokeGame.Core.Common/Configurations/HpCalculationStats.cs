@@ -2,6 +2,6 @@
 
 public sealed record HpCalculationStats
 {
-    public required decimal DefaultIV { get; init; }
-    public required decimal DefaultEV { get; init; }
+    public required int DefaultIV { get; init; }
+    public required int DefaultEV { get; init; }
 }
