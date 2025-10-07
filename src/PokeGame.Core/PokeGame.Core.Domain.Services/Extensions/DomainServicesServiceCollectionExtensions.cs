@@ -2,11 +2,12 @@
 using BT.Common.Api.Helpers.Models;
 using BT.Common.Helpers.Extensions;
 using BT.Common.Http.Extensions;
-using BT.Common.Services.Extensions;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PokeGame.Core.Common;
 using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Domain.Services.Abstract;
@@ -45,7 +46,7 @@ public static class DomainServicesServiceCollectionExtensions
         services
             .AddHttpClient()
             .AddLogging()
-            .AddDistributedCachingService()
+            .AddMemoryCache()
             .AddDomainModelValidators()
             .AddPokeGamePersistence(configuration, healthCheckBuilder, environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
@@ -80,8 +81,8 @@ public static class DomainServicesServiceCollectionExtensions
             (cli, sp) =>
             {
                 var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-                var logger = loggerFactory.CreateLogger<PokeApiClient>();
-                return new PokeApiClient(cli, pokeApiSettings.BaseUrl, logger);
+                var memCache = sp.GetRequiredService<IMemoryCache>();
+                return new PokeApiClient(cli, pokeApiSettings.BaseUrl, memCache, loggerFactory.CreateLogger<PokeApiClient>());
             },
             pokeApiSettings
         );
@@ -89,6 +90,7 @@ public static class DomainServicesServiceCollectionExtensions
         services.AddSingleton<IPokeGameRuleHelperService, PokeGameRuleHelperService>();
 
         services
+            .ConfigureSingletonOptions(pokeApiSettings)
             .ConfigureSingletonOptions<PokeGameRules>(pokeGameRulesSection)
             .AddScoped<CreateNewGameCommand>()
             .AddScoped<GetGameSavesByUserCommand>()

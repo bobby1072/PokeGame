@@ -1,10 +1,10 @@
-﻿using System.Net.Http.Json;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using BT.Common.Http.Extensions;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Game.Abstract;
@@ -16,38 +16,37 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
     {
         private readonly HttpClient _client;
         private readonly string _baseUrl;
+        private readonly IMemoryCache _memoryCache;
         private readonly ILogger<PokeApiClient> _logger;
-        private static JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        };
+        private static readonly JsonSerializerOptions _jsonSerializerOptions =
+            new() { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
 
-        public PokeApiClient(HttpClient httpClient, string baseUrl, ILogger<PokeApiClient> logger)
+        public PokeApiClient(
+            HttpClient httpClient,
+            string baseUrl,
+            IMemoryCache memoryCache,
+            ILogger<PokeApiClient> logger
+        )
         {
             _client = httpClient;
             _baseUrl = baseUrl;
+            _memoryCache = memoryCache;
             _logger = logger;
         }
 
-        public async Task<T> GetResourceAsync<T>(int id)
-            where T : ResourceBase
-        {
-            return await GetResourceAsync<T>(id, CancellationToken.None);
-        }
-
-        public async Task<T> GetResourceAsync<T>(int id, CancellationToken cancellationToken)
+        public async Task<T> GetResourceAsync<T>(
+            int id,
+            CancellationToken cancellationToken = default
+        )
             where T : ResourceBase
         {
             return await GetResourcesWithParamsAsync<T>(id.ToString(), cancellationToken);
         }
 
-        public async Task<T> GetResourceAsync<T>(string name)
-            where T : NamedApiResource
-        {
-            return await GetResourceAsync<T>(name, CancellationToken.None);
-        }
-
-        public async Task<T> GetResourceAsync<T>(string name, CancellationToken cancellationToken)
+        public async Task<T> GetResourceAsync<T>(
+            string name,
+            CancellationToken cancellationToken = default
+        )
             where T : NamedApiResource
         {
             _logger.LogInformation(
@@ -69,15 +68,9 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
             return await GetResourcesWithParamsAsync<T>(sanitizedName, cancellationToken);
         }
 
-        public async Task<List<T>> GetResourceAsync<T>(IEnumerable<UrlNavigation<T>> collection)
-            where T : ResourceBase
-        {
-            return await GetResourceAsync(collection, CancellationToken.None);
-        }
-
         public async Task<List<T>> GetResourceAsync<T>(
             IEnumerable<UrlNavigation<T>> collection,
-            CancellationToken cancellationToken
+            CancellationToken cancellationToken = default
         )
             where T : ResourceBase
         {
@@ -86,15 +79,9 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
             ).ToList();
         }
 
-        public async Task<T> GetResourceAsync<T>(UrlNavigation<T> urlResource)
-            where T : ResourceBase
-        {
-            return await GetResourceByUrlAsync<T>(urlResource.Url, CancellationToken.None);
-        }
-
         public async Task<T> GetResourceAsync<T>(
             UrlNavigation<T> urlResource,
-            CancellationToken cancellationToken
+            CancellationToken cancellationToken = default
         )
             where T : ResourceBase
         {
@@ -255,15 +242,33 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
             return await GetResourcesWithParamsAsync<T>(resourceId, cancellationToken);
         }
 
-        private async Task<T> GetAsync<T>(string url, CancellationToken cancellationToken)
+        private async Task<T> GetAsync<T>(string url, CancellationToken cancellationToken = default)
         {
             var tType = typeof(T);
+            var fullPath = _baseUrl.AppendPathSegment(url);
+            var resourceCacheKey = GetResourceCacheKey(url, tType.Name);
+            if (
+                _memoryCache.TryGetValue<T>(resourceCacheKey, out var foundCacheVal)
+                && foundCacheVal is not null
+            )
+            {
+                _logger.LogInformation(
+                    "Found request resource in memory cache: {ResourceURL}, skipping poke api http request...",
+                    fullPath.RequestUri.ToString()
+                );
+
+                _memoryCache.Set(resourceCacheKey, foundCacheVal, GetCacheItemTTL());
+
+                return foundCacheVal;
+            }
 
             _logger.LogInformation("Making GET request to {Url} for type {Type}", url, tType.Name);
 
-            var result = await _baseUrl
-                .AppendPathSegment(url)
-                .GetJsonAsync<T>(_client, _jsonSerializerOptions, cancellationToken);
+            var result = await fullPath.GetJsonAsync<T>(
+                _client,
+                _jsonSerializerOptions,
+                cancellationToken
+            );
 
             if (result == null)
             {
@@ -274,11 +279,15 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
                 );
                 throw new PokeGameApiServerException("Failed to deserialize response");
             }
+
             _logger.LogDebug(
                 "Successfully deserialized response from {Url} to {@ResponseData}",
                 url,
                 result
             );
+
+            _memoryCache.Set(resourceCacheKey, result, GetCacheItemTTL());
+
             return result;
         }
 
@@ -386,5 +395,11 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
             sb.Append(anchorText);
             return sb.ToString();
         }
+
+        private static string GetResourceCacheKey(string resourceUrl, string typeName) =>
+            $"{resourceUrl} --> {typeName}";
+
+        private static DateTimeOffset GetCacheItemTTL() =>
+            new(DateTime.UtcNow, TimeSpan.FromHours(12));
     }
 }

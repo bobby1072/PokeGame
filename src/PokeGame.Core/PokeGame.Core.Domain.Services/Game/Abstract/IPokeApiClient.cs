@@ -12,28 +12,10 @@ namespace PokeGame.Core.Domain.Services.Game.Abstract
         /// </summary>
         /// <typeparam name="T">The type of resource</typeparam>
         /// <param name="id">Id of resource</param>
-        /// <returns>The object of the resource</returns>
-        Task<T> GetResourceAsync<T>(int id)
-            where T : ResourceBase;
-
-        /// <summary>
-        /// Gets a resource by id
-        /// </summary>
-        /// <typeparam name="T">The type of resource</typeparam>
-        /// <param name="id">Id of resource</param>
         /// <param name="cancellationToken">Cancellation token for the request</param>
         /// <returns>The object of the resource</returns>
-        Task<T> GetResourceAsync<T>(int id, CancellationToken cancellationToken)
+        Task<T> GetResourceAsync<T>(int id, CancellationToken cancellationToken = default)
             where T : ResourceBase;
-
-        /// <summary>
-        /// Gets a resource by name. This lookup is case insensitive.
-        /// </summary>
-        /// <typeparam name="T">The type of resource</typeparam>
-        /// <param name="name">Name of resource</param>
-        /// <returns>The object of the resource</returns>
-        Task<T> GetResourceAsync<T>(string name)
-            where T : NamedApiResource;
 
         /// <summary>
         /// Gets a resource by name. This lookup is case insensitive.
@@ -42,17 +24,8 @@ namespace PokeGame.Core.Domain.Services.Game.Abstract
         /// <param name="name">Name of resource</param>
         /// <param name="cancellationToken">Cancellation token for the request</param>
         /// <returns>The object of the resource</returns>
-        Task<T> GetResourceAsync<T>(string name, CancellationToken cancellationToken)
+        Task<T> GetResourceAsync<T>(string name, CancellationToken cancellationToken = default)
             where T : NamedApiResource;
-
-        /// <summary>
-        /// Resolves all navigation properties in a collection
-        /// </summary>
-        /// <typeparam name="T">Navigation type</typeparam>
-        /// <param name="collection">The collection of navigation objects</param>
-        /// <returns>A list of resolved objects</returns>
-        Task<List<T>> GetResourceAsync<T>(IEnumerable<UrlNavigation<T>> collection)
-            where T : ResourceBase;
 
         /// <summary>
         /// Resolves all navigation properties in a collection
@@ -63,17 +36,8 @@ namespace PokeGame.Core.Domain.Services.Game.Abstract
         /// <returns>A list of resolved objects</returns>
         Task<List<T>> GetResourceAsync<T>(
             IEnumerable<UrlNavigation<T>> collection,
-            CancellationToken cancellationToken
+            CancellationToken cancellationToken = default
         )
-            where T : ResourceBase;
-
-        /// <summary>
-        /// Resolves a single navigation property
-        /// </summary>
-        /// <typeparam name="T">Navigation type</typeparam>
-        /// <param name="urlResource">The single navigation object to resolve</param>
-        /// <returns>A resolved object</returns>
-        Task<T> GetResourceAsync<T>(UrlNavigation<T> urlResource)
             where T : ResourceBase;
 
         /// <summary>
@@ -85,7 +49,7 @@ namespace PokeGame.Core.Domain.Services.Game.Abstract
         /// <returns>A resolved object</returns>
         Task<T> GetResourceAsync<T>(
             UrlNavigation<T> urlResource,
-            CancellationToken cancellationToken
+            CancellationToken cancellationToken = default
         )
             where T : ResourceBase;
 
