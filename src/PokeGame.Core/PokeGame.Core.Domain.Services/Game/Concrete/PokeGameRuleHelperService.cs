@@ -22,6 +22,11 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
     public OwnedPokemon AddXpToOwnedPokemon(OwnedPokemon ownedPokemon, int xpToAdd)
     {
+        _logger.LogInformation(
+            "Attemtpting to add xp to owned pokemon with id: {OwnedPokemonId}",
+            ownedPokemon.Id
+        );
+
         _logger.LogDebug("Owned pokemon before xp added: {@OwnedPokemon}", ownedPokemon);
 
         var maxXpForLevel = _pokeGameRules.BaseXpCeiling;
@@ -51,7 +56,8 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
             ownedPokemon.CurrentHp = GetPokemonMaxHp(ownedPokemon);
             maxXpForLevel = (int)(maxXpForLevel * multiplyerToUse);
 
-            _logger.LogDebug("Owned pokemon with id: {OwnedPokemonId} has leveled up from: {OriginalLevel} --> {NewLevel}",
+            _logger.LogDebug(
+                "Owned pokemon with id: {OwnedPokemonId} has leveled up from: {OriginalLevel} --> {NewLevel}",
                 ownedPokemon.Id,
                 originaLLevel,
                 ownedPokemon.PokemonLevel
@@ -65,13 +71,19 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
     public OwnedPokemon RefillOwnedPokemonHp(OwnedPokemon ownedPokemon)
     {
+        _logger.LogInformation(
+            "Attempting to refill HP on owned pokemon with id: {OwnedPokemonId}",
+            ownedPokemon.Id
+        );
+
         var originalHp = ownedPokemon.CurrentHp;
 
         ownedPokemon.CurrentHp = GetPokemonMaxHp(ownedPokemon);
 
-        _logger.LogDebug("Owned pokemon with id: {OwnedPokemonId} went from hp: {Originalhp} --> {NewHp}",
+        _logger.LogDebug(
+            "Owned pokemon with id: {OwnedPokemonId} went from hp: {Originalhp} --> {NewHp}",
             ownedPokemon.Id,
-            originalHp, 
+            originalHp,
             ownedPokemon.CurrentHp
         );
 

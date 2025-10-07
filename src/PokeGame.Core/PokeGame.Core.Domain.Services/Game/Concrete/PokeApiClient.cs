@@ -7,10 +7,10 @@ using System.Text.Json;
 using BT.Common.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
-using PokeGame.Core.Domain.Services.Abstract;
+using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Schemas.PokeApi;
 
-namespace PokeGame.Core.Domain.Services.Concrete
+namespace PokeGame.Core.Domain.Services.Game.Concrete
 {
     internal sealed class PokeApiClient : IPokeApiClient
     {

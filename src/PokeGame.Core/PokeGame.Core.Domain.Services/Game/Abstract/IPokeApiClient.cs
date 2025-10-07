@@ -1,6 +1,6 @@
 using PokeGame.Core.Schemas.PokeApi;
 
-namespace PokeGame.Core.Domain.Services.Abstract
+namespace PokeGame.Core.Domain.Services.Game.Abstract
 {
     /// <summary>
     /// Interface for getting data from the PokeAPI service

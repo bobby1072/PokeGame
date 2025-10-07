@@ -60,7 +60,10 @@ public static class DomainServicesServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddGameServices(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddGameServices(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         var pokeGameRulesSection = configuration.GetSection(PokeGameRules.Key);
 
@@ -68,24 +71,21 @@ public static class DomainServicesServiceCollectionExtensions
         {
             throw new ArgumentNullException(PokeGameRules.Key);
         }
-        
-        var pokeApiSettings = configuration
-            .GetSection(PokeApiSettings.Key)
-            .Get<PokeApiSettings>() ?? throw new InvalidOperationException($"Failed to get {nameof(PokeApiSettings)}");
-        
-        services.AddHttpClientWithResilience<IPokeApiClient, PokeApiClient>((cli, sp) =>
+
+        var pokeApiSettings =
+            configuration.GetSection(PokeApiSettings.Key).Get<PokeApiSettings>()
+            ?? throw new InvalidOperationException($"Failed to get {nameof(PokeApiSettings)}");
+
+        services.AddHttpClientWithResilience<IPokeApiClient, PokeApiClient>(
+            (cli, sp) =>
             {
                 var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
                 var logger = loggerFactory.CreateLogger<PokeApiClient>();
-                return new PokeApiClient(
-                    cli,
-                    pokeApiSettings.BaseUrl,
-                    logger
-                );
+                return new PokeApiClient(cli, pokeApiSettings.BaseUrl, logger);
             },
             pokeApiSettings
         );
-        
+
         services
             .ConfigureSingletonOptions<PokeGameRules>(pokeGameRulesSection)
             .AddScoped<CreateNewGameCommand>()
@@ -93,6 +93,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<StartGameSessionCommand>()
             .AddScoped<RemoveGameSessionByGameSaveIdCommand>()
             .AddScoped<RemoveGameSessionsByConnectionIdCommand>()
+            .AddScoped<IPokeGameRuleHelperService, PokeGameRuleHelperService>()
             .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>()
             .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>();
 
@@ -121,7 +122,6 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<GetDbPokedexPokemonCommand>()
             .AddSingleton<IPokedexDataMigratorHealthCheck, PokedexDataMigratorHealthCheck>()
             .AddHostedService<PokedexDataMigratorHostedService>();
-
 
         healthCheckBuilder.AddCheck<IPokedexDataMigratorHealthCheck>(
             nameof(PokedexDataMigratorHealthCheck)
