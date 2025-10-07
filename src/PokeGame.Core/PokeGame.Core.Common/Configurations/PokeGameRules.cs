@@ -7,6 +7,6 @@ public sealed record PokeGameRules
     public required decimal LegendaryXpMultiplier { get; init; }
     public required int BaseXpCeiling { get; init; }
     public required HpCalculationStats HpCalculationStats { get; init; }
-    public required StandardPokemonPokedexRange StandardPokemonPokedexRange { get; init; }
-    public required LegendaryPokemonPokedexRange LegendaryPokemonPokedexRange { get; init; }
+    public required PokedexRange StandardPokemonPokedexRange { get; init; }
+    public required PokedexRange PokedexRange { get; init; }
 }

@@ -20,6 +20,12 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         _logger = logger;
     }
 
+    // public int GetRandomPokemonNumberFromStandardPokedexRange()
+    // {
+    //     var random = new Random();
+    //     
+    //     var pokeStage = random.Next(_pokeGameRules.StandardPokemonPokedexRange.Min, _pokeGameRules.StandardPokemonPokedexRange.Max);
+    // }
     public OwnedPokemon AddXpToOwnedPokemon(OwnedPokemon ownedPokemon, int xpToAdd)
     {
         _logger.LogInformation(
