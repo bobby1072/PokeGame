@@ -22,40 +22,72 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
     public OwnedPokemon AddXpToOwnedPokemon(OwnedPokemon ownedPokemon, int xpToAdd)
     {
-        var maxXpforLevel = _pokeGameRules.BaseXpCeiling;
+        _logger.LogDebug("Owned pokemon before xp added: {@OwnedPokemon}", ownedPokemon);
+
+        var maxXpForLevel = _pokeGameRules.BaseXpCeiling;
+
+        var multiplyerToUse =
+            (
+                ownedPokemon.PokemonSpecies?.IsLegendary
+                ?? throw new PokeGameApiServerException(
+                    "Pokemon species not attached to owned pokemon"
+                )
+            )
+                ? _pokeGameRules.LegendaryXpMultiplier
+                : _pokeGameRules.XpMultiplier;
         for (int i = 1; i <= ownedPokemon.PokemonLevel; i++)
         {
-            maxXpforLevel = (int)(maxXpforLevel * _pokeGameRules.XpMultiplier);
+            maxXpForLevel = (int)(maxXpForLevel * multiplyerToUse);
         }
 
-        ownedPokemon.CurrentExperience = ownedPokemon.CurrentExperience + xpToAdd;
+        ownedPokemon.CurrentExperience += xpToAdd;
 
-        if (ownedPokemon.CurrentExperience >= maxXpforLevel)
+        var originaLLevel = ownedPokemon.PokemonLevel;
+
+        while (ownedPokemon.CurrentExperience >= maxXpForLevel && ownedPokemon.PokemonLevel < 100)
         {
+            ownedPokemon.CurrentExperience -= maxXpForLevel;
             ownedPokemon.PokemonLevel++;
-            ownedPokemon.CurrentExperience = ownedPokemon.CurrentExperience - maxXpforLevel;
             ownedPokemon.CurrentHp = GetPokemonMaxHp(ownedPokemon);
+            maxXpForLevel = (int)(maxXpForLevel * multiplyerToUse);
+
+            _logger.LogDebug("Owned pokemon with id: {OwnedPokemonId} has leveled up from: {OriginalLevel} --> {NewLevel}",
+                ownedPokemon.Id,
+                originaLLevel,
+                ownedPokemon.PokemonLevel
+            );
         }
+
+        _logger.LogDebug("Owned pokemon after xp added: {@OwnedPokemon}", ownedPokemon);
 
         return ownedPokemon;
     }
 
     public OwnedPokemon RefillOwnedPokemonHp(OwnedPokemon ownedPokemon)
     {
+        var originalHp = ownedPokemon.CurrentHp;
+
         ownedPokemon.CurrentHp = GetPokemonMaxHp(ownedPokemon);
+
+        _logger.LogDebug("Owned pokemon with id: {OwnedPokemonId} went from hp: {Originalhp} --> {NewHp}",
+            ownedPokemon.Id,
+            originalHp, 
+            ownedPokemon.CurrentHp
+        );
+
         return ownedPokemon;
     }
 
     private int GetPokemonMaxHp(OwnedPokemon ownedPokemon)
     {
-        int evTerm = _pokeGameRules.HpCalculationStats.DefaultEV / 4; // floor division automatically
+        int evTerm = _pokeGameRules.HpCalculationStats.DefaultEV / 4;
         double core =
             (
                 2
                     * (
                         ownedPokemon.PokedexPokemon?.Stats.Hp
                         ?? throw new PokeGameApiServerException(
-                            "Pokedex pokemon not attached owned pokemon"
+                            "Pokedex pokemon not attached to owned pokemon"
                         )
                     )
                 + _pokeGameRules.HpCalculationStats.DefaultIV
