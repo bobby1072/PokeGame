@@ -44,8 +44,8 @@ internal sealed class PokeGameRuleHelperService
     private  int GetPokemonMaxHp(OwnedPokemon ownedPokemon)
     {
         int evTerm = _pokeGameRules.HpCalculationStats.DefaultEV / 4; // floor division automatically
-        double core = ((2 *(ownedPokemon.PokedexPokemon?.Stats.Hp ?? throw new PokeGameApiServerException("Pokedex pokemon not attached owned pokemon"))
-            + _pokeGameRules.HpCalculationStats.DefaultIV + evTerm) * ownedPokemon.PokemonLevel) / 100.0;
+        double core = (2 *(ownedPokemon.PokedexPokemon?.Stats.Hp ?? throw new PokeGameApiServerException("Pokedex pokemon not attached owned pokemon"))
+            + _pokeGameRules.HpCalculationStats.DefaultIV + evTerm) * ownedPokemon.PokemonLevel / 100.0;
         int hp = (int)Math.Floor(core) + ownedPokemon.PokemonLevel + 10;
         return hp;
     }
