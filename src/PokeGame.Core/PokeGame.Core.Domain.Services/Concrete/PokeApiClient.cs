@@ -12,7 +12,7 @@ using PokeGame.Core.Schemas.PokeApi;
 
 namespace PokeGame.Core.Domain.Services.Concrete
 {
-    public sealed class PokeApiClient : IPokeApiClient
+    internal sealed class PokeApiClient : IPokeApiClient
     {
         private readonly HttpClient _client;
         private readonly string _baseUrl;
