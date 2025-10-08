@@ -11,15 +11,40 @@ internal sealed class CorrelationIdFilter: IHubFilter
     {
         _logger = logger;
     }
-    
     public async ValueTask<object?> InvokeMethodAsync(HubInvocationContext context,
         Func<HubInvocationContext, ValueTask<object?>> next)
     {
-        var httpContext = context.Context.GetHttpContext();
-        
+        var addedCorrelationId = AddCorrelationIdToHttpContext(context.Context.GetHttpContext());
+
+        using (_logger.BeginScope(new { CorrelationId = addedCorrelationId }))
+        {
+            return await next.Invoke(context);
+        }
+    }
+    public Task OnConnectedAsync(HubLifetimeContext context, Func<HubLifetimeContext, Task> next)
+    {
+        var addedCorrelationId = AddCorrelationIdToHttpContext(context.Context.GetHttpContext());
+
+        using (_logger.BeginScope(new { CorrelationId = addedCorrelationId }))
+        {
+            return next.Invoke(context);
+        }
+    }
+    public Task OnDisconnectedAsync(HubLifetimeContext context, Exception? exception,
+        Func<HubLifetimeContext, Exception?, Task> next)
+    {
+        var addedCorrelationId = AddCorrelationIdToHttpContext(context.Context.GetHttpContext());
+
+        using (_logger.BeginScope(new { CorrelationId = addedCorrelationId }))
+        {
+            return next.Invoke(context, exception);
+        }
+    }
+    private string AddCorrelationIdToHttpContext(HttpContext? context)
+    {
         var correlationId = Guid.NewGuid().ToString();
 
-        if (httpContext?.Response.Headers.TryAdd(ApiConstants.CorrelationIdHeader, correlationId) != true)
+        if (context?.Response.Headers.TryAdd(ApiConstants.CorrelationIdHeader, correlationId) != true)
         {
             _logger.LogWarning("Signal R filter failed to add correlationId to response headers...");
         }
@@ -28,9 +53,6 @@ internal sealed class CorrelationIdFilter: IHubFilter
             _logger.LogInformation("Signal R filter successfully added correlationId: {CorrelationId} to response headers...", correlationId);
         }
 
-        using (_logger.BeginScope(new { CorrelationId = correlationId }))
-        {
-            return await next.Invoke(context);
-        }
+        return correlationId;
     }
 }
