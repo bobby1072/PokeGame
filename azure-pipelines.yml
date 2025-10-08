@@ -5,6 +5,8 @@ variables:
     value: bobby1072/poke_game_api
   - name: ReactServerDockerRepository
     value: bobby1072/poke_game_react_server
+  - name: SignalRApiDockerRepository
+    value: bobby1072/poke_game_signal_r_api    
   - name: ReleaseVersion
     value: $(Build.BuildNumber)     
   - name: ServiceInfo__ReleaseVersion
@@ -107,7 +109,7 @@ stages:
               folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core"
               jsonTargetFiles: |
                 PokeGame.Core.Api/appsettings.json
-                PokeGame.Core.Api/appsettings.json
+                PokeGame.Core.SignalR/appsettings.json
                 PokeGame.Core.React.Server/appsettings.json
 
           - task: Docker@2
@@ -145,15 +147,6 @@ stages:
               path: $(Build.SourcesDirectory)/src/phaser-client/dist
 
           - task: Docker@2
-            displayName: Login to Docker Hub
-            inputs:
-              command: login
-              containerRegistry: DockerHub
-              username: $(dockerHubUsername)
-              password: $(dockerHubPassword)
-
-
-          - task: Docker@2
             displayName: Build React Server Image
             inputs:
               command: build
@@ -173,3 +166,24 @@ stages:
               tags: |
                 latest
                 $(Build.BuildNumber)
+
+          - task: Docker@2
+            displayName: Build Signal R Api Image
+            inputs:
+              command: build
+              repository: $(SignalRApiDockerRepository)
+              tags: |
+                latest
+                $(Build.BuildNumber)
+              Dockerfile: "$(Build.SourcesDirectory)/src/PokeGame.Core/dockerfile.signalr"
+              buildContext: "$(Build.SourcesDirectory)"
+
+          - task: Docker@2
+            displayName: Push Signal R Api Image
+            inputs:
+              command: push
+              repository: $(SignalRApiDockerRepository)
+              tags: |
+                latest
+                $(Build.BuildNumber)
+
