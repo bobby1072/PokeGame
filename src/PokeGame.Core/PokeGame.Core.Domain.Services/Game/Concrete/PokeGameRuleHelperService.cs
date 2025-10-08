@@ -18,7 +18,7 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
     private int[]? _fullLegendaryPokedexIndexArrayInstance;
     private int[] _fullLegendaryPokedexIndexArray
     {
-        get => _fullStandardPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(_pokeGameRules.LegendaryPokemonPokedexRange);
+        get => _fullLegendaryPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(_pokeGameRules.LegendaryPokemonPokedexRange);
     }
 
     public PokeGameRuleHelperService(
@@ -38,7 +38,7 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
     }
     public int GetRandomPokemonNumberFromLegendaryPokedexRange()
     {
-        var randomArrayIndex = Random.Shared.Next(0, _fullStandardPokedexIndexArray.Length);
+        var randomArrayIndex = Random.Shared.Next(0, _fullLegendaryPokedexIndexArray.Length);
 
         return _fullStandardPokedexIndexArray[randomArrayIndex];
     }
