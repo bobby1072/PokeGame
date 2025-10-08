@@ -13,7 +13,7 @@ ARG CONF=Release
 
 WORKDIR /src
 
-COPY src/PokeGame.Core/PokeGame.Core.Api/*.csproj ./PokeGame.Core/PokeGame.Core.Api/
+COPY src/PokeGame.Core/PokeGame.Core.SignalR/*.csproj ./PokeGame.Core/PokeGame.Core.SignalR/
 COPY src/PokeGame.Core/PokeGame.Core.Common/*.csproj ./PokeGame.Core/PokeGame.Core.Common/
 COPY src/PokeGame.Core/PokeGame.Core.Domain.Services/*.csproj ./PokeGame.Core/PokeGame.Core.Domain.Services/
 COPY src/PokeGame.Core/PokeGame.Core.Persistence/*.csproj ./PokeGame.Core/PokeGame.Core.Persistence/
@@ -27,9 +27,9 @@ COPY src/Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/*.csproj ./Submodules
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Persistence.Shared/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Persistence.Shared/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Http/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Http/
 
-RUN dotnet restore PokeGame.Core/PokeGame.Core.Api/PokeGame.Core.Api.csproj 
+RUN dotnet restore PokeGame.Core/PokeGame.Core.SignalR/PokeGame.Core.SignalR.csproj 
 
-COPY src/PokeGame.Core/PokeGame.Core.Api/ ./PokeGame.Core/PokeGame.Core.Api/
+COPY src/PokeGame.Core/PokeGame.Core.SignalR/ ./PokeGame.Core/PokeGame.Core.SignalR/
 COPY src/PokeGame.Core/PokeGame.Core.Common/ ./PokeGame.Core/PokeGame.Core.Common/
 COPY src/PokeGame.Core/PokeGame.Core.Domain.Services/ ./PokeGame.Core/PokeGame.Core.Domain.Services/
 COPY src/PokeGame.Core/PokeGame.Core.Persistence/ ./PokeGame.Core/PokeGame.Core.Persistence/
@@ -44,13 +44,13 @@ COPY src/Submodules/BT/src/BT.Common/BT.Common.Persistence.Shared/ ./Submodules/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Http/ ./Submodules/BT/src/BT.Common/BT.Common.Http/
 
 
-WORKDIR /src/PokeGame.Core/PokeGame.Core.Api 
+WORKDIR /src/PokeGame.Core/PokeGame.Core.SignalR 
 ARG CONF=Release
-RUN dotnet publish PokeGame.Core.Api.csproj -c ${CONF} -o /app
+RUN dotnet publish PokeGame.Core.SignalR.csproj -c ${CONF} -o /app
 
 FROM base AS final
 ARG CONF=Release
 WORKDIR /app
 COPY --from=publish /app .
 
-ENTRYPOINT ["dotnet", "PokeGame.Core.Api.dll"]
+ENTRYPOINT ["dotnet", "PokeGame.Core.SignalR.dll"]

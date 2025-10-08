@@ -13,12 +13,18 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
     private int[]? _fullStandardPokedexIndexArrayInstance;
     private int[] _fullStandardPokedexIndexArray
     {
-        get => _fullStandardPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(_pokeGameRules.StandardPokemonPokedexRange);
+        get =>
+            _fullStandardPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(
+                _pokeGameRules.StandardPokemonPokedexRange
+            );
     }
     private int[]? _fullLegendaryPokedexIndexArrayInstance;
     private int[] _fullLegendaryPokedexIndexArray
     {
-        get => _fullLegendaryPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(_pokeGameRules.LegendaryPokemonPokedexRange);
+        get =>
+            _fullLegendaryPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(
+                _pokeGameRules.LegendaryPokemonPokedexRange
+            );
     }
 
     public PokeGameRuleHelperService(
@@ -36,12 +42,14 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
         return _fullStandardPokedexIndexArray[randomArrayIndex];
     }
+
     public int GetRandomPokemonNumberFromLegendaryPokedexRange()
     {
         var randomArrayIndex = Random.Shared.Next(0, _fullLegendaryPokedexIndexArray.Length);
 
         return _fullStandardPokedexIndexArray[randomArrayIndex];
     }
+
     public OwnedPokemon AddXpToOwnedPokemon(OwnedPokemon ownedPokemon, int xpToAdd)
     {
         _logger.LogInformation(
@@ -51,38 +59,34 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
         _logger.LogDebug("Owned pokemon before xp added: {@OwnedPokemon}", ownedPokemon);
 
-        var maxXpForLevel = _pokeGameRules.BaseXpCeiling;
+        if (ownedPokemon.PokemonSpecies == null)
+            throw new PokeGameApiServerException("Pokemon species not attached to owned pokemon");
 
-        var multiplyerToUse =
-            (
-                ownedPokemon.PokemonSpecies?.IsLegendary
-                ?? throw new PokeGameApiServerException(
-                    "Pokemon species not attached to owned pokemon"
-                )
-            )
-                ? _pokeGameRules.LegendaryXpMultiplier
-                : _pokeGameRules.XpMultiplier;
-        for (int i = 1; i <= ownedPokemon.PokemonLevel; i++)
+        var originalLevel = ownedPokemon.PokemonLevel;
+        var (newLevel, newExperience, newHp) = CalculateXpAndLevelUp(
+            ownedPokemon.PokemonLevel,
+            ownedPokemon.CurrentExperience,
+            xpToAdd,
+            ownedPokemon.PokemonSpecies.IsLegendary,
+            level =>
+            {
+                var tempPokemon = ownedPokemon;
+                tempPokemon.PokemonLevel = level;
+                return GetPokemonMaxHp(tempPokemon);
+            }
+        );
+
+        ownedPokemon.PokemonLevel = newLevel;
+        ownedPokemon.CurrentExperience = newExperience;
+        ownedPokemon.CurrentHp = newHp;
+
+        if (newLevel > originalLevel)
         {
-            maxXpForLevel = (int)(maxXpForLevel * multiplyerToUse);
-        }
-
-        ownedPokemon.CurrentExperience += xpToAdd;
-
-        var originaLLevel = ownedPokemon.PokemonLevel;
-
-        while (ownedPokemon.CurrentExperience >= maxXpForLevel && ownedPokemon.PokemonLevel < 100)
-        {
-            ownedPokemon.CurrentExperience -= maxXpForLevel;
-            ownedPokemon.PokemonLevel++;
-            ownedPokemon.CurrentHp = GetPokemonMaxHp(ownedPokemon);
-            maxXpForLevel = (int)(maxXpForLevel * multiplyerToUse);
-
             _logger.LogDebug(
                 "Owned pokemon with id: {OwnedPokemonId} has leveled up from: {OriginalLevel} --> {NewLevel}",
                 ownedPokemon.Id,
-                originaLLevel,
-                ownedPokemon.PokemonLevel
+                originalLevel,
+                newLevel
             );
         }
 
@@ -112,6 +116,39 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         return ownedPokemon;
     }
 
+    private (int newLevel, int newCurrentExperience, int newCurrentHp) CalculateXpAndLevelUp(
+        int currentLevel,
+        int currentExperience,
+        int xpToAdd,
+        bool isLegendary,
+        Func<int, int> getMaxHpForLevel
+    )
+    {
+        var maxXpForLevel = _pokeGameRules.BaseXpCeiling;
+        var multiplierToUse = isLegendary
+            ? _pokeGameRules.LegendaryXpMultiplier
+            : _pokeGameRules.XpMultiplier;
+
+        for (int i = 1; i <= currentLevel; i++)
+        {
+            maxXpForLevel = (int)(maxXpForLevel * multiplierToUse);
+        }
+
+        var newExperience = currentExperience + xpToAdd;
+        var newLevel = currentLevel;
+        var newHp = getMaxHpForLevel(currentLevel);
+
+        while (newExperience >= maxXpForLevel && newLevel < 100)
+        {
+            newExperience -= maxXpForLevel;
+            newLevel++;
+            newHp = getMaxHpForLevel(newLevel);
+            maxXpForLevel = (int)(maxXpForLevel * multiplierToUse);
+        }
+
+        return (newLevel, newExperience, newHp);
+    }
+
     private int GetPokemonMaxHp(OwnedPokemon ownedPokemon)
     {
         int evTerm = _pokeGameRules.HpCalculationStats.DefaultEV / 4;
@@ -136,17 +173,11 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
     private static int[] GetFullPokedexIndexArray(PokedexRange pokedexRange)
     {
         var fullPokeDexIndexArray = new List<int>();
-        for (
-            int i = pokedexRange.Min;
-            i <= pokedexRange.Max;
-            i++
-        )
+        for (int i = pokedexRange.Min; i <= pokedexRange.Max; i++)
         {
             fullPokeDexIndexArray.Add(i);
         }
 
-        return fullPokeDexIndexArray
-            .Union(pokedexRange.Extras)
-            .ToArray();
+        return fullPokeDexIndexArray.Union(pokedexRange.Extras).ToArray();
     }
 }
