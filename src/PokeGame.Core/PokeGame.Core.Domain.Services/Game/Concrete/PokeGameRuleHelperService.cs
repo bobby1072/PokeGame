@@ -10,6 +10,11 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 {
     private readonly PokeGameRules _pokeGameRules;
     private readonly ILogger<PokeGameRuleHelperService> _logger;
+    private int[]? _fullPokedexIndexArrayInstance;
+    private int[] _fullPokedexIndexArray
+    {
+        get => _fullPokedexIndexArrayInstance ??= GetFullPokedexIndexArray();
+    }
 
     public PokeGameRuleHelperService(
         PokeGameRules pokeGameRules,
@@ -20,12 +25,13 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         _logger = logger;
     }
 
-    // public int GetRandomPokemonNumberFromStandardPokedexRange()
-    // {
-    //     var random = new Random();
-    //     
-    //     var pokeStage = random.Next(_pokeGameRules.StandardPokemonPokedexRange.Min, _pokeGameRules.StandardPokemonPokedexRange.Max);
-    // }
+    public int GetRandomPokemonNumberFromStandardPokedexRange()
+    {
+        var randomArrayIndex = Random.Shared.Next(0, _fullPokedexIndexArray.Length);
+
+        return _fullPokedexIndexArray[randomArrayIndex];
+    }
+
     public OwnedPokemon AddXpToOwnedPokemon(OwnedPokemon ownedPokemon, int xpToAdd)
     {
         _logger.LogInformation(
@@ -115,5 +121,22 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
             / 100.0;
         int hp = (int)Math.Floor(core) + ownedPokemon.PokemonLevel + 10;
         return hp;
+    }
+
+    private int[] GetFullPokedexIndexArray()
+    {
+        var fullPokeDexIndexArray = new List<int>();
+        for (
+            int i = _pokeGameRules.StandardPokemonPokedexRange.Min;
+            i <= _pokeGameRules.StandardPokemonPokedexRange.Max;
+            i++
+        )
+        {
+            fullPokeDexIndexArray.Add(i);
+        }
+
+        return fullPokeDexIndexArray
+            .Union(_pokeGameRules.StandardPokemonPokedexRange.Extras)
+            .ToArray();
     }
 }

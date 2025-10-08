@@ -82,7 +82,12 @@ public static class DomainServicesServiceCollectionExtensions
             {
                 var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
                 var memCache = sp.GetRequiredService<IMemoryCache>();
-                return new PokeApiClient(cli, pokeApiSettings.BaseUrl, memCache, loggerFactory.CreateLogger<PokeApiClient>());
+                return new PokeApiClient(
+                    cli,
+                    pokeApiSettings.BaseUrl,
+                    memCache,
+                    loggerFactory.CreateLogger<PokeApiClient>()
+                );
             },
             pokeApiSettings
         );
