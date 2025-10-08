@@ -10,13 +10,12 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.9" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.9" />
-      <PackageReference Include="PokeApiNet" Version="4.1.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Api.Helpers\BT.Common.Api.Helpers.csproj" />
       <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Helpers\BT.Common.Helpers.csproj" />
-      <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Services\BT.Common.Services.csproj" />
+      <ProjectReference Include="..\..\Submodules\BT\src\BT.Common\BT.Common.Http\BT.Common.Http.csproj" />
       <ProjectReference Include="..\PokeGame.Core.Common\PokeGame.Core.Common.csproj" />
       <ProjectReference Include="..\PokeGame.Core.Persistence\PokeGame.Core.Persistence.csproj" />
     </ItemGroup>

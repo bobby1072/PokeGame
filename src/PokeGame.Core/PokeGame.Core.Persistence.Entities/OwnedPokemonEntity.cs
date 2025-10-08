@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Persistence.Entities;
@@ -34,7 +33,7 @@ public sealed class OwnedPokemonEntity : BasePokeGameEntity<Guid?, OwnedPokemon>
             MoveOneResourceName = MoveOneResourceName,
             MoveTwoResourceName = MoveTwoResourceName,
             MoveThreeResourceName = MoveThreeResourceName,
-            MoveFourResourceName = MoveFourResourceName
+            MoveFourResourceName = MoveFourResourceName,
         };
     }
 }

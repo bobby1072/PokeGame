@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PokeGame.Core.Common;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
 using PokeGame.Core.Domain.Services.Extensions;
@@ -47,6 +48,22 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
             ["DbMigrationSettings:StartVersion"] = "1",
             ["DbMigrationSettings:TotalAttempts"] = "2",
             ["DbMigrationSettings:DelayBetweenAttemptsInSeconds"] = "1",
+            ["PokeGameRules:XpMultiplier"] = "1.052",
+            ["PokeGameRules:BaseXpCeiling"] = "100",
+            ["PokeGameRules:LegendaryXpMultiplier"] = "1.055",
+            ["PokeGameRules:HpCalculationStats:DefaultIV"] = "31",
+            ["PokeGameRules:HpCalculationStats:DefaultEV"] = "0",
+            ["PokeGameRules:StandardPokemonPokedexRange:Min"] = "1",
+            ["PokeGameRules:StandardPokemonPokedexRange:Max"] = "143",
+            ["PokeGameRules:StandardPokemonPokedexRange:Extras:0"] = "147",
+            ["PokeGameRules:StandardPokemonPokedexRange:Extras:1"] = "148",
+            ["PokeGameRules:StandardPokemonPokedexRange:Extras:2"] = "149",
+            ["PokeGameRules:LegendaryPokemonPokedexRange:Min"] = "144",
+            ["PokeGameRules:LegendaryPokemonPokedexRange:Max"] = "151",
+            ["PokeApiSettings:BaseUrl"] = "https://pokeapi.co/api/v2/",
+            ["PokeApiSettings:TotalAttempts"] = "2",
+            ["PokeApiSettings:DelayBetweenAttemptsInSeconds"] = "1",
+            ["PokeApiSettings:TimeoutInSeconds"] = "30",
         };
 
         _configuration = new ConfigurationBuilder()
@@ -112,6 +129,13 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         );
         Assert.NotNull(serviceInfoDescriptor);
         Assert.Equal(ServiceLifetime.Singleton, serviceInfoDescriptor.Lifetime);
+
+        // Assert - PokeGameRules configuration is registered
+        var pokeGameRulesDescriptor = _services.FirstOrDefault(x =>
+            x.ServiceType == typeof(PokeGameRules)
+        );
+        Assert.NotNull(pokeGameRulesDescriptor);
+        Assert.Equal(ServiceLifetime.Singleton, pokeGameRulesDescriptor.Lifetime);
     }
 
     [Fact]
@@ -240,6 +264,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         Assert.NotNull(serviceProvider.GetService<IUserProcessingManager>());
         Assert.NotNull(serviceProvider.GetService<IPokedexDataMigratorHealthCheck>());
         Assert.NotNull(serviceProvider.GetService<IPokedexJsonFactory>());
+        Assert.NotNull(serviceProvider.GetService<PokeGameRules>());
 
         // Assert - Commands can be resolved
         Assert.NotNull(serviceProvider.GetService<CreateNewGameCommand>());
@@ -270,6 +295,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         {
             typeof(IPokedexDataMigratorHealthCheck),
             typeof(ServiceInfo),
+            typeof(PokeGameRules),
         };
 
         foreach (var serviceType in singletonServices)

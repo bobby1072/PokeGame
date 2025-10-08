@@ -1,12 +1,15 @@
 ﻿using System.Reflection;
 using BT.Common.Api.Helpers.Models;
 using BT.Common.Helpers.Extensions;
-using BT.Common.Services.Extensions;
+using BT.Common.Http.Extensions;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PokeGame.Core.Common;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
 using PokeGame.Core.Domain.Services.Game.Abstract;
@@ -43,31 +46,64 @@ public static class DomainServicesServiceCollectionExtensions
         services
             .AddHttpClient()
             .AddLogging()
-            .AddDistributedCachingService()
+            .AddMemoryCache()
             .AddDomainModelValidators()
             .AddPokeGamePersistence(configuration, healthCheckBuilder, environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
 
         services
             .AddUserServices()
-            .AddPokemonServices(healthCheckBuilder)
-            .AddGameServices()
+            .AddPokedexServices(healthCheckBuilder)
+            .AddGameServices(configuration)
             .AddScoped<IDomainServiceCommandExecutor, DomainServiceCommandExecutor>()
             .AddScoped<IValidatorService, ValidatorService>();
 
         return services;
     }
 
-    private static IServiceCollection AddGameServices(this IServiceCollection services)
+    private static IServiceCollection AddGameServices(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
+        var pokeGameRulesSection = configuration.GetSection(PokeGameRules.Key);
+
+        if (!pokeGameRulesSection.Exists())
+        {
+            throw new ArgumentNullException(PokeGameRules.Key);
+        }
+
+        var pokeApiSettings =
+            configuration.GetSection(PokeApiSettings.Key).Get<PokeApiSettings>()
+            ?? throw new InvalidOperationException($"Failed to get {nameof(PokeApiSettings)}");
+
+        services.AddHttpClientWithResilience<IPokeApiClient, PokeApiClient>(
+            (cli, sp) =>
+            {
+                var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+                var memCache = sp.GetRequiredService<IMemoryCache>();
+                return new PokeApiClient(
+                    cli,
+                    pokeApiSettings.BaseUrl,
+                    memCache,
+                    loggerFactory.CreateLogger<PokeApiClient>()
+                );
+            },
+            pokeApiSettings
+        );
+
+        services.AddSingleton<IPokeGameRuleHelperService, PokeGameRuleHelperService>();
+
         services
+            .ConfigureSingletonOptions(pokeApiSettings)
+            .ConfigureSingletonOptions<PokeGameRules>(pokeGameRulesSection)
             .AddScoped<CreateNewGameCommand>()
             .AddScoped<GetGameSavesByUserCommand>()
             .AddScoped<StartGameSessionCommand>()
             .AddScoped<RemoveGameSessionByGameSaveIdCommand>()
             .AddScoped<RemoveGameSessionsByConnectionIdCommand>()
-            .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>()
-            .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>();
+            .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>()
+            .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>();
 
         return services;
     }
@@ -83,7 +119,7 @@ public static class DomainServicesServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddPokemonServices(
+    private static IServiceCollection AddPokedexServices(
         this IServiceCollection services,
         IHealthChecksBuilder healthCheckBuilder
     )
@@ -94,8 +130,6 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<GetDbPokedexPokemonCommand>()
             .AddSingleton<IPokedexDataMigratorHealthCheck, PokedexDataMigratorHealthCheck>()
             .AddHostedService<PokedexDataMigratorHostedService>();
-
-        services.AddHttpClient<IPokeApiClient, PokeApiClient>();
 
         healthCheckBuilder.AddCheck<IPokedexDataMigratorHealthCheck>(
             nameof(PokedexDataMigratorHealthCheck)
