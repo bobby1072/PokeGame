@@ -16,7 +16,6 @@ using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Domain.Services.Game.Commands;
 using PokeGame.Core.Domain.Services.Game.Concrete;
 using PokeGame.Core.Domain.Services.Pokedex.Abstract;
-using PokeGame.Core.Domain.Services.Pokedex.Commands;
 using PokeGame.Core.Domain.Services.Pokedex.Concrete;
 using PokeGame.Core.Domain.Services.User.Abstract;
 using PokeGame.Core.Domain.Services.User.Commands;
@@ -126,8 +125,7 @@ public static class DomainServicesServiceCollectionExtensions
     {
         services
             .AddPokedexJsonDoc()
-            .AddScoped<CreateDbPokedexPokemonCommand>()
-            .AddScoped<GetDbPokedexPokemonCommand>()
+            .AddScoped<IPokedexService, PokedexService>()
             .AddSingleton<IPokedexDataMigratorHealthCheck, PokedexDataMigratorHealthCheck>()
             .AddHostedService<PokedexDataMigratorHostedService>();
 
