@@ -91,10 +91,10 @@ stages:
               customCommand: "run build"
               workingDir: $(Build.SourcesDirectory)/src/phaser-client
 
-          - publish: "$(Build.SourcesDirectory)/src/phaser-client/dist"
-            condition: eq(variables.isMain, true)
-            displayName: "Publish client files"
-            artifact: client
+          # - publish: "$(Build.SourcesDirectory)/src/phaser-client/dist"
+          #   condition: eq(variables.isMain, true)
+          #   displayName: "Publish client files"
+          #   artifact: client
 
   
   - stage: Publish
