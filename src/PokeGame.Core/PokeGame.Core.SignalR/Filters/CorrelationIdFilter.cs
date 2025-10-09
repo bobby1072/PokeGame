@@ -1,4 +1,5 @@
 ﻿using BT.Common.Api.Helpers;
+using BT.Common.Helpers.Models;
 using Microsoft.AspNetCore.SignalR;
 
 namespace PokeGame.Core.SignalR.Filters;
@@ -16,7 +17,7 @@ internal sealed class CorrelationIdFilter: IHubFilter
     {
         var addedCorrelationId = AddCorrelationIdToHttpContext(context.Context.GetHttpContext());
 
-        using (_logger.BeginScope(new { CorrelationId = addedCorrelationId }))
+        using (_logger.BeginScope(new LoggingScopeVariableDictionary { ["CorrelationId"] = addedCorrelationId }))
         {
             return await next.Invoke(context);
         }
@@ -25,7 +26,7 @@ internal sealed class CorrelationIdFilter: IHubFilter
     {
         var addedCorrelationId = AddCorrelationIdToHttpContext(context.Context.GetHttpContext());
 
-        using (_logger.BeginScope(new { CorrelationId = addedCorrelationId }))
+        using (_logger.BeginScope(new LoggingScopeVariableDictionary { ["CorrelationId"] = addedCorrelationId }))
         {
             return next.Invoke(context);
         }
@@ -35,7 +36,7 @@ internal sealed class CorrelationIdFilter: IHubFilter
     {
         var addedCorrelationId = AddCorrelationIdToHttpContext(context.Context.GetHttpContext());
 
-        using (_logger.BeginScope(new { CorrelationId = addedCorrelationId }))
+        using (_logger.BeginScope(new LoggingScopeVariableDictionary { ["CorrelationId"] = addedCorrelationId }))
         {
             return next.Invoke(context, exception);
         }
