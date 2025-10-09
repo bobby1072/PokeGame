@@ -82,7 +82,6 @@ stages:
               folderPath: "$(Build.SourcesDirectory)/src/phaser-client/src/common/utils"
               enableXmlTransform: false
               fileType: "json"
-              xmlTransformationRules:
               jsonTargetFiles: "reactappsettings.json"
 
           - task: Npm@1
@@ -112,7 +111,6 @@ stages:
               folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core"
               enableXmlTransform: false
               fileType: "json"
-              xmlTransformationRules:
               jsonTargetFiles: |
                 PokeGame.Core.Api/appsettings.json
                 PokeGame.Core.SignalR/appsettings.json
