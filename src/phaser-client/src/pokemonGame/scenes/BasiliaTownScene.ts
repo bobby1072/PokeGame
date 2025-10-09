@@ -6,11 +6,6 @@ export class BasiliaTownScene extends BasePlayableFreeroamScene {
         super(BasiliaTownScene.name);
     }
 
-    public preload() {
-        // Load scene-specific assets
-        this.load.image("basiliaTown", "/assets/maps/basilia_town.png");
-    }
-
     protected getMapTextureKey(): string {
         return "basiliaTown";
     }
