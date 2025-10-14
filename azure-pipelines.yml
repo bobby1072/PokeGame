@@ -76,14 +76,6 @@ stages:
               customCommand: "run check-types"
               workingDir: $(Build.SourcesDirectory)/src/phaser-client
 
-          - task: FileTransform@2
-            displayName: "Transform react app settings"
-            inputs:
-              folderPath: "$(Build.SourcesDirectory)/src/phaser-client/src/common/utils"
-              enableXmlTransform: false
-              fileType: "json"
-              jsonTargetFiles: "reactappsettings.json"
-
           - task: Npm@1
             displayName: "Build"
             inputs:
@@ -105,16 +97,23 @@ stages:
           - checkout: self
             submodules: recursive
 
+          - task: DownloadPipelineArtifact@2
+            displayName: "Download phaser client files"
+            inputs:
+              artifact: client
+              path: $(Build.SourcesDirectory)/src/phaser-client/dist
+
           - task: FileTransform@2
             displayName: "Transform all configuration files"
             inputs:
-              folderPath: "$(Build.SourcesDirectory)/src/PokeGame.Core"
+              folderPath: "$(Build.SourcesDirectory)/src"
               enableXmlTransform: false
               fileType: "json"
               jsonTargetFiles: |
-                PokeGame.Core.Api/appsettings.json
-                PokeGame.Core.SignalR/appsettings.json
-                PokeGame.Core.React.Server/appsettings.json
+                PokeGame.Core/PokeGame.Core.Api/appsettings.json
+                PokeGame.Core/PokeGame.Core.SignalR/appsettings.json
+                PokeGame.Core/PokeGame.Core.React.Server/appsettings.json
+                phaser-client/dist/reactappsettings.json
 
           - task: Docker@2
             displayName: Login to Docker Hub
@@ -143,12 +142,6 @@ stages:
               tags: |
                 latest
                 $(Build.BuildNumber)             
-
-          - task: DownloadPipelineArtifact@2
-            displayName: "Download phaser client files"
-            inputs:
-              artifact: client
-              path: $(Build.SourcesDirectory)/src/phaser-client/dist
 
           - task: Docker@2
             displayName: Build React Server Image

@@ -1,4 +1,4 @@
-import appSettingsJson from "./reactappsettings.json";
+import axios from "axios";
 
 enum AppSettingsKeys {
     serviceName = "serviceName",
@@ -12,22 +12,45 @@ export type AppSettings = {
 };
 
 export default abstract class AppSettingsProvider {
-    public static GetAllAppSettings(): AppSettings {
+    private static appSettingsCache: Record<string, any> | null = null;
+
+    public static async GetAllAppSettings(): Promise<AppSettings> {
+        const settings = await AppSettingsProvider.LoadAppSettings();
         return Object.entries(AppSettingsKeys).reduce(
             (acc, [key, val]) => ({
                 ...acc,
-                [key]: AppSettingsProvider.TryGetValue(val as any),
+                [key]: AppSettingsProvider.TryGetValue(val as any, settings),
             }),
             {}
         ) as AppSettings;
     }
+
+    private static async LoadAppSettings(): Promise<Record<string, any>> {
+        if (AppSettingsProvider.appSettingsCache) {
+            return AppSettingsProvider.appSettingsCache;
+        }
+
+        try {
+            const response = await axios.get('/reactappsettings.json');
+            if (!response.data) {
+                throw new Error(`Failed to load app settings: ${response.status}`);
+            }
+            AppSettingsProvider.appSettingsCache = response.data;
+            return response.data;
+        } catch (error) {
+            console.error('Error loading app settings:', error);
+            throw error;
+        }
+    }
+
     private static TryGetValue(
-        key: AppSettingsKeys
+        key: AppSettingsKeys,
+        settings: Record<string, any>
     ): string | undefined | null {
         try {
             const prodResult = AppSettingsProvider.FindVal(
                 key.toString(),
-                appSettingsJson
+                settings
             );
 
             return prodResult?.toString();

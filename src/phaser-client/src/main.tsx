@@ -12,9 +12,9 @@ import { SignalRGameSessionProvider } from "./common/contexts/SignalRGameSession
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <PokeGameThemeProvider>
-            <AppSettingsContextProvider>
-                <PokeGameCoreHttpClientContextProvider>
-                    <QueryClientProvider client={new QueryClient()}>
+            <QueryClientProvider client={new QueryClient()}>
+                <AppSettingsContextProvider>
+                    <PokeGameCoreHttpClientContextProvider>
                         <PokeGameUserContextProvider>
                             <SignalRGameSessionProvider>
                                 <BrowserRouter>
@@ -28,9 +28,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                                 </BrowserRouter>
                             </SignalRGameSessionProvider>
                         </PokeGameUserContextProvider>
-                    </QueryClientProvider>
-                </PokeGameCoreHttpClientContextProvider>
-            </AppSettingsContextProvider>
+                    </PokeGameCoreHttpClientContextProvider>
+                </AppSettingsContextProvider>
+            </QueryClientProvider>
         </PokeGameThemeProvider>
     </React.StrictMode>
 );
