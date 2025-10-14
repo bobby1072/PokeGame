@@ -50,6 +50,7 @@ try
     
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddResponseCompression();
+    builder.Services.AddHealthChecks();
     
     var app = builder.Build();
 
