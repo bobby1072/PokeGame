@@ -5,10 +5,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common;
-using PokeGame.Core.Domain.Services.Abstract;
-using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Domain.Services.Pokedex.Abstract;
-using PokeGame.Core.Domain.Services.Pokedex.Commands;
 using PokeGame.Core.Persistence.Configurations;
 using PokeGame.Core.Persistence.Migrations.Abstract;
 using PokeGame.Core.Schemas;
@@ -53,7 +50,7 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
             _logger.LogInformation("Migrations are disabled...");
             return;
         }
-        
+
         // Wait for database migration to complete
         while (
             (
@@ -103,16 +100,11 @@ internal sealed class PokedexDataMigratorHostedService : BackgroundService
             throw;
         }
         await using var scope = _scopeFactory.CreateAsyncScope();
-        var commandExecutor =
-            scope.ServiceProvider.GetRequiredService<IDomainServiceCommandExecutor>();
+        var pokedexService = scope.ServiceProvider.GetRequiredService<IPokedexService>();
 
         if (pokedexPokemonList.Length > 0)
         {
-            await commandExecutor.RunCommandAsync<
-                CreateDbPokedexPokemonCommand,
-                IReadOnlyCollection<PokedexPokemon>,
-                DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>
-            >(pokedexPokemonList);
+            await pokedexService.CreatePokedexPokemonAsync(pokedexPokemonList, cancellationToken);
         }
         else
         {

@@ -16,7 +16,6 @@ using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Domain.Services.Game.Commands;
 using PokeGame.Core.Domain.Services.Game.Concrete;
 using PokeGame.Core.Domain.Services.Pokedex.Abstract;
-using PokeGame.Core.Domain.Services.Pokedex.Commands;
 using PokeGame.Core.Domain.Services.Pokedex.Concrete;
 using PokeGame.Core.Domain.Services.User.Abstract;
 using PokeGame.Core.Domain.Services.User.Commands;
@@ -196,9 +195,8 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         // Act
         _services.AddPokeGameApplicationServices(_configuration, _hostEnvironment);
 
-        // Assert - Pokemon Commands
-        AssertServiceRegistration<CreateDbPokedexPokemonCommand>(ServiceLifetime.Scoped);
-        AssertServiceRegistration<GetDbPokedexPokemonCommand>(ServiceLifetime.Scoped);
+        // Assert - Pokemon Service
+        AssertServiceRegistration<IPokedexService, PokedexService>(ServiceLifetime.Scoped);
 
         // Assert - Health Check
         AssertServiceRegistration<IPokedexDataMigratorHealthCheck, PokedexDataMigratorHealthCheck>(
@@ -274,8 +272,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
         Assert.NotNull(serviceProvider.GetService<SaveUserCommand>());
         Assert.NotNull(serviceProvider.GetService<GetUserByEmailCommand>());
         Assert.NotNull(serviceProvider.GetService<GetUserByIdCommand>());
-        Assert.NotNull(serviceProvider.GetService<CreateDbPokedexPokemonCommand>());
-        Assert.NotNull(serviceProvider.GetService<GetDbPokedexPokemonCommand>());
+        Assert.NotNull(serviceProvider.GetService<IPokedexService>());
 
         // Assert - Keyed service can be resolved
         var keyedService = serviceProvider.GetKeyedService<JsonDocument>(
@@ -327,8 +324,7 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
             typeof(SaveUserCommand),
             typeof(GetUserByEmailCommand),
             typeof(GetUserByIdCommand),
-            typeof(CreateDbPokedexPokemonCommand),
-            typeof(GetDbPokedexPokemonCommand),
+            typeof(IPokedexService),
         };
 
         foreach (var serviceType in scopedServices)
@@ -388,8 +384,6 @@ public sealed class DomainServicesServiceCollectionExtensionsTests
             typeof(SaveUserCommand),
             typeof(GetUserByEmailCommand),
             typeof(GetUserByIdCommand),
-            typeof(CreateDbPokedexPokemonCommand),
-            typeof(GetDbPokedexPokemonCommand),
         };
 
         foreach (var commandType in commandTypes)
