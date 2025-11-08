@@ -1,18 +1,21 @@
 import { EventBus } from "../EventBus";
 import { BasePlayableFreeroamScene } from "./BasePlayableFreeroamScene";
 
-export class BasiliaTownScene extends BasePlayableFreeroamScene {
+export default class BasiliaTownStarterHomeScene extends BasePlayableFreeroamScene {
     public constructor() {
-        super(BasiliaTownScene.name);
+        super(BasiliaTownStarterHomeScene.name);
     }
 
     public preload() {
         this.load.setPath("assets");
-        this.load.tilemapTiledJSON("basiliaTownMap", "BasiliaTownMap.json");
+        this.load.tilemapTiledJSON(
+            "basiliaTownStarterHomeMap",
+            "BasiliaTownStarterHomeInsideMap.json"
+        );
     }
 
     protected getTilemapKey(): string {
-        return "basiliaTownMap";
+        return "basiliaTownStarterHomeMap";
     }
 
     protected getTilesetKeys(): string[] {
@@ -20,7 +23,8 @@ export class BasiliaTownScene extends BasePlayableFreeroamScene {
     }
 
     protected getStartPosition(): Phaser.Math.Vector2 {
-        return new Phaser.Math.Vector2(240, 240);
+        // Start position near the door entrance (bottom center of the room)
+        return new Phaser.Math.Vector2(240, 320);
     }
 
     public override create() {
