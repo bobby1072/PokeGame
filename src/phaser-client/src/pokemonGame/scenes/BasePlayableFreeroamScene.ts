@@ -1,167 +1,139 @@
 import Phaser, { Types } from "phaser";
-import { BasePlayablePokemonScene } from "./BasePlayablePokemonScene";
+import { Scene } from "phaser";
 
-export abstract class BasePlayableFreeroamScene extends BasePlayablePokemonScene {
+export abstract class BasePlayableFreeroamScene extends Scene {
     protected player!: Types.Physics.Arcade.SpriteWithDynamicBody;
     protected cursors!: Types.Input.Keyboard.CursorKeys;
-    protected isMoving = false;
-    protected targetPos?: Phaser.Math.Vector2;
     protected moveSpeed = 180;
-    protected debugText?: Phaser.GameObjects.Text;
 
     public constructor(sceneKey: string) {
         super(sceneKey);
     }
 
     public create() {
-        // Add background (inheritor must add image in preload)
-        this.mapImage = this.add.image(512, 384, this.getMapTextureKey());
-        const scaleX = this.scale.width / this.mapImage.width;
-        const scaleY = this.scale.height / this.mapImage.height;
-        const scale = Math.max(scaleX, scaleY);
-        this.mapImage.setScale(scale).setScrollFactor(0);
+        // Create tilemap
+        const map = this.make.tilemap({ key: this.getTilemapKey() });
 
-        // Create player at custom start position
+        // Add tilesets
+        const tilesetKeys = this.getTilesetKeys();
+        const tilesets: Phaser.Tilemaps.Tileset[] = [];
+
+        tilesetKeys.forEach((key: string, index: number) => {
+            const tilesetName = map.tilesets[index].name;
+            const tileset = map.addTilesetImage(tilesetName, key);
+            if (tileset) {
+                tilesets.push(tileset);
+            }
+        });
+
+        // Create all layers from the tilemap
+        const collidableLayers: Phaser.Tilemaps.TilemapLayer[] = [];
+        map.layers.forEach((_layerData, index) => {
+            const layer = map.createLayer(index, tilesets, 0, 0);
+            if (layer) {
+                // Fix tile bleeding/black lines by disabling pixel snapping
+                layer.setSkipCull(true);
+
+                // Check if this layer has the ge_collide property set to true
+                const layerProperties = map.layers[index].properties;
+
+                if (layerProperties) {
+                    const collidesProp = layerProperties.find(
+                        (p: any) => p.name === "ge_collide"
+                    );
+
+                    if (collidesProp && (collidesProp as any).value) {
+                        // Set collision ONLY on tiles with actual tile data (index > 0)
+                        // This prevents setting collision on empty tiles
+                        layer.setCollisionByExclusion([-1, 0]);
+                        collidableLayers.push(layer);
+                    }
+                }
+            }
+        });
+
+        // Set world bounds based on tilemap dimensions
+        const worldW = map.widthInPixels;
+        const worldH = map.heightInPixels;
+        this.physics.world.setBounds(0, 0, worldW, worldH);
+
+        // Don't bound the camera - let it show the full canvas
+        // Just center it on the map
+        this.cameras.main.centerOn(worldW / 2, worldH / 2);
+
+        // Create player
         const startPos = this.getStartPosition();
         this.player = this.physics.add.sprite(
             startPos.x,
             startPos.y,
             "myPlayer"
         );
-        const baseHeight = 48;
+
+        // Scale player
+        const baseHeight = 24; // Reduced from 48 to make player smaller
         const ph = this.player.height > 0 ? this.player.height : 96;
         this.player.setScale(baseHeight / ph);
         this.player.setDepth(10);
         this.player.setCollideWorldBounds(true);
+
+        // Set player collision body
         this.player.body.setSize(
             this.player.width * 0.6,
             this.player.height * 0.8
         );
-
-        // Input
-        this.cursors = this.input.keyboard!.createCursorKeys();
-        this.input.keyboard?.addCapture(["UP", "DOWN", "LEFT", "RIGHT"]);
-        this.gridToggleKey = this.input.keyboard?.addKey(
-            Phaser.Input.Keyboard.KeyCodes.G
+        this.player.body.setOffset(
+            this.player.width * 0.2,
+            this.player.height * 0.1
         );
 
-        // World/camera bounds
-        const worldW = this.mapImage.displayWidth;
-        const worldH = this.mapImage.displayHeight;
-        this.physics.world.setBounds(0, 0, worldW, worldH);
-        this.cameras.main.setBounds(0, 0, worldW, worldH);
+        // Add collision between player and collidable layers
+        collidableLayers.forEach((layer) => {
+            this.physics.add.collider(this.player, layer);
+        });
+
+        // Setup camera to follow player
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
-        // Build grid and configure blocked areas
-        this.buildGridFromImage();
-        this.configureBlockedAreas();
+        // Calculate zoom to fit the map better in the canvas
+        // Canvas is 1024x768, map is 480x480
+        const zoomX = this.scale.width / worldW; // 1024 / 480 = ~2.13
+        const zoomY = this.scale.height / worldH; // 768 / 480 = 1.6
+        const zoom = Math.min(zoomX, zoomY) * 1.75; // Use the smaller to ensure map fits, with 40% increase
+        this.cameras.main.setZoom(zoom);
+        this.cameras.main.roundPixels = true; // Prevent sub-pixel rendering artifacts
 
-        // Snap player to nearest cell center
-        const startCell = this.worldToGrid(this.player.x, this.player.y);
-        const startCenter = this.gridToWorldCenter(startCell.ix, startCell.iy);
-        this.player.setPosition(startCenter.x, startCenter.y);
-
-        // Draw overlay
-        this.drawGridOverlay();
-
-        // Debug HUD
-        this.debugText = this.add
-            .text(10, 10, "", {
-                fontSize: "12px",
-                color: "#ffffff",
-                backgroundColor: "#00000099",
-                padding: { left: 6, right: 6, top: 3, bottom: 3 } as any,
-            })
-            .setScrollFactor(0)
-            .setDepth(1000);
-
-        this.input.on("pointermove", (p: Phaser.Input.Pointer) => {
-            const { ix, iy } = this.worldToGrid(p.worldX, p.worldY);
-            const ok = this.inGrid(ix, iy) ? this.walkable[iy][ix] : false;
-            this.debugText?.setText(
-                `G: toggle grid\nCell: (${ix}, ${iy}) Walkable: ${ok}`
-            );
-        });
+        // Setup input
+        this.cursors = this.input.keyboard!.createCursorKeys();
+        this.input.keyboard?.addCapture(["UP", "DOWN", "LEFT", "RIGHT"]);
     }
 
-    // Abstract: inheritors must provide map texture key
-    protected abstract getMapTextureKey(): string;
-
-    // Abstract: inheritors must provide starting position
+    // Abstract methods that must be implemented by subclasses
+    protected abstract getTilemapKey(): string;
+    protected abstract getTilesetKeys(): string[];
     protected abstract getStartPosition(): Phaser.Math.Vector2;
 
-    // Abstract: inheritors must configure blocked areas
-    protected abstract configureBlockedAreas(): void;
+    public update(_time: number, _delta: number) {
+        if (!this.player) return;
 
-    // Used by grid builder; separate from runtime movement checks
-    protected override sampleWalkableAt(
-        worldX: number,
-        worldY: number
-    ): boolean {
-        return this.canMoveTo(worldX, worldY);
-    }
+        // Simple 8-directional movement
+        let vx = 0;
+        let vy = 0;
 
-    protected canMoveTo(worldX: number, worldY: number): boolean {
-        // Default: allow all movement; inheritors can override for pixel-based blocking
-        return true;
-    }
+        if (this.cursors.left?.isDown) vx = -1;
+        else if (this.cursors.right?.isDown) vx = 1;
 
-    public update(time: number, delta: number) {
-        super.update(time, delta);
-        if (this.isMoving && this.targetPos) {
-            const dx = this.targetPos.x - this.player.x;
-            const dy = this.targetPos.y - this.player.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist <= 2) {
-                this.player.setVelocity(0, 0);
-                this.player.setPosition(this.targetPos.x, this.targetPos.y);
-                this.isMoving = false;
-                this.targetPos = undefined;
-                return;
-            }
-            const nx = dx / dist;
-            const ny = dy / dist;
-            this.player.setVelocity(nx * this.moveSpeed, ny * this.moveSpeed);
-            return;
-        }
-        // Not moving: read input (4-direction only)
-        let gx = 0,
-            gy = 0;
-        if (this.cursors.left?.isDown) gx = -1;
-        else if (this.cursors.right?.isDown) gx = 1;
-        if (this.cursors.up?.isDown) gy = -1;
-        else if (this.cursors.down?.isDown) gy = 1;
-        if (gx !== 0 && gy !== 0) gy = 0;
-        if (gx === 0 && gy === 0) {
+        if (this.cursors.up?.isDown) vy = -1;
+        else if (this.cursors.down?.isDown) vy = 1;
+
+        if (vx !== 0 || vy !== 0) {
+            // Normalize diagonal movement
+            const length = Math.sqrt(vx * vx + vy * vy);
+            vx = (vx / length) * this.moveSpeed;
+            vy = (vy / length) * this.moveSpeed;
+
+            this.player.setVelocity(vx, vy);
+        } else {
             this.player.setVelocity(0, 0);
-            this.isMoving = false;
-            this.targetPos = undefined;
-            // Snap to nearest valid cell
-            const { ix, iy } = this.worldToGrid(this.player.x, this.player.y);
-            const snapPos = this.gridToWorldCenter(
-                Phaser.Math.Clamp(ix, 0, this.cols - 1),
-                Phaser.Math.Clamp(iy, 0, this.rows - 1)
-            );
-            this.player.setPosition(snapPos.x, snapPos.y);
-            return;
         }
-        const { ix, iy } = this.worldToGrid(this.player.x, this.player.y);
-        const nx = ix + gx;
-        const ny = iy + gy;
-        // If out of bounds or not walkable, reset movement state and snap to nearest valid cell
-        if (!this.inGrid(nx, ny) || !this.walkable[ny]?.[nx]) {
-            this.player.setVelocity(0, 0);
-            this.isMoving = false;
-            this.targetPos = undefined;
-            const snapPos = this.gridToWorldCenter(
-                Phaser.Math.Clamp(ix, 0, this.cols - 1),
-                Phaser.Math.Clamp(iy, 0, this.rows - 1)
-            );
-            this.player.setPosition(snapPos.x, snapPos.y);
-            return;
-        }
-        // Otherwise, move to next cell
-        this.targetPos = this.gridToWorldCenter(nx, ny);
-        this.isMoving = true;
     }
 }
