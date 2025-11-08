@@ -8,11 +8,6 @@ export class PokeBoot extends Scene {
 
     public preload() {
         this.load.setPath("assets");
-        this.load.tilemapTiledJSON("basiliaTownMap", "BasiliaTownMap.json");
-        this.load.tilemapTiledJSON(
-            "basiliaTownStarterHomeMap",
-            "BasiliaTownStarterHomeInsideMap.json"
-        );
         this.load.image(
             "tileset_d5xdb0y",
             "tileset_by_chaoticcherrycake_d5xdb0y.png"

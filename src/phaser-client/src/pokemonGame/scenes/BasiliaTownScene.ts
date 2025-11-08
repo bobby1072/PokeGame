@@ -6,6 +6,11 @@ export class BasiliaTownScene extends BasePlayableFreeroamScene {
         super(BasiliaTownScene.name);
     }
 
+    public preload() {
+        this.load.setPath("assets");
+        this.load.tilemapTiledJSON("basiliaTownMap", "BasiliaTownMap.json");
+    }
+
     protected getTilemapKey(): string {
         return "basiliaTownMap";
     }

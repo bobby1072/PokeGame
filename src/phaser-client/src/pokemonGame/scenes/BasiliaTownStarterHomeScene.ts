@@ -6,6 +6,14 @@ export default class BasiliaTownStarterHomeScene extends BasePlayableFreeroamSce
         super(BasiliaTownStarterHomeScene.name);
     }
 
+    public preload() {
+        this.load.setPath("assets");
+        this.load.tilemapTiledJSON(
+            "basiliaTownStarterHomeMap",
+            "BasiliaTownStarterHomeInsideMap.json"
+        );
+    }
+
     protected getTilemapKey(): string {
         return "basiliaTownStarterHomeMap";
     }
