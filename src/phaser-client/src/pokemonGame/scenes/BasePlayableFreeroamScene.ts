@@ -31,6 +31,9 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         map.layers.forEach((_layerData, index) => {
             const layer = map.createLayer(index, tilesets, 0, 0);
             if (layer) {
+                // Fix tile bleeding/black lines by disabling pixel snapping
+                layer.setSkipCull(true);
+
                 // Check if this layer has the ge_collide property set to true
                 const layerProperties = map.layers[index].properties;
 
@@ -88,6 +91,7 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         // Setup camera to follow player
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
         this.cameras.main.setZoom(2); // Zoom in for better visibility
+        this.cameras.main.roundPixels = true; // Prevent sub-pixel rendering artifacts
 
         // Setup input
         this.cursors = this.input.keyboard!.createCursorKeys();

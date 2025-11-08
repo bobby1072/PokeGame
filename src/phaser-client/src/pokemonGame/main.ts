@@ -13,6 +13,11 @@ const config: Phaser.Types.Core.GameConfig = {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
     },
+    render: {
+        pixelArt: true, // Prevents antialiasing and fixes tile bleeding
+        antialias: false,
+        roundPixels: true,
+    },
     physics: {
         default: "arcade",
         arcade: {
