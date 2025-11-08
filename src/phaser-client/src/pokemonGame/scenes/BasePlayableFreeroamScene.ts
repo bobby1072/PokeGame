@@ -4,7 +4,7 @@ import { Scene } from "phaser";
 export abstract class BasePlayableFreeroamScene extends Scene {
     protected player!: Types.Physics.Arcade.SpriteWithDynamicBody;
     protected cursors!: Types.Input.Keyboard.CursorKeys;
-    protected moveSpeed = 180;
+    protected moveSpeed = 140;
 
     public constructor(sceneKey: string) {
         super(sceneKey);

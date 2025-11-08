@@ -20,7 +20,6 @@ export class BasiliaTownScene extends BasePlayableFreeroamScene {
     }
 
     protected getStartPosition(): Phaser.Math.Vector2 {
-        // Start position in pixels (center of map approximately)
         return new Phaser.Math.Vector2(240, 240);
     }
 
