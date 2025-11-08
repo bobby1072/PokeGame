@@ -1,18 +1,6 @@
 variables:
-  - name: isMain
-    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
-  - name: ApiDockerRepository
-    value: bobby1072/poke_game_api
-  - name: ReactServerDockerRepository
-    value: bobby1072/poke_game_react_server
-  - name: SignalRApiDockerRepository
-    value: bobby1072/poke_game_signal_r_api    
-  - name: ReleaseVersion
-    value: $(Build.BuildNumber)     
-  - name: ServiceInfo__ReleaseVersion
-    value: $(Build.BuildNumber)     
-  - name: releaseVersion
-    value: $(Build.BuildNumber)
+  - template: pipeline-variables.yml
+
 
 trigger:
   branches:
@@ -76,32 +64,21 @@ stages:
               customCommand: "run check-types"
               workingDir: $(Build.SourcesDirectory)/src/phaser-client
 
-          - task: Npm@1
-            displayName: "Build"
-            inputs:
-              command: "custom"
-              customCommand: "run build"
-              workingDir: $(Build.SourcesDirectory)/src/phaser-client
-
-          - publish: "$(Build.SourcesDirectory)/src/phaser-client/dist"
-            condition: eq(variables.isMain, true)
-            displayName: "Publish client files"
-            artifact: client
-
   
   - stage: Publish
-    condition: and(eq(variables.isMain, true), succeeded())
+    # condition: and(eq(variables.isMain, true), succeeded())
     jobs:
       - job: push_api_image
         steps:
           - checkout: self
             submodules: recursive
 
-          - task: DownloadPipelineArtifact@2
-            displayName: "Download phaser client files"
+          - task: Npm@1
+            displayName: "Build"
             inputs:
-              artifact: client
-              path: $(Build.SourcesDirectory)/src/phaser-client/dist
+              command: "custom"
+              customCommand: "run build"
+              workingDir: $(Build.SourcesDirectory)/src/phaser-client
 
           - task: FileTransform@2
             displayName: "Transform all configuration files"
