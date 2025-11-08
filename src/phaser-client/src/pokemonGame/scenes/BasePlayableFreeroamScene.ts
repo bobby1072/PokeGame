@@ -56,7 +56,10 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         const worldW = map.widthInPixels;
         const worldH = map.heightInPixels;
         this.physics.world.setBounds(0, 0, worldW, worldH);
-        this.cameras.main.setBounds(0, 0, worldW, worldH);
+
+        // Don't bound the camera - let it show the full canvas
+        // Just center it on the map
+        this.cameras.main.centerOn(worldW / 2, worldH / 2);
 
         // Create player
         const startPos = this.getStartPosition();
@@ -90,7 +93,13 @@ export abstract class BasePlayableFreeroamScene extends Scene {
 
         // Setup camera to follow player
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
-        this.cameras.main.setZoom(2); // Zoom in for better visibility
+
+        // Calculate zoom to fit the map better in the canvas
+        // Canvas is 1024x768, map is 480x480
+        const zoomX = this.scale.width / worldW; // 1024 / 480 = ~2.13
+        const zoomY = this.scale.height / worldH; // 768 / 480 = 1.6
+        const zoom = Math.min(zoomX, zoomY) * 1.75; // Use the smaller to ensure map fits, with 40% increase
+        this.cameras.main.setZoom(zoom);
         this.cameras.main.roundPixels = true; // Prevent sub-pixel rendering artifacts
 
         // Setup input
