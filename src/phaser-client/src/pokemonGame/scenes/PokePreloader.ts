@@ -1,5 +1,5 @@
 import { Scene } from "phaser";
-import { BasiliaTownScene } from "./BasiliaTownScene.ts";
+import BasiliaTownStarterHomeScene from "./BasiliaTownStarterHomeScene.ts";
 
 export class PokePreloader extends Scene {
     public constructor() {
@@ -7,6 +7,6 @@ export class PokePreloader extends Scene {
     }
 
     public create() {
-        this.scene.start(BasiliaTownScene.name);
+        this.scene.start(BasiliaTownStarterHomeScene.name);
     }
 }
