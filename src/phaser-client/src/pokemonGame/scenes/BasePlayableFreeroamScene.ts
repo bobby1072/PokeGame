@@ -31,48 +31,23 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         map.layers.forEach((_layerData, index) => {
             const layer = map.createLayer(index, tilesets, 0, 0);
             if (layer) {
-                console.log(`Created layer: ${map.layers[index].name}`);
                 // Check if this layer has the ge_collide property set to true
                 const layerProperties = map.layers[index].properties;
-                console.log(
-                    `Layer ${map.layers[index].name} properties:`,
-                    layerProperties
-                );
 
                 if (layerProperties) {
                     const collidesProp = layerProperties.find(
                         (p: any) => p.name === "ge_collide"
                     );
-                    console.log(`Found ge_collide property:`, collidesProp);
 
                     if (collidesProp && (collidesProp as any).value) {
                         // Set collision ONLY on tiles with actual tile data (index > 0)
                         // This prevents setting collision on empty tiles
                         layer.setCollisionByExclusion([-1, 0]);
-
-                        // Verify collision is set
-                        const tilesWithCollision = layer
-                            .getTilesWithin()
-                            .filter((t: any) => t.collides && t.index > 0);
-                        console.log(
-                            `✓ Set collision on layer: ${
-                                map.layers[index].name
-                            }, tiles with collision enabled: ${
-                                tilesWithCollision.length
-                            }, total non-empty tiles: ${
-                                layer
-                                    .getTilesWithin()
-                                    .filter((t: any) => t.index > 0).length
-                            }`
-                        );
-
                         collidableLayers.push(layer);
                     }
                 }
             }
         });
-
-        console.log(`Total collidable layers: ${collidableLayers.length}`);
 
         // Set world bounds based on tilemap dimensions
         const worldW = map.widthInPixels;
@@ -89,7 +64,7 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         );
 
         // Scale player
-        const baseHeight = 48;
+        const baseHeight = 24; // Reduced from 48 to make player smaller
         const ph = this.player.height > 0 ? this.player.height : 96;
         this.player.setScale(baseHeight / ph);
         this.player.setDepth(10);
@@ -105,25 +80,14 @@ export abstract class BasePlayableFreeroamScene extends Scene {
             this.player.height * 0.1
         );
 
-        console.log("Player position:", this.player.x, this.player.y);
-        console.log(
-            "Player body size:",
-            this.player.body.width,
-            this.player.body.height
-        );
-
         // Add collision between player and collidable layers
         collidableLayers.forEach((layer) => {
-            const collider = this.physics.add.collider(this.player, layer);
-            console.log(`✓ Added collider between player and layer`, collider);
+            this.physics.add.collider(this.player, layer);
         });
 
         // Setup camera to follow player
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
         this.cameras.main.setZoom(2); // Zoom in for better visibility
-
-        // Enable physics debugging to visualize collision bodies
-        this.physics.world.createDebugGraphic();
 
         // Setup input
         this.cursors = this.input.keyboard!.createCursorKeys();
