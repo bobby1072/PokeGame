@@ -37,3 +37,6 @@ wwwroot/
 .vscode/
 
 .config/
+
+
+*.titled-session
