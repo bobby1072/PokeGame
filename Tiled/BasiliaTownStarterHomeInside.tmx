@@ -80,7 +80,7 @@
  </layer>
  <layer id="3" name="FrontDoor" width="30" height="30">
   <properties>
-   <property name="ge_collide" type="bool" value="true"/>
+   <property name="ge_scene" value="{&quot;StartPosition&quot;: {&quot;x&quot;: 4, &quot;y&quot;: 24}, &quot;SceneName&quot;: &quot;BasiliaTownScene&quot;}"/>
   </properties>
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

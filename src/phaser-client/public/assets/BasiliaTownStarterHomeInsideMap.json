@@ -127,9 +127,9 @@
          "opacity":1,
          "properties":[
                 {
-                 "name":"ge_collide",
-                 "type":"bool",
-                 "value":true
+                 "name":"ge_scene",
+                 "type":"string",
+                 "value":"{\"StartPosition\": {\"x\": 4, \"y\": 24}, \"SceneName\": \"BasiliaTownScene\"}"
                 }],
          "type":"tilelayer",
          "visible":true,
