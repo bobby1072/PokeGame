@@ -31,7 +31,7 @@ const config: Phaser.Types.Core.GameConfig = {
         PokePreloader,
         BasiliaTownScene,
         BasiliaTownStarterHomeScene,
-    ],
+    ] as any,
 };
 
 const StartPokemonGame = (parent: string) => {

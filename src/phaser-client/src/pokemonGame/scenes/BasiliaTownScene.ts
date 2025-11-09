@@ -2,8 +2,10 @@ import { EventBus } from "../EventBus";
 import { BasePlayableFreeroamScene } from "./BasePlayableFreeroamScene";
 
 export class BasiliaTownScene extends BasePlayableFreeroamScene {
+    public static readonly SCENE_KEY = "BasiliaTownScene";
+
     public constructor() {
-        super(BasiliaTownScene.name);
+        super(BasiliaTownScene.SCENE_KEY);
     }
 
     public preload() {

@@ -5,9 +5,17 @@ export abstract class BasePlayableFreeroamScene extends Scene {
     protected player!: Types.Physics.Arcade.SpriteWithDynamicBody;
     protected cursors!: Types.Input.Keyboard.CursorKeys;
     protected moveSpeed = 140;
+    protected spawnData?: { x: number; y: number };
 
     public constructor(sceneKey: string) {
         super(sceneKey);
+    }
+
+    public init(data: any) {
+        // Store spawn data if provided
+        if (data && data.x !== undefined && data.y !== undefined) {
+            this.spawnData = { x: data.x, y: data.y };
+        }
     }
 
     public create() {
@@ -18,35 +26,87 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         const tilesetKeys = this.getTilesetKeys();
         const tilesets: Phaser.Tilemaps.Tileset[] = [];
 
-        tilesetKeys.forEach((key: string, index: number) => {
-            const tilesetName = map.tilesets[index].name;
-            const tileset = map.addTilesetImage(tilesetName, key);
-            if (tileset) {
-                tilesets.push(tileset);
+        // Match tilesets by name from the map to the provided keys
+        map.tilesets.forEach((tilesetData) => {
+            const tilesetName = tilesetData.name;
+            // Find the matching key - for now just use the first key that matches
+            const matchingKey = tilesetKeys.find((key) =>
+                key.includes(
+                    tilesetName.replace("tileset_by_chaoticcherrycake_", "")
+                )
+            );
+
+            if (matchingKey) {
+                const tileset = map.addTilesetImage(tilesetName, matchingKey);
+                if (tileset) {
+                    tilesets.push(tileset);
+                }
             }
         });
 
         // Create all layers from the tilemap
         const collidableLayers: Phaser.Tilemaps.TilemapLayer[] = [];
+        const sceneTransitionData: Array<{
+            sceneName: string;
+            startPosition?: { x: number; y: number };
+            tiles: Array<{ x: number; y: number }>;
+        }> = [];
+
         map.layers.forEach((_layerData, index) => {
-            const layer = map.createLayer(index, tilesets, 0, 0);
-            if (layer) {
-                // Fix tile bleeding/black lines by disabling pixel snapping
-                layer.setSkipCull(true);
+            // Check for scene transition property BEFORE creating the layer
+            const layerProperties = map.layers[index].properties;
+            let isSceneTransition = false;
 
-                // Check if this layer has the ge_collide property set to true
-                const layerProperties = map.layers[index].properties;
+            if (layerProperties) {
+                const sceneProp = layerProperties.find(
+                    (p: any) => p.name === "ge_scene"
+                );
+                if (sceneProp && (sceneProp as any).value) {
+                    isSceneTransition = true;
 
-                if (layerProperties) {
-                    const collidesProp = layerProperties.find(
-                        (p: any) => p.name === "ge_collide"
-                    );
+                    // Parse scene transition data
+                    try {
+                        const sceneData = JSON.parse((sceneProp as any).value);
+                        if (sceneData.SceneName) {
+                            // Get tile positions from this layer
+                            const tiles: Array<{ x: number; y: number }> = [];
+                            const layerData = map.layers[index].data;
 
-                    if (collidesProp && (collidesProp as any).value) {
-                        // Set collision ONLY on tiles with actual tile data (index > 0)
-                        // This prevents setting collision on empty tiles
-                        layer.setCollisionByExclusion([-1, 0]);
-                        collidableLayers.push(layer);
+                            for (let y = 0; y < layerData.length; y++) {
+                                for (let x = 0; x < layerData[y].length; x++) {
+                                    if (layerData[y][x].index > 0) {
+                                        tiles.push({ x, y });
+                                    }
+                                }
+                            }
+
+                            sceneTransitionData.push({
+                                sceneName: sceneData.SceneName,
+                                startPosition: sceneData.StartPosition,
+                                tiles,
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse ge_scene JSON:", e);
+                    }
+                }
+            }
+
+            // Skip creating the layer if it's a scene transition
+            if (!isSceneTransition) {
+                const layer = map.createLayer(index, tilesets, 0, 0);
+                if (layer) {
+                    layer.setSkipCull(true);
+
+                    if (layerProperties) {
+                        const collidesProp = layerProperties.find(
+                            (p: any) => p.name === "ge_collide"
+                        );
+
+                        if (collidesProp && (collidesProp as any).value) {
+                            layer.setCollisionByExclusion([-1, 0]);
+                            collidableLayers.push(layer);
+                        }
                     }
                 }
             }
@@ -61,8 +121,11 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         // Just center it on the map
         this.cameras.main.centerOn(worldW / 2, worldH / 2);
 
-        // Create player
-        const startPos = this.getStartPosition();
+        // Create player at custom position if provided, otherwise use default
+        const startPos = this.spawnData
+            ? new Phaser.Math.Vector2(this.spawnData.x, this.spawnData.y)
+            : this.getStartPosition();
+
         this.player = this.physics.add.sprite(
             startPos.x,
             startPos.y,
@@ -89,6 +152,42 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         // Add collision between player and collidable layers
         collidableLayers.forEach((layer) => {
             this.physics.add.collider(this.player, layer);
+        });
+
+        // Create invisible zones for scene transitions
+        sceneTransitionData.forEach((transitionData) => {
+            transitionData.tiles.forEach((tile) => {
+                // Create a zone at each tile position
+                const zone = this.add.zone(
+                    tile.x * 16 + 8,
+                    tile.y * 16 + 8,
+                    16,
+                    16
+                );
+                this.physics.add.existing(zone);
+
+                this.physics.add.overlap(
+                    this.player,
+                    zone,
+                    () => {
+                        let spawnData: any = {};
+
+                        if (transitionData.startPosition) {
+                            // Convert tile coordinates to pixel coordinates
+                            spawnData = {
+                                x: transitionData.startPosition.x * 16 + 8,
+                                y: transitionData.startPosition.y * 16 + 8,
+                            };
+                        }
+
+                        // Stop current scene and start new one
+                        this.scene.stop();
+                        this.scene.start(transitionData.sceneName, spawnData);
+                    },
+                    undefined,
+                    this
+                );
+            });
         });
 
         // Setup camera to follow player

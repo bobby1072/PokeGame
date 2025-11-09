@@ -2,8 +2,10 @@ import { Scene } from "phaser";
 import { PokePreloader } from "./PokePreloader.ts";
 
 export class PokeBoot extends Scene {
+    public static readonly SCENE_KEY = "PokeBoot";
+
     public constructor() {
-        super(PokeBoot.name);
+        super(PokeBoot.SCENE_KEY);
     }
 
     public preload() {
@@ -17,6 +19,6 @@ export class PokeBoot extends Scene {
     }
 
     public create() {
-        this.scene.start(PokePreloader.name);
+        this.scene.start(PokePreloader.SCENE_KEY);
     }
 }
