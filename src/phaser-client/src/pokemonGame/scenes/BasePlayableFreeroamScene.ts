@@ -180,6 +180,8 @@ export abstract class BasePlayableFreeroamScene extends Scene {
                             };
                         }
 
+                        // Stop current scene and start new one
+                        this.scene.stop();
                         this.scene.start(transitionData.sceneName, spawnData);
                     },
                     undefined,
