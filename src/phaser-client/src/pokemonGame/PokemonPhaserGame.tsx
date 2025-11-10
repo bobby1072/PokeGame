@@ -5,7 +5,7 @@ import {
     useLayoutEffect,
     useRef,
 } from "react";
-import StartPokemonGame from "./main";
+import StartPokemonGame from "./MainGame";
 import { EventBus } from "./EventBus";
 
 export interface IRefPokemonPhaserGame {
