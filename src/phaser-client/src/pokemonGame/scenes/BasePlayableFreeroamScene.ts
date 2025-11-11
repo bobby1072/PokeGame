@@ -132,21 +132,21 @@ export abstract class BasePlayableFreeroamScene extends Scene {
             "myPlayer"
         );
 
-        // Scale player
-        const baseHeight = 24; // Reduced from 48 to make player smaller
+        // Scale player to exactly 16 pixels (one tile) to prevent overlapping transition zones
+        const baseHeight = 16;
         const ph = this.player.height > 0 ? this.player.height : 96;
         this.player.setScale(baseHeight / ph);
         this.player.setDepth(10);
         this.player.setCollideWorldBounds(true);
 
-        // Set player collision body
+        // Set player collision body to be smaller than sprite for tighter collision
         this.player.body.setSize(
-            this.player.width * 0.6,
-            this.player.height * 0.8
+            this.player.width * 0.5,
+            this.player.height * 0.5
         );
         this.player.body.setOffset(
-            this.player.width * 0.2,
-            this.player.height * 0.1
+            this.player.width * 0.25,
+            this.player.height * 0.25
         );
 
         // Add collision between player and collidable layers
