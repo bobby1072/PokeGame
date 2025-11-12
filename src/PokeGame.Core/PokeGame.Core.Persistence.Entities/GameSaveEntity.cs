@@ -9,6 +9,9 @@ public sealed class GameSaveEntity: BasePokeGameEntity<Guid?, GameSave>
 {
     public required Guid UserId { get; set; }
     public required string CharacterName { get; set; }
+    public required string LastPlayedScene  { get; set; }
+    public required string LastPlayedLocationX { get; set; }
+    public required string LastPlayedLocationY { get; set; }
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
     public DateTime LastPlayed { get; set; } = DateTime.UtcNow;
 
@@ -19,8 +22,11 @@ public sealed class GameSaveEntity: BasePokeGameEntity<Guid?, GameSave>
             Id = Id,
             CharacterName = CharacterName,
             UserId = UserId,
+            LastPlayed = LastPlayed,
+            LastPlayedScene = LastPlayedScene,
+            LastPlayedLocationX = LastPlayedLocationX,
+            LastPlayedLocationY = LastPlayedLocationY,
             DateCreated = DateCreated,
-            LastPlayed = LastPlayed
         };
     }
 }
