@@ -9,6 +9,6 @@ public interface IGameSessionProcessingManager
         string connectionId,
         Schemas.Game.User user
     );
-    Task DeleteAllGameSessionsByGameSave(Guid gameSaveId);
-    Task DeleteAllGameSessionsByConnectionId(string connectionId);
+
+    Task EndGameSession(string connectionId);
 }

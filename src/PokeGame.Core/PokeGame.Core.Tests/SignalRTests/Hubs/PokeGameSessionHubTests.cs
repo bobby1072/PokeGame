@@ -59,11 +59,11 @@ public sealed class PokeGameSessionHubTests
         // Note: Abort() is called on the context but we can't verify it with our test implementation
     }
     [Fact]
-    public async Task OnDisconnectedAsync_Should_Delete_All_Sessions()
+    public async Task OnDisconnectedAsync_Should_End_Game_Session()
     {
         // Arrange
         _mockGameSessionManager
-            .Setup(m => m.DeleteAllGameSessionsByConnectionId("test-connection-id"))
+            .Setup(m => m.EndGameSession("test-connection-id"))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -71,7 +71,7 @@ public sealed class PokeGameSessionHubTests
 
         // Assert
         _mockGameSessionManager.Verify(
-            m => m.DeleteAllGameSessionsByConnectionId("test-connection-id"),
+            m => m.EndGameSession("test-connection-id"),
             Times.Once
         );
     }
@@ -81,7 +81,7 @@ public sealed class PokeGameSessionHubTests
     {
         // Arrange
         _mockGameSessionManager
-            .Setup(m => m.DeleteAllGameSessionsByConnectionId("test-connection-id"))
+            .Setup(m => m.EndGameSession("test-connection-id"))
             .ThrowsAsync(new Exception("Test exception"));
 
         // Act & Assert
@@ -89,7 +89,7 @@ public sealed class PokeGameSessionHubTests
         await _hub.OnDisconnectedAsync(null);
 
         _mockGameSessionManager.Verify(
-            m => m.DeleteAllGameSessionsByConnectionId("test-connection-id"),
+            m => m.EndGameSession("test-connection-id"),
             Times.Once
         );
     }

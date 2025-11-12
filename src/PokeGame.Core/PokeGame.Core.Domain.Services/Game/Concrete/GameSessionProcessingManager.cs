@@ -28,17 +28,9 @@ internal sealed class GameSessionProcessingManager : IGameSessionProcessingManag
             >((gameSaveId, connectionId, user))
         ).CommandResult;
 
-    public Task DeleteAllGameSessionsByConnectionId(string connectionId) =>
-        _domainServiceCommandExecutor.RunCommandAsync<
-            RemoveGameSessionsByConnectionIdCommand,
-            string,
-            DomainCommandResult
-        >(connectionId);
-
-    public Task DeleteAllGameSessionsByGameSave(Guid gameSaveId) =>
-        _domainServiceCommandExecutor.RunCommandAsync<
-            RemoveGameSessionByGameSaveIdCommand,
-            Guid,
-            DomainCommandResult
-        >(gameSaveId);
+    public Task EndGameSession(string connectionId) =>
+        _domainServiceCommandExecutor
+            .RunCommandAsync<EndGameSessionCommand, string,
+                    DomainCommandResult>
+                (connectionId);
 }
