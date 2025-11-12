@@ -140,7 +140,7 @@ public sealed class PokeGameSessionHub : Hub
             var gameSessionManager =
                 _serviceProvider.GetRequiredService<IGameSessionProcessingManager>();
 
-            await gameSessionManager.DeleteAllGameSessionsByConnectionId(Context.ConnectionId);
+            await gameSessionManager.EndGameSession(Context.ConnectionId);
         }
         catch (Exception ex)
         {
