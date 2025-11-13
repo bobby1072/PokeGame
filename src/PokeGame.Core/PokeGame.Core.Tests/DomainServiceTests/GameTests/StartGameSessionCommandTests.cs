@@ -40,6 +40,9 @@ public sealed class StartGameSessionCommandTests
             Id = gameSaveId,
             UserId = user.Id!.Value,
             CharacterName = _fixture.Create<string>(),
+            LastPlayedScene = "BasiliaTown",
+            LastPlayedLocationX = 0,
+            LastPlayedLocationY = 0,
         };
 
         var gameSaveResult = new DbGetOneResult<GameSave>(existingGameSave);
@@ -150,6 +153,9 @@ public sealed class StartGameSessionCommandTests
             Id = gameSaveId,
             UserId = Guid.NewGuid(), // Different user
             CharacterName = _fixture.Create<string>(),
+            LastPlayedScene = "BasiliaTown",
+            LastPlayedLocationX = 0,
+            LastPlayedLocationY = 0,
         };
 
         var gameSaveResult = new DbGetOneResult<GameSave>(existingGameSave);
@@ -185,6 +191,9 @@ public sealed class StartGameSessionCommandTests
             Id = gameSaveId,
             UserId = user.Id!.Value,
             CharacterName = _fixture.Create<string>(),
+            LastPlayedScene = "BasiliaTown",
+            LastPlayedLocationX = 0,
+            LastPlayedLocationY = 0,
         };
 
         var gameSaveResult = new DbGetOneResult<GameSave>(existingGameSave);

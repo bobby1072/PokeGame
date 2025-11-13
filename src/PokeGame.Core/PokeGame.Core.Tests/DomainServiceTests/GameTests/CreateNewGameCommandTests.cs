@@ -3,6 +3,7 @@ using BT.Common.Persistence.Shared.Models;
 using FluentValidation;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Game.Commands;
@@ -21,9 +22,25 @@ public sealed class CreateNewGameCommandTests
 
     public CreateNewGameCommandTests()
     {
+        var pokeGameRules = new PokeGameRules
+        {
+            XpMultiplier = 1.052m,
+            BaseXpCeiling = 100,
+            LegendaryXpMultiplier = 1.055m,
+            HpCalculationStats = new HpCalculationStats { DefaultIV = 31, DefaultEV = 0 },
+            StandardPokemonPokedexRange = new PokedexRange { Min = 1, Max = 143 },
+            LegendaryPokemonPokedexRange = new PokedexRange { Min = 144, Max = 151 },
+            DefaultStarterScene = new DefaultStarterScene
+            {
+                SceneName = "BasiliaTownStarterHomeScene",
+                SceneLocation = new DefaultStarterSceneLocation { X = 15, Y = 17 }
+            }
+        };
+        
         _command = new CreateNewGameCommand(
             _mockGameSaveRepository.Object,
             _mockValidatorService.Object,
+            pokeGameRules,
             new NullLogger<CreateNewGameCommand>()
         );
     }
@@ -40,7 +57,10 @@ public sealed class CreateNewGameCommandTests
         {
             Id = Guid.NewGuid(),
             CharacterName = characterName,
-            UserId = user.Id!.Value
+            UserId = user.Id!.Value,
+            LastPlayedScene = "BasiliaTownStarterHomeScene",
+            LastPlayedLocationX = 15,
+            LastPlayedLocationY = 17,
         };
         
         var dbResult = new DbSaveResult<GameSave>(new[] { expectedGameSave });
