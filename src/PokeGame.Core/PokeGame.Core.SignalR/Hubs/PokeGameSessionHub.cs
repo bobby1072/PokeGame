@@ -13,13 +13,15 @@ public sealed class PokeGameSessionHub : Hub
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<PokeGameSessionHub> _logger;
-
+    private const string EventKey = "EventKey";
     public PokeGameSessionHub(IServiceProvider serviceProvider, ILogger<PokeGameSessionHub> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
     }
-
+    #region  Hub Methods
+    #endregion
+    #region Connect & Disconnect
     public override async Task OnConnectedAsync()
     {
         await base.OnConnectedAsync();
@@ -37,17 +39,17 @@ public sealed class PokeGameSessionHub : Hub
             )
             {
                 _logger.LogInformation(
-                    "Game save id not included with connection request, aborting Signal R connection..."
+                    "Invalid game save id included with connection request, aborting Signal R connection..."
                 );
 
                 await Clients.Caller.SendAsync(
                     EventKeys.GameSessionConnectionFailed,
                     new SignalRClientEvent
                     {
-                        ExceptionMessage = "No game save id attached to request query",
+                        ExceptionMessage = "Invalid game save id attached to request query",
                         ExtraData = new Dictionary<string, object>
                         {
-                            { "EventKey", EventKeys.GameSessionConnectionFailed },
+                            { EventKey, EventKeys.GameSessionConnectionFailed },
                         },
                     }
                 );
@@ -66,7 +68,7 @@ public sealed class PokeGameSessionHub : Hub
             )
             {
                 _logger.LogInformation(
-                    "User id not included with connection request, aborting Signal R connection for connectionId: {ConnectionId}...",
+                    "Invalid user id included with connection request, aborting Signal R connection for connectionId: {ConnectionId}...",
                     Context.ConnectionId
                 );
 
@@ -74,10 +76,10 @@ public sealed class PokeGameSessionHub : Hub
                     EventKeys.GameSessionConnectionFailed,
                     new SignalRClientEvent
                     {
-                        ExceptionMessage = "No user id attached to request query",
+                        ExceptionMessage = "Invalid user id attached to request query",
                         ExtraData = new Dictionary<string, object>
                         {
-                            { "EventKey", EventKeys.GameSessionConnectionFailed },
+                            { EventKey, EventKeys.GameSessionConnectionFailed },
                         },
                     }
                 );
@@ -111,7 +113,7 @@ public sealed class PokeGameSessionHub : Hub
                     Data = newGameSession,
                     ExtraData = new Dictionary<string, object>
                     {
-                        { "EventKey", EventKeys.GameSessionStarted },
+                        { EventKey, EventKeys.GameSessionStarted },
                     },
                 }
             );
@@ -151,7 +153,8 @@ public sealed class PokeGameSessionHub : Hub
             );
         }
     }
-
+    #endregion
+    #region Private methods and data
     private async Task HandleSignalRException(Exception exception, string eventKey)
     {
         if (exception is PokeGameApiUserException pokeGameApiUserException)
@@ -166,7 +169,7 @@ public sealed class PokeGameSessionHub : Hub
                 new SignalRClientEvent
                 {
                     ExceptionMessage = pokeGameApiUserException.Message,
-                    ExtraData = new Dictionary<string, object> { { "EventKey", eventKey } },
+                    ExtraData = new Dictionary<string, object> { { EventKey, eventKey } },
                 }
             );
         }
@@ -182,15 +185,16 @@ public sealed class PokeGameSessionHub : Hub
                 new SignalRClientEvent
                 {
                     ExceptionMessage = Constants.ExceptionConstants.InternalError,
-                    ExtraData = new Dictionary<string, object> { { "EventKey", eventKey } },
+                    ExtraData = new Dictionary<string, object> { { EventKey, eventKey } },
                 }
             );
         }
     }
 
-    private struct EventKeys
+    private static class EventKeys
     {
         public const string GameSessionStarted = "GameSessionStarted";
         public const string GameSessionConnectionFailed = "GameSessionConnectionFailed";
     }
+    #endregion
 }
