@@ -9,4 +9,6 @@ public sealed record PokeGameRules
     public required HpCalculationStats HpCalculationStats { get; init; }
     public required PokedexRange StandardPokemonPokedexRange { get; init; }
     public required PokedexRange LegendaryPokemonPokedexRange { get; init; }
+    
+    public required DefaultStarterScene DefaultStarterScene { get; init; }
 }
