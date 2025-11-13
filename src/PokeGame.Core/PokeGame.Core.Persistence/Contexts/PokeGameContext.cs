@@ -2,6 +2,7 @@
 using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
+using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Persistence.Entities;
 using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Game;
@@ -16,10 +17,13 @@ internal sealed class PokeGameContext : DbContext
     public DbSet<OwnedPokemonEntity> OwnedPokemons { get; set; }
     public DbSet<ItemStackEntity> ItemStacks { get; set; }
     public DbSet<GameSessionEntity> GameSessions { get; set; }
-
+    public DbSet<GameSaveDataEntity> GameSaveData { get; set; }
+    private static readonly JsonSerializerOptions _jsonBSerializerOptions = new () { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
     public PokeGameContext(DbContextOptions<PokeGameContext> options)
         : base(options) { }
 
+    
+    
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         UpdateDatesOnNewlyAddedOrModified();
@@ -47,6 +51,32 @@ internal sealed class PokeGameContext : DbContext
         return base.SaveChanges();
     }
 
+    
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<GameSaveEntity>(ent =>
+        {
+            ent.HasOne<GameSaveDataEntity>()
+                .WithOne(x => x.ParentGameSave)
+                .HasForeignKey<GameSaveEntity>(x => x.GameSaveData);
+        });
+
+        modelBuilder.Entity<GameSaveDataEntity>(ent =>
+        {
+            ent
+                .Property(x => x.GameData)
+                .HasColumnType("JSONB")
+                .HasConversion(x => JsonSerializer.Serialize(x, _jsonBSerializerOptions), x => DeserializeGameSaveData(x));
+        });
+    }
+
+    private static GameSaveDataActual DeserializeGameSaveData(string json)
+    {
+        return JsonSerializer.Deserialize<GameSaveDataActual>(json, _jsonBSerializerOptions) ?? throw new PokeGameApiServerException("Failed to deserialize GameSaveDataActual from db json");
+    }
+    
+    
     private void UpdateDatesOnNewlyAddedOrModified()
     {
         var currentTime = DateTime.UtcNow;

@@ -11,9 +11,6 @@ public static class GameSaveExtensions
             Id = gameSave.Id,
             CharacterName = gameSave.CharacterName,
             UserId = gameSave.UserId,
-            LastPlayedScene = gameSave.LastPlayedScene,
-            LastPlayedLocationX = gameSave.LastPlayedLocationX,
-            LastPlayedLocationY = gameSave.LastPlayedLocationY,
             DateCreated = gameSave.DateCreated,
             LastPlayed = gameSave.LastPlayed,
         };
