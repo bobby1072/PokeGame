@@ -100,6 +100,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<GetGameSavesByUserCommand>()
             .AddScoped<StartGameSessionCommand>()
             .AddScoped<EndGameSessionCommand>()
+            .AddScoped<SaveGameDataCommand>()
             .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>()
             .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>();
 
