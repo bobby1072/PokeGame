@@ -8,7 +8,7 @@ public sealed class GameSave : PersistableDomainModel<GameSave, Guid?>
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
     public DateTime LastPlayed { get; set; } = DateTime.UtcNow;
     
-    public GameSaveData? GameSaveData { get; init; }
+    public GameSaveData? GameSaveData { get; set; }
 
     public override bool Equals(GameSave? other)
     {
