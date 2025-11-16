@@ -16,16 +16,19 @@ internal sealed class SaveGameDataCommand: IDomainCommand<(GameSaveData GameData
 
     private readonly IGameSessionRepository _gameSessionRepository;
     private readonly IGameSaveDataRepository _gameSaveDataRepository;
+    private readonly IValidatorService _validatorService;
     private readonly ILogger<SaveGameDataCommand> _logger;
 
     public SaveGameDataCommand(
         IGameSessionRepository gameSessionRepository,
         IGameSaveDataRepository gameSaveDataRepository,
+        IValidatorService validatorService,
         ILogger<SaveGameDataCommand> logger
     )
     {
         _gameSessionRepository = gameSessionRepository;
         _gameSaveDataRepository = gameSaveDataRepository;
+        _validatorService = validatorService;
         _logger = logger;
     }
 
@@ -35,6 +38,8 @@ internal sealed class SaveGameDataCommand: IDomainCommand<(GameSaveData GameData
     {
         _logger.LogInformation("About to save game data...");
 
+        await _validatorService.ValidateAndThrowAsync(input.GameData, cancellationToken);
+        
         var foundGameSession = await EntityFrameworkUtils
             .TryDbOperation(() =>
                 _gameSessionRepository.GetOne(input.ConnectionId, nameof(GameSessionEntity.ConnectionId)), _logger)

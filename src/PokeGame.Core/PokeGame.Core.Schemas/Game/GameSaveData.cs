@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 namespace PokeGame.Core.Schemas.Game;
 
 public sealed class GameSaveData: PersistableDomainModel<GameSaveData, long?>
