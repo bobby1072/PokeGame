@@ -20,6 +20,72 @@ public sealed class PokeGameSessionHub : Hub
         _logger = logger;
     }
     #region  Hub Methods
+    [HubMethodName("SaveGame")]
+    public async Task SaveGame(GameSaveData gameSaveData)
+    {
+        try
+        {
+            var httpContext = Context.GetHttpContext();
+            
+            var foundUserIdQueryString = httpContext?.GetStringFromRequestQuery(
+                Constants.ApiConstants.UserIdHeaderKey
+            );
+
+            if (
+                string.IsNullOrWhiteSpace(foundUserIdQueryString)
+                || !Guid.TryParse(foundUserIdQueryString, out var userId)
+            )
+            {
+                _logger.LogInformation(
+                    "Invalid user id included with connection request"
+                );
+
+                await Clients.Caller.SendAsync(
+                    EventKeys.GameSaveFailed,
+                    new SignalRClientEvent
+                    {
+                        ExceptionMessage = "Invalid user id attached to request query",
+                        ExtraData = new Dictionary<string, object>
+                        {
+                            { EventKey, EventKeys.GameSaveFailed },
+                        },
+                    }
+                );
+
+                return;
+            }
+
+            var userManager = _serviceProvider.GetRequiredService<IUserProcessingManager>();
+            var foundUser = await userManager.GetUserAsync(userId);
+            
+            var gameSaveProcessingManager = _serviceProvider.GetRequiredService<IGameSaveProcessingManager>();
+            await gameSaveProcessingManager.SaveGameDataAsync(gameSaveData, Context.ConnectionId, foundUser);
+        }
+        catch (PokeGameApiUserException ex)
+        {
+            _logger.LogInformation(ex, "Poke game user exception occurred during game save");
+            await Clients.Caller.SendAsync(
+                EventKeys.GameSaveFailed,
+                new SignalRClientEvent
+                {
+                    ExceptionMessage = $"Failed to save game. {ex.Message}",
+                    ExtraData = new Dictionary<string, object> { { EventKey, EventKeys.GameSaveFailed } },
+                }
+            );   
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected exception occurred during game save...");
+            await Clients.Caller.SendAsync(
+                EventKeys.GameSaveFailed,
+                new SignalRClientEvent
+                {
+                    ExceptionMessage = "Failed to save game...",
+                    ExtraData = new Dictionary<string, object> { { EventKey, EventKeys.GameSaveFailed } },
+                }
+            ); 
+        }
+    }
     #endregion
     #region Connect & Disconnect
     public override async Task OnConnectedAsync()
@@ -154,7 +220,7 @@ public sealed class PokeGameSessionHub : Hub
         }
     }
     #endregion
-    #region Private methods and data
+    #region Private Methods And Definitions
     private async Task HandleSignalRException(Exception exception, string eventKey)
     {
         if (exception is PokeGameApiUserException pokeGameApiUserException)
@@ -195,6 +261,7 @@ public sealed class PokeGameSessionHub : Hub
     {
         public const string GameSessionStarted = "GameSessionStarted";
         public const string GameSessionConnectionFailed = "GameSessionConnectionFailed";
+        public const string GameSaveFailed = "GameSaveFailed";
     }
     #endregion
 }

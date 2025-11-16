@@ -24,4 +24,10 @@ internal sealed class GameSaveProcessingManager: IGameSaveProcessingManager
         (await _domainServiceCommandExecutor
             .RunCommandAsync<GetGameSavesByUserCommand, Schemas.Game.User,
                 DomainCommandResult<IReadOnlyCollection<GameSave>>>(currentUser)).CommandResult;
+
+    public async Task<GameSaveData> SaveGameDataAsync(GameSaveData gameData, string connectionId,
+        Schemas.Game.User currentUser) =>
+        (await _domainServiceCommandExecutor
+            .RunCommandAsync<SaveGameDataCommand, (GameSaveData GameData, string ConnectionId, Schemas.Game.User CurrentUser),
+                DomainCommandResult<GameSaveData>>((gameData, connectionId, currentUser))).CommandResult;
 }
