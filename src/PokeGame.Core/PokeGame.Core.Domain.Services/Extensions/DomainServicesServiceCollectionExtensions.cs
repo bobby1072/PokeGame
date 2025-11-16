@@ -7,9 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using PokeGame.Core.Common;
 using PokeGame.Core.Common.Configurations;
+using PokeGame.Core.Common.Extensions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
 using PokeGame.Core.Domain.Services.Game.Abstract;
@@ -47,6 +47,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddLogging()
             .AddMemoryCache()
             .AddDomainModelValidators()
+            .AddGameInformationServices()
             .AddPokeGamePersistence(configuration, healthCheckBuilder, environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
 
@@ -65,11 +66,11 @@ public static class DomainServicesServiceCollectionExtensions
         IConfiguration configuration
     )
     {
-        var pokeGameRulesSection = configuration.GetSection(PokeGameRules.Key);
+        var pokeGameRulesSection = configuration.GetSection(ConfigurablePokeGameRules.Key);
 
         if (!pokeGameRulesSection.Exists())
         {
-            throw new ArgumentNullException(PokeGameRules.Key);
+            throw new ArgumentNullException(ConfigurablePokeGameRules.Key);
         }
 
         var pokeApiSettings =
@@ -95,7 +96,7 @@ public static class DomainServicesServiceCollectionExtensions
 
         services
             .ConfigureSingletonOptions(pokeApiSettings)
-            .ConfigureSingletonOptions<PokeGameRules>(pokeGameRulesSection)
+            .ConfigureSingletonOptions<ConfigurablePokeGameRules>(pokeGameRulesSection)
             .AddScoped<CreateNewGameCommand>()
             .AddScoped<GetGameSavesByUserCommand>()
             .AddScoped<StartGameSessionCommand>()

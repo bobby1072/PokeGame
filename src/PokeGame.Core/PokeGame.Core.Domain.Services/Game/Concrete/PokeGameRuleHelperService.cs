@@ -8,14 +8,14 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete;
 
 internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 {
-    private readonly PokeGameRules _pokeGameRules;
+    private readonly ConfigurablePokeGameRules _configurablePokeGameRules;
     private readonly ILogger<PokeGameRuleHelperService> _logger;
     private int[]? _fullStandardPokedexIndexArrayInstance;
     private int[] _fullStandardPokedexIndexArray
     {
         get =>
             _fullStandardPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(
-                _pokeGameRules.StandardPokemonPokedexRange
+                _configurablePokeGameRules.StandardPokemonPokedexRange
             );
     }
     private int[]? _fullLegendaryPokedexIndexArrayInstance;
@@ -23,16 +23,16 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
     {
         get =>
             _fullLegendaryPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(
-                _pokeGameRules.LegendaryPokemonPokedexRange
+                _configurablePokeGameRules.LegendaryPokemonPokedexRange
             );
     }
 
     public PokeGameRuleHelperService(
-        PokeGameRules pokeGameRules,
+        ConfigurablePokeGameRules configurablePokeGameRules,
         ILogger<PokeGameRuleHelperService> logger
     )
     {
-        _pokeGameRules = pokeGameRules;
+        _configurablePokeGameRules = configurablePokeGameRules;
         _logger = logger;
     }
 
@@ -124,10 +124,10 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         Func<int, int> getMaxHpForLevel
     )
     {
-        var maxXpForLevel = _pokeGameRules.BaseXpCeiling;
+        var maxXpForLevel = _configurablePokeGameRules.BaseXpCeiling;
         var multiplierToUse = isLegendary
-            ? _pokeGameRules.LegendaryXpMultiplier
-            : _pokeGameRules.XpMultiplier;
+            ? _configurablePokeGameRules.LegendaryXpMultiplier
+            : _configurablePokeGameRules.XpMultiplier;
 
         for (int i = 1; i <= currentLevel; i++)
         {
@@ -151,7 +151,7 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
     private int GetPokemonMaxHp(OwnedPokemon ownedPokemon)
     {
-        int evTerm = _pokeGameRules.HpCalculationStats.DefaultEV / 4;
+        int evTerm = _configurablePokeGameRules.HpCalculationStats.DefaultEV / 4;
         double core =
             (
                 2
@@ -161,7 +161,7 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
                             "Pokedex pokemon not attached to owned pokemon"
                         )
                     )
-                + _pokeGameRules.HpCalculationStats.DefaultIV
+                + _configurablePokeGameRules.HpCalculationStats.DefaultIV
                 + evTerm
             )
             * ownedPokemon.PokemonLevel

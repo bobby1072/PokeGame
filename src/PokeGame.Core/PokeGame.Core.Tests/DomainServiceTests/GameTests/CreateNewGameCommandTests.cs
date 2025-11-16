@@ -22,7 +22,7 @@ public sealed class CreateNewGameCommandTests
 
     public CreateNewGameCommandTests()
     {
-        var pokeGameRules = new PokeGameRules
+        var pokeGameRules = new ConfigurablePokeGameRules
         {
             XpMultiplier = 1.052m,
             BaseXpCeiling = 100,

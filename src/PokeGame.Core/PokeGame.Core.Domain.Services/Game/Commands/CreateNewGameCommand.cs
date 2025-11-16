@@ -18,19 +18,19 @@ internal sealed class CreateNewGameCommand
     public string CommandName => nameof(CreateNewGameCommand);
     private readonly IGameSaveRepository _gameSaveRepository;
     private readonly IValidatorService _gameSaveValidator;
-    private readonly PokeGameRules _pokeGameRules;
+    private readonly ConfigurablePokeGameRules _configurablePokeGameRules;
     private readonly ILogger<CreateNewGameCommand> _logger;
 
     public CreateNewGameCommand(
         IGameSaveRepository gameSaveRepository,
         IValidatorService gameSaveValidator,
-        PokeGameRules pokeGameRules,
+        ConfigurablePokeGameRules configurablePokeGameRules,
         ILogger<CreateNewGameCommand> logger
     )
     {
         _gameSaveRepository = gameSaveRepository;
         _gameSaveValidator = gameSaveValidator;
-        _pokeGameRules = pokeGameRules;
+        _configurablePokeGameRules = configurablePokeGameRules;
         _logger = logger;
     }
 
@@ -72,9 +72,9 @@ internal sealed class CreateNewGameCommand
             GameSaveId = gameSaveId,
             GameData = new GameSaveDataActual
             {
-                LastPlayedScene = _pokeGameRules.DefaultStarterScene.SceneName,
-                LastPlayedLocationX = _pokeGameRules.DefaultStarterScene.SceneLocation.X,
-                LastPlayedLocationY = _pokeGameRules.DefaultStarterScene.SceneLocation.Y
+                LastPlayedScene = _configurablePokeGameRules.DefaultStarterScene.SceneName,
+                LastPlayedLocationX = _configurablePokeGameRules.DefaultStarterScene.SceneLocation.X,
+                LastPlayedLocationY = _configurablePokeGameRules.DefaultStarterScene.SceneLocation.Y
             }
         };
     }

@@ -1,8 +1,8 @@
 ﻿namespace PokeGame.Core.Common.Configurations;
 
-public sealed record PokeGameRules
+public sealed record ConfigurablePokeGameRules
 {
-    public static readonly string Key = nameof(PokeGameRules);
+    public const string Key = "PokeGameRules";
     public required decimal XpMultiplier { get; init; }
     public required decimal LegendaryXpMultiplier { get; init; }
     public required int BaseXpCeiling { get; init; }
