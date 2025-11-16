@@ -8,7 +8,6 @@ public sealed class GameSaveDataEntity: BasePokeGameEntity<long?, GameSaveData>
 {
     public required Guid GameSaveId { get; set; }
     public required GameSaveDataActual GameData { get; set; }
-    public GameSaveEntity? ParentGameSave { get; set; }
     public override GameSaveData ToModel()
     {
         return new GameSaveData

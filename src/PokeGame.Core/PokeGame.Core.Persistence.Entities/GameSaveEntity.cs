@@ -10,7 +10,7 @@ public sealed class GameSaveEntity: BasePokeGameEntity<Guid?, GameSave>
     public required string CharacterName { get; set; }
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
     public DateTime LastPlayed { get; set; } = DateTime.UtcNow;
-    public GameSaveData? GameSaveData { get; init; }
+    public GameSaveDataEntity? GameSaveData { get; init; }
 
     public override GameSave ToModel()
     {
@@ -21,7 +21,7 @@ public sealed class GameSaveEntity: BasePokeGameEntity<Guid?, GameSave>
             UserId = UserId,
             LastPlayed = LastPlayed,
             DateCreated = DateCreated,
-            GameSaveData = GameSaveData,
+            GameSaveData = GameSaveData?.ToModel(),
         };
     }
 }

@@ -55,25 +55,18 @@ internal sealed class PokeGameContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<GameSaveEntity>(ent =>
-        {
-            ent.HasOne<GameSaveDataEntity>()
-                .WithOne(x => x.ParentGameSave)
-                .HasForeignKey<GameSaveEntity>(x => x.GameSaveData);
-        });
-
         modelBuilder.Entity<GameSaveDataEntity>(ent =>
         {
             ent
+                .HasOne<GameSaveEntity>()
+                .WithOne(x => x.GameSaveData)
+                .HasForeignKey<GameSaveDataEntity>(x => x.GameSaveId);
+            
+            ent
                 .Property(x => x.GameData)
-                .HasColumnType("JSONB")
-                .HasConversion(x => JsonSerializer.Serialize(x, _jsonBSerializerOptions), x => DeserializeGameSaveData(x));
+                .HasColumnType("jsonb")
+                .HasConversion(x => SerializeGameSaveData(x), x => DeserializeGameSaveData(x));
         });
-    }
-
-    private static GameSaveDataActual DeserializeGameSaveData(string json)
-    {
-        return JsonSerializer.Deserialize<GameSaveDataActual>(json, _jsonBSerializerOptions) ?? throw new PokeGameApiServerException("Failed to deserialize GameSaveDataActual from db json");
     }
     
     
@@ -169,4 +162,13 @@ internal sealed class PokeGameContext : DbContext
             }
         }
     }
+    private static string SerializeGameSaveData(GameSaveDataActual entity)
+    {
+        return JsonSerializer.Serialize(entity, _jsonBSerializerOptions);
+    }
+    private static GameSaveDataActual DeserializeGameSaveData(string json)
+    {
+        return JsonSerializer.Deserialize<GameSaveDataActual>(json, _jsonBSerializerOptions) ?? throw new PokeGameApiServerException("Failed to deserialize GameSaveDataActual from db json");
+    }
+
 }
