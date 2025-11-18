@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
-using PokeGame.Core.Persistence.Entities;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas.Game;
 
@@ -64,16 +63,11 @@ internal sealed class StartGameSessionCommand
             );
         }
 
-        var foundExistingGameSession = await EntityFrameworkUtils.TryDbOperation(
-            () => _gameSessionRepository.GetOne(input.GameSaveId, nameof(GameSessionEntity.GameSaveId)),
+        await EntityFrameworkUtils.TryDbOperation(
+            () => _gameSessionRepository.DeleteAllSessionsByGameSaveIdAsync(input.GameSaveId),
             _logger
         );
 
-        if (foundExistingGameSession?.Data is not null)
-        {
-            throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "There is currently another game session already in progress");
-        }
-        
         var newSession = new GameSession
         {
             GameSaveId = input.GameSaveId,

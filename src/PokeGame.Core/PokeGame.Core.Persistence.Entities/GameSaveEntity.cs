@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Persistence.Entities;
@@ -10,7 +11,6 @@ public sealed class GameSaveEntity: BasePokeGameEntity<Guid?, GameSave>
     public required string CharacterName { get; set; }
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
     public DateTime LastPlayed { get; set; } = DateTime.UtcNow;
-    public GameSaveDataEntity? GameSaveData { get; init; }
 
     public override GameSave ToModel()
     {
@@ -19,9 +19,8 @@ public sealed class GameSaveEntity: BasePokeGameEntity<Guid?, GameSave>
             Id = Id,
             CharacterName = CharacterName,
             UserId = UserId,
-            LastPlayed = LastPlayed,
             DateCreated = DateCreated,
-            GameSaveData = GameSaveData?.ToModel(),
+            LastPlayed = LastPlayed
         };
     }
 }

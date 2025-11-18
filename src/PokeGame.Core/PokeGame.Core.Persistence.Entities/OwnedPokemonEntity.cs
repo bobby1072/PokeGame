@@ -9,6 +9,7 @@ public sealed class OwnedPokemonEntity : BasePokeGameEntity<Guid?, OwnedPokemon>
     public required Guid GameSaveId { get; set; }
     public required string ResourceName { get; set; }
     public DateTime CaughtAt { get; set; } = DateTime.UtcNow;
+    public bool InDeck { get; set; } = false;
     public required int PokemonLevel { get; set; }
     public required int CurrentExperience { get; set; }
     public required int CurrentHp { get; set; }
@@ -25,6 +26,7 @@ public sealed class OwnedPokemonEntity : BasePokeGameEntity<Guid?, OwnedPokemon>
             GameSaveId = GameSaveId,
             ResourceName = ResourceName,
             CaughtAt = CaughtAt,
+            InDeck = InDeck,
             PokemonLevel = PokemonLevel,
             CurrentExperience = CurrentExperience,
             CurrentHp = CurrentHp,

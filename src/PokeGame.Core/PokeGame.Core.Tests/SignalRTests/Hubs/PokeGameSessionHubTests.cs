@@ -53,7 +53,7 @@ public sealed class PokeGameSessionHubTests
         Assert.Equal("GameSessionConnectionFailed", invocation.MethodName);
         var eventArg = Assert.Single(invocation.Arguments);
         var evt = Assert.IsType<SignalRClientEvent>(eventArg);
-        Assert.Equal("Invalid game save id attached to request query", evt.ExceptionMessage);
+        Assert.Equal("No game save id attached to request query", evt.ExceptionMessage);
         Assert.Equal("GameSessionConnectionFailed", evt.ExtraData["EventKey"]);
 
         // Note: Abort() is called on the context but we can't verify it with our test implementation
