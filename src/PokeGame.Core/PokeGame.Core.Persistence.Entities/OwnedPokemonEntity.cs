@@ -34,6 +34,7 @@ public sealed class OwnedPokemonEntity : BasePokeGameEntity<Guid?, OwnedPokemon>
             MoveTwoResourceName = MoveTwoResourceName,
             MoveThreeResourceName = MoveThreeResourceName,
             MoveFourResourceName = MoveFourResourceName,
+            GameSave = GameSave?.ToModel(),
         };
     }
 }

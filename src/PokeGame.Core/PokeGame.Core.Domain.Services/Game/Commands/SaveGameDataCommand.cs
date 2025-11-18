@@ -76,7 +76,7 @@ internal sealed class SaveGameDataCommand: IDomainCommand<(GameSaveData GameData
                 .TryDbOperation(() => _ownedPokemonRepository
                     .GetMany(newPokemon
                         .FastArraySelect<GameSaveDataActualDeckPokemon, Guid?>(x => x.OwnedPokemonId)
-                        .ToArray())
+                        .ToArray(), relations: nameof(OwnedPokemonEntity.GameSave))
                 )
                     ?? throw new PokeGameApiServerException("Failed to fetch owned pokemon");
 
@@ -84,7 +84,11 @@ internal sealed class SaveGameDataCommand: IDomainCommand<(GameSaveData GameData
             {
                 throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Failed to find the pokemon you're adding to you deck");
             }
-            // if(foundOwnedPokemon.Data.Any(x => x))
+
+            if (foundOwnedPokemon.Data.Any(x => x.GameSave?.UserId != currentUser.Id))
+            {
+                throw new PokeGameApiUserException(HttpStatusCode.Unauthorized, "The pokemon in your deck have to belong to you");
+            }
         }
     }
     private async Task<GameSaveData> GetExistingGameSaveData(GameSession foundGameSession)
