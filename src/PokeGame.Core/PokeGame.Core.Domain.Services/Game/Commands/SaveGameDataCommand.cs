@@ -59,9 +59,7 @@ internal sealed class SaveGameDataCommand: IDomainCommand<(GameSaveData GameData
     private async Task ValidateNewGameSaveDataAgainstOld(GameSaveData newGameSaveData,
         GameSaveData oldGameSaveData)
     {
-        newGameSaveData.GameData.DeckPokemon.Sort();
-        oldGameSaveData.GameData.DeckPokemon.Sort();
-        if (!newGameSaveData.GameData.DeckPokemon.SequenceEqual(oldGameSaveData.GameData.DeckPokemon))
+        if (!newGameSaveData.GameData.DeckPokemon.All(oldGameSaveData.GameData.DeckPokemon.Contains))
         {
             
         }
