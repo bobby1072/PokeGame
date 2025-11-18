@@ -1,9 +1,8 @@
 ﻿using BT.Common.Api.Helpers.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PokeGame.Core.Api.Attributes;
+using PokeGame.Core.Common.Attributes;
 using PokeGame.Core.Domain.Services.User.Abstract;
-using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Game;
 using PokeGame.Core.Schemas.Input;
 

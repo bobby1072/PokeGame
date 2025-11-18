@@ -1,19 +1,19 @@
 namespace PokeGame.Core.Common;
 
-public struct Constants
+public static class Constants
 {
-    public struct ExceptionConstants
+    public static class ExceptionConstants
     {
         public const string InternalError = "An internal error occurred";
         public const string MissingEnvVars = "Missing environment variables";
     }
 
-    public struct ServiceKeys
+    public static class ServiceKeys
     {
         public const string PokedexJsonFile = "PokedexJsonFile";
     }
 
-    public struct ApiConstants
+    public static class ApiConstants
     {
         public const string UserIdHeaderKey =  "UserId";
         public const string GameSaveIdHeaderKey =  "GameSaveId";

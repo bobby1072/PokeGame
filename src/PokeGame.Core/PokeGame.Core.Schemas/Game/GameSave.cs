@@ -4,8 +4,11 @@ public sealed class GameSave : PersistableDomainModel<GameSave, Guid?>
 {
     public required Guid UserId { get; set; }
     public required string CharacterName { get; set; }
+
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
     public DateTime LastPlayed { get; set; } = DateTime.UtcNow;
+    
+    public GameSaveData? GameSaveData { get; set; }
 
     public override bool Equals(GameSave? other)
     {
