@@ -17,6 +17,8 @@ public sealed class OwnedPokemonEntity : BasePokeGameEntity<Guid?, OwnedPokemon>
     public string? MoveThreeResourceName { get; set; }
     public string? MoveFourResourceName { get; set; }
 
+    public GameSaveEntity? GameSave { get; set; }
+
     public override OwnedPokemon ToModel()
     {
         return new OwnedPokemon

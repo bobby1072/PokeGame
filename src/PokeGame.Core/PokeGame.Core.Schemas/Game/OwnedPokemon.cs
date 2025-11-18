@@ -18,18 +18,20 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
     public Pokemon? Pokemon { get; set; }
     public PokedexPokemon? PokedexPokemon { get; set; }
     public PokemonSpecies? PokemonSpecies { get; set; }
+    public GameSave? GameSave { get; set; }
+
     public override bool Equals(OwnedPokemon? other)
     {
-        return other is not null &&
-               GameSaveId == other.GameSaveId &&
-               ResourceName == other.ResourceName &&
-               CaughtAt == other.CaughtAt &&
-               PokemonLevel == other.PokemonLevel &&
-               CurrentExperience == other.CurrentExperience &&
-               CurrentHp == other.CurrentHp &&
-               MoveOneResourceName == other.MoveOneResourceName &&
-               MoveTwoResourceName == other.MoveTwoResourceName &&
-               MoveThreeResourceName == other.MoveThreeResourceName &&
-               MoveFourResourceName == other.MoveFourResourceName;
+        return other is not null
+            && GameSaveId == other.GameSaveId
+            && ResourceName == other.ResourceName
+            && CaughtAt == other.CaughtAt
+            && PokemonLevel == other.PokemonLevel
+            && CurrentExperience == other.CurrentExperience
+            && CurrentHp == other.CurrentHp
+            && MoveOneResourceName == other.MoveOneResourceName
+            && MoveTwoResourceName == other.MoveTwoResourceName
+            && MoveThreeResourceName == other.MoveThreeResourceName
+            && MoveFourResourceName == other.MoveFourResourceName;
     }
 }
