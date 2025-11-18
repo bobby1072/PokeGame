@@ -3,6 +3,7 @@ CREATE TABLE "public".owned_pokemon(
     game_save_id UUID NOT NULL REFERENCES public.game_save(id) ON DELETE CASCADE ON UPDATE CASCADE,
     resource_name TEXT NOT NULL,
     caught_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
+    in_deck BOOLEAN DEFAULT FALSE,
     pokemon_level INT NOT NULL CHECK (pokemon_level <= 100),
     current_experience INT DEFAULT 0,
     current_hp INT NOT NULL,

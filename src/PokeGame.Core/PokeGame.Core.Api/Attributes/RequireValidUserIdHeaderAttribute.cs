@@ -1,5 +1,5 @@
-﻿namespace PokeGame.Core.Common.Attributes;
+﻿namespace PokeGame.Core.Api.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-public sealed class RequireValidUserIdHeaderAttribute: Attribute
+internal sealed class RequireValidUserIdHeaderAttribute: Attribute
 { }

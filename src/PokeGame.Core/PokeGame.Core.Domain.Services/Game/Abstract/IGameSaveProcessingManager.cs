@@ -6,6 +6,4 @@ public interface IGameSaveProcessingManager
 {
     Task<GameSave> SaveGameAsync(string characterName, Schemas.Game.User currentUser);
     Task<IReadOnlyCollection<GameSave>> GetGameSavesForUserAsync(Schemas.Game.User currentUser);
-    Task<GameSaveData> SaveGameDataAsync(GameSaveData gameData, string connectionId,
-        Schemas.Game.User currentUser);
 }

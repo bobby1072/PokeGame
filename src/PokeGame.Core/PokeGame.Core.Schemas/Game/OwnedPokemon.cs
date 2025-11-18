@@ -8,6 +8,7 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
     public required Guid GameSaveId { get; set; }
     public required string ResourceName { get; set; }
     public DateTime CaughtAt { get; set; } = DateTime.UtcNow;
+    public bool InDeck { get; set; } = false;
     public required int PokemonLevel { get; set; }
     public int CurrentExperience { get; set; } = 0;
     public required int CurrentHp { get; set; }
@@ -24,6 +25,7 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
                GameSaveId == other.GameSaveId &&
                ResourceName == other.ResourceName &&
                CaughtAt == other.CaughtAt &&
+               InDeck == other.InDeck &&
                PokemonLevel == other.PokemonLevel &&
                CurrentExperience == other.CurrentExperience &&
                CurrentHp == other.CurrentHp &&

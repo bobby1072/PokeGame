@@ -3,7 +3,6 @@ using BT.Common.Persistence.Shared.Models;
 using FluentValidation;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Game.Commands;
@@ -22,25 +21,9 @@ public sealed class CreateNewGameCommandTests
 
     public CreateNewGameCommandTests()
     {
-        var pokeGameRules = new ConfigurablePokeGameRules
-        {
-            XpMultiplier = 1.052m,
-            BaseXpCeiling = 100,
-            LegendaryXpMultiplier = 1.055m,
-            HpCalculationStats = new HpCalculationStats { DefaultIV = 31, DefaultEV = 0 },
-            StandardPokemonPokedexRange = new PokedexRange { Min = 1, Max = 143 },
-            LegendaryPokemonPokedexRange = new PokedexRange { Min = 144, Max = 151 },
-            DefaultStarterScene = new DefaultStarterScene
-            {
-                SceneName = "BasiliaTownStarterHomeScene",
-                SceneLocation = new DefaultStarterSceneLocation { X = 15, Y = 17 }
-            }
-        };
-        
         _command = new CreateNewGameCommand(
             _mockGameSaveRepository.Object,
             _mockValidatorService.Object,
-            pokeGameRules,
             new NullLogger<CreateNewGameCommand>()
         );
     }
@@ -53,14 +36,21 @@ public sealed class CreateNewGameCommandTests
         var user = _fixture.Create<User>();
         var input = (characterName, user);
         
-        var dbResult = new DbResult(true);
+        var expectedGameSave = new GameSave
+        {
+            Id = Guid.NewGuid(),
+            CharacterName = characterName,
+            UserId = user.Id!.Value
+        };
+        
+        var dbResult = new DbSaveResult<GameSave>(new[] { expectedGameSave });
 
         _mockValidatorService
             .Setup(x => x.ValidateAndThrowAsync(It.IsAny<GameSave>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         _mockGameSaveRepository
-            .Setup(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()))
+            .Setup(x => x.Create(It.IsAny<GameSave>()))
             .ReturnsAsync(dbResult);
 
         // Act
@@ -71,13 +61,9 @@ public sealed class CreateNewGameCommandTests
         Assert.NotNull(result.CommandResult);
         Assert.Equal(characterName, result.CommandResult.CharacterName);
         Assert.Equal(user.Id, result.CommandResult.UserId);
-        Assert.NotNull(result.CommandResult.GameSaveData);
-        Assert.Equal("BasiliaTownStarterHomeScene", result.CommandResult.GameSaveData.GameData.LastPlayedScene);
-        Assert.Equal(15, result.CommandResult.GameSaveData.GameData.LastPlayedLocationX);
-        Assert.Equal(17, result.CommandResult.GameSaveData.GameData.LastPlayedLocationY);
         
         _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<GameSave>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockGameSaveRepository.Verify(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.Create(It.IsAny<GameSave>()), Times.Once);
     }
 
     [Fact]
@@ -101,7 +87,7 @@ public sealed class CreateNewGameCommandTests
 
         Assert.Equal("Validation failed", exception.Message);
         _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<GameSave>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockGameSaveRepository.Verify(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()), Times.Never);
+        _mockGameSaveRepository.Verify(x => x.Create(It.IsAny<GameSave>()), Times.Never);
     }
 
     [Fact]
@@ -117,8 +103,8 @@ public sealed class CreateNewGameCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSaveRepository
-            .Setup(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()))
-            .ReturnsAsync((DbResult)null!);
+            .Setup(x => x.Create(It.IsAny<GameSave>()))
+            .ReturnsAsync((DbSaveResult<GameSave>)null!);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
@@ -127,7 +113,7 @@ public sealed class CreateNewGameCommandTests
 
         Assert.Equal("Failed to save game save", exception.Message);
         _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<GameSave>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockGameSaveRepository.Verify(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.Create(It.IsAny<GameSave>()), Times.Once);
     }
 
     [Fact]
@@ -138,14 +124,14 @@ public sealed class CreateNewGameCommandTests
         var user = _fixture.Create<User>();
         var input = (characterName, user);
         
-        var dbResult = new DbResult(false);
+        var dbResult = new DbSaveResult<GameSave>(Array.Empty<GameSave>()) { IsSuccessful = false };
 
         _mockValidatorService
             .Setup(x => x.ValidateAndThrowAsync(It.IsAny<GameSave>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         _mockGameSaveRepository
-            .Setup(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()))
+            .Setup(x => x.Create(It.IsAny<GameSave>()))
             .ReturnsAsync(dbResult);
 
         // Act & Assert
@@ -155,7 +141,35 @@ public sealed class CreateNewGameCommandTests
 
         Assert.Equal("Failed to save game save", exception.Message);
         _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<GameSave>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockGameSaveRepository.Verify(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.Create(It.IsAny<GameSave>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Should_Throw_PokeGameApiServerException_When_Repository_Returns_Empty_Data()
+    {
+        // Arrange
+        var characterName = _fixture.Create<string>();
+        var user = _fixture.Create<User>();
+        var input = (characterName, user);
+        
+        var dbResult = new DbSaveResult<GameSave>(Array.Empty<GameSave>()) { IsSuccessful = true };
+
+        _mockValidatorService
+            .Setup(x => x.ValidateAndThrowAsync(It.IsAny<GameSave>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _mockGameSaveRepository
+            .Setup(x => x.Create(It.IsAny<GameSave>()))
+            .ReturnsAsync(dbResult);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
+            () => _command.ExecuteAsync(input)
+        );
+
+        Assert.Equal("Failed to save game save", exception.Message);
+        _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<GameSave>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.Create(It.IsAny<GameSave>()), Times.Once);
     }
 
     [Fact]
