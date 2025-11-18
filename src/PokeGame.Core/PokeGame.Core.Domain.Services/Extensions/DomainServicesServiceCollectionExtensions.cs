@@ -47,7 +47,6 @@ public static class DomainServicesServiceCollectionExtensions
             .AddLogging()
             .AddMemoryCache()
             .AddDomainModelValidators()
-            .AddGameInformationServices()
             .AddPokeGamePersistence(configuration, healthCheckBuilder, environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
 
