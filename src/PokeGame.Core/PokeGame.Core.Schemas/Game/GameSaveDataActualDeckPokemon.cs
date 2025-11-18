@@ -2,7 +2,7 @@
 
 public sealed class GameSaveDataActualDeckPokemon: DomainModel<GameSaveDataActualDeckPokemon>
 {
-    public required string OwnedPokemonId { get; set; }
+    public required Guid OwnedPokemonId { get; set; }
 
     public override bool Equals(GameSaveDataActualDeckPokemon? other)
     {

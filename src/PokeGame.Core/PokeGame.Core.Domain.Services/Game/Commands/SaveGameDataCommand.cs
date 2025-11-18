@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Utils;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
@@ -16,18 +17,21 @@ internal sealed class SaveGameDataCommand: IDomainCommand<(GameSaveData GameData
 
     private readonly IGameSessionRepository _gameSessionRepository;
     private readonly IGameSaveDataRepository _gameSaveDataRepository;
+    private readonly IOwnedPokemonRepository _ownedPokemonRepository;
     private readonly IValidatorService _validatorService;
     private readonly ILogger<SaveGameDataCommand> _logger;
 
     public SaveGameDataCommand(
         IGameSessionRepository gameSessionRepository,
         IGameSaveDataRepository gameSaveDataRepository,
+        IOwnedPokemonRepository ownedPokemonRepository,
         IValidatorService validatorService,
         ILogger<SaveGameDataCommand> logger
     )
     {
         _gameSessionRepository = gameSessionRepository;
         _gameSaveDataRepository = gameSaveDataRepository;
+        _ownedPokemonRepository = ownedPokemonRepository;
         _validatorService = validatorService;
         _logger = logger;
     }
@@ -46,7 +50,7 @@ internal sealed class SaveGameDataCommand: IDomainCommand<(GameSaveData GameData
         input.GameData.GameSaveId = foundGameSession.GameSaveId;
         input.GameData.Id = foundExistingGameData.Id;
 
-        await ValidateNewGameSaveDataAgainstOld(input.GameData, foundExistingGameData);
+        await ValidateNewGameSaveDataAgainstOld(input.GameData, foundExistingGameData, input.CurrentUser);
         
         var updatedGameSave = await UpdateGameSave(input.GameData);
 
@@ -57,11 +61,30 @@ internal sealed class SaveGameDataCommand: IDomainCommand<(GameSaveData GameData
     }
 
     private async Task ValidateNewGameSaveDataAgainstOld(GameSaveData newGameSaveData,
-        GameSaveData oldGameSaveData)
+        GameSaveData oldGameSaveData, Schemas.Game.User currentUser)
     {
-        if (!newGameSaveData.GameData.DeckPokemon.All(oldGameSaveData.GameData.DeckPokemon.Contains))
+        var oldPokemonOwnedIds = oldGameSaveData.GameData.DeckPokemon
+            .FastArraySelect(x => x.OwnedPokemonId);
+        
+        var newPokemon = newGameSaveData.GameData.DeckPokemon
+            .FastArrayWhere(x => 
+                !oldPokemonOwnedIds.Contains(x.OwnedPokemonId))
+            .ToArray();
+        if (newPokemon.Length > 0)
         {
-            
+            var foundOwnedPokemon = await EntityFrameworkUtils
+                .TryDbOperation(() => _ownedPokemonRepository
+                    .GetMany(newPokemon
+                        .FastArraySelect<GameSaveDataActualDeckPokemon, Guid?>(x => x.OwnedPokemonId)
+                        .ToArray())
+                )
+                    ?? throw new PokeGameApiServerException("Failed to fetch owned pokemon");
+
+            if (foundOwnedPokemon.Data.Count < 1 || !foundOwnedPokemon.IsSuccessful)
+            {
+                throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Failed to find the pokemon you're adding to you deck");
+            }
+            // if(foundOwnedPokemon.Data.Any(x => x))
         }
     }
     private async Task<GameSaveData> GetExistingGameSaveData(GameSession foundGameSession)
