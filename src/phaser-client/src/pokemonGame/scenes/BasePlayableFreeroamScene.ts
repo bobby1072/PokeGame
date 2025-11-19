@@ -1,11 +1,16 @@
 import Phaser, { Types } from "phaser";
 import { Scene } from "phaser";
+import { HubConnection } from "@microsoft/signalr";
+import { GameSave } from "../../common/models/GameSave";
 
 export abstract class BasePlayableFreeroamScene extends Scene {
     protected player!: Types.Physics.Arcade.SpriteWithDynamicBody;
     protected cursors!: Types.Input.Keyboard.CursorKeys;
     protected moveSpeed = 140;
     protected spawnData?: { x: number; y: number };
+    private autoSaveTimer?: Phaser.Time.TimerEvent;
+    private hubConnection?: HubConnection;
+    private currentGameSave?: GameSave | null;
 
     public constructor(sceneKey: string) {
         super(sceneKey);
@@ -19,6 +24,20 @@ export abstract class BasePlayableFreeroamScene extends Scene {
     }
 
     public create() {
+        // Get SignalR connection and game save from game registry
+        this.hubConnection = this.game.registry.get("hubConnection");
+        this.currentGameSave = this.game.registry.get("currentGameSave");
+
+        // Set up auto-save timer (20 seconds = 20000ms)
+        if (this.hubConnection && this.currentGameSave) {
+            this.autoSaveTimer = this.time.addEvent({
+                delay: 20000,
+                callback: this.saveGame,
+                callbackScope: this,
+                loop: true,
+            });
+        }
+
         // Create tilemap
         const map = this.make.tilemap({ key: this.getTilemapKey() });
 
@@ -204,12 +223,59 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         // Setup input
         this.cursors = this.input.keyboard!.createCursorKeys();
         this.input.keyboard?.addCapture(["UP", "DOWN", "LEFT", "RIGHT"]);
+
+        // Register shutdown event to clean up timer
+        this.events.once("shutdown", this.onShutdown, this);
     }
 
     // Abstract methods that must be implemented by subclasses
     protected abstract getTilemapKey(): string;
     protected abstract getTilesetKeys(): string[];
     protected abstract getStartPosition(): Phaser.Math.Vector2;
+
+    private async saveGame() {
+        if (!this.hubConnection || !this.currentGameSave) {
+            console.warn(
+                "Cannot save game: missing hub connection or game save data"
+            );
+            return;
+        }
+
+        try {
+            // Convert player pixel position to tile coordinates
+            const tileX = Math.floor(this.player.x / 16);
+            const tileY = Math.floor(this.player.y / 16);
+
+            // Ensure coordinates are within valid range (0-29)
+            const clampedX = Math.max(0, Math.min(29, tileX));
+            const clampedY = Math.max(0, Math.min(29, tileY));
+
+            const gameSaveData = {
+                id: this.currentGameSave.gameSaveData.id,
+                gameSaveId: this.currentGameSave.gameSaveData.gameSaveId,
+                gameData: {
+                    lastPlayedScene: this.scene.key,
+                    lastPlayedLocationX: clampedX,
+                    lastPlayedLocationY: clampedY,
+                    deckPokemon:
+                        this.currentGameSave.gameSaveData.gameData.deckPokemon,
+                },
+            };
+
+            await this.hubConnection.invoke("SaveGame", gameSaveData);
+            console.log("Game auto-saved successfully");
+        } catch (error) {
+            console.error("Failed to auto-save game:", error);
+        }
+    }
+
+    private onShutdown() {
+        // Clean up the auto-save timer when scene shuts down
+        if (this.autoSaveTimer) {
+            this.autoSaveTimer.destroy();
+            this.autoSaveTimer = undefined;
+        }
+    }
 
     public update(_time: number, _delta: number) {
         if (!this.player) return;

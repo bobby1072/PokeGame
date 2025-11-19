@@ -81,6 +81,15 @@ export const useConnectToSignalRQuery = () => {
                     }));
                 }
             );
+            state.hubConnection.on(
+                SignalREventKeys.GameSaveFailed,
+                (data: BaseWebOutcome) => {
+                    console.error(
+                        "Game save failed:",
+                        data.exceptionMessage || "Unknown error"
+                    );
+                }
+            );
         }
     }, [state.hubConnection]);
 
