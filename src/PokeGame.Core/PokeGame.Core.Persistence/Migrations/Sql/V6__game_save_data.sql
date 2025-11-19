@@ -1,0 +1,5 @@
+CREATE TABLE "public".game_save_data(
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    game_save_id UUID NOT NULL REFERENCES public.game_save(id) ON DELETE CASCADE ON UPDATE CASCADE UNIQUE, 
+    game_data JSONB NOT NULL
+);

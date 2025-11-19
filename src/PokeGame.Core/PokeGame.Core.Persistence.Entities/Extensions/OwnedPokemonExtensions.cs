@@ -12,7 +12,6 @@ public static class OwnedPokemonExtensions
             GameSaveId = ownedPokemon.GameSaveId,
             ResourceName = ownedPokemon.ResourceName,
             CaughtAt = ownedPokemon.CaughtAt,
-            InDeck = ownedPokemon.InDeck,
             PokemonLevel = ownedPokemon.PokemonLevel,
             CurrentExperience = ownedPokemon.CurrentExperience,
             CurrentHp = ownedPokemon.CurrentHp,

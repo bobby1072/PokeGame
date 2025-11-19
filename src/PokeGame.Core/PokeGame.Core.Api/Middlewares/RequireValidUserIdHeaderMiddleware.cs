@@ -1,6 +1,6 @@
 ﻿using System.Net;
-using PokeGame.Core.Api.Attributes;
 using PokeGame.Core.Common;
+using PokeGame.Core.Common.Attributes;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Common.Extensions;
 using PokeGame.Core.Domain.Services.User.Abstract;

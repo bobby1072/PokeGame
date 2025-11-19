@@ -1,12 +1,10 @@
-﻿using System.Net;
-using BT.Common.Persistence.Shared.Utils;
-using FluentValidation;
+﻿using BT.Common.Persistence.Shared.Utils;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Persistence.Repositories.Abstract;
-using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Domain.Services.Game.Commands;
@@ -20,16 +18,19 @@ internal sealed class CreateNewGameCommand
     public string CommandName => nameof(CreateNewGameCommand);
     private readonly IGameSaveRepository _gameSaveRepository;
     private readonly IValidatorService _gameSaveValidator;
+    private readonly ConfigurablePokeGameRules _configurablePokeGameRules;
     private readonly ILogger<CreateNewGameCommand> _logger;
 
     public CreateNewGameCommand(
         IGameSaveRepository gameSaveRepository,
         IValidatorService gameSaveValidator,
+        ConfigurablePokeGameRules configurablePokeGameRules,
         ILogger<CreateNewGameCommand> logger
     )
     {
         _gameSaveRepository = gameSaveRepository;
         _gameSaveValidator = gameSaveValidator;
+        _configurablePokeGameRules = configurablePokeGameRules;
         _logger = logger;
     }
 
@@ -44,22 +45,37 @@ internal sealed class CreateNewGameCommand
             CharacterName = input.CharacterName,
             UserId = (Guid)input.CurrentUser.Id!,
         };
-
+        var newGameSaveData = CreateNewGameSaveData((Guid)newGameSave.Id!);
+        
         await _gameSaveValidator.ValidateAndThrowAsync(newGameSave, cancellationToken);
 
         var createdSave =
             await EntityFrameworkUtils.TryDbOperation(
-                () => _gameSaveRepository.Create(newGameSave),
+                () => _gameSaveRepository.CreateGameSaveWithData(newGameSave, newGameSaveData),
                 _logger
             ) ?? throw new PokeGameApiServerException("Failed to save game save");
-
-        _logger.LogDebug("Game save saved: {@GameSave}", newGameSave);
-
-        if (!createdSave.IsSuccessful || createdSave.Data.Count == 0)
+        
+        if (!createdSave.IsSuccessful)
         {
             throw new PokeGameApiServerException("Failed to save game save");
         }
 
-        return new DomainCommandResult<GameSave> { CommandResult = createdSave.FirstResult };
+        newGameSave.GameSaveData = newGameSaveData;
+        _logger.LogDebug("Game save saved: {@GameSave}", newGameSave);
+
+        return new DomainCommandResult<GameSave> { CommandResult = newGameSave };
+    }
+    private GameSaveData CreateNewGameSaveData(Guid gameSaveId)
+    {
+        return new GameSaveData
+        {
+            GameSaveId = gameSaveId,
+            GameData = new GameSaveDataActual
+            {
+                LastPlayedScene = _configurablePokeGameRules.DefaultStarterScene.SceneName,
+                LastPlayedLocationX = _configurablePokeGameRules.DefaultStarterScene.SceneLocation.X,
+                LastPlayedLocationY = _configurablePokeGameRules.DefaultStarterScene.SceneLocation.Y
+            }
+        };
     }
 }

@@ -52,12 +52,13 @@ public sealed class StartGameSessionCommandTests
         };
 
         var sessionCreateResult = new DbSaveResult<GameSession>(new[] { expectedGameSession });
+        var noExistingSession = new DbGetOneResult<GameSession>(null!) { IsSuccessful = true };
 
         _mockGameSaveRepository.Setup(x => x.GetOne(gameSaveId)).ReturnsAsync(gameSaveResult);
 
         _mockGameSessionRepository
-            .Setup(x => x.DeleteAllSessionsByGameSaveIdAsync(gameSaveId))
-            .Returns(Task.CompletedTask);
+            .Setup(x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()))
+            .ReturnsAsync(noExistingSession);
 
         _mockGameSessionRepository
             .Setup(x => x.Create(It.IsAny<GameSession>()))
@@ -75,7 +76,7 @@ public sealed class StartGameSessionCommandTests
 
         _mockGameSaveRepository.Verify(x => x.GetOne(gameSaveId), Times.Once);
         _mockGameSessionRepository.Verify(
-            x => x.DeleteAllSessionsByGameSaveIdAsync(gameSaveId),
+            x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()),
             Times.Once
         );
         _mockGameSessionRepository.Verify(x => x.Create(It.IsAny<GameSession>()), Times.Once);
@@ -102,7 +103,7 @@ public sealed class StartGameSessionCommandTests
         Assert.Equal("Failed to fetch game save", exception.Message);
         _mockGameSaveRepository.Verify(x => x.GetOne(gameSaveId), Times.Once);
         _mockGameSessionRepository.Verify(
-            x => x.DeleteAllSessionsByGameSaveIdAsync(It.IsAny<Guid>()),
+            x => x.GetOne(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string[]>()),
             Times.Never
         );
         _mockGameSessionRepository.Verify(x => x.Create(It.IsAny<GameSession>()), Times.Never);
@@ -165,7 +166,7 @@ public sealed class StartGameSessionCommandTests
         Assert.Equal("Invalid game save id provided", exception.Message);
         _mockGameSaveRepository.Verify(x => x.GetOne(gameSaveId), Times.Once);
         _mockGameSessionRepository.Verify(
-            x => x.DeleteAllSessionsByGameSaveIdAsync(It.IsAny<Guid>()),
+            x => x.GetOne(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string[]>()),
             Times.Never
         );
         _mockGameSessionRepository.Verify(x => x.Create(It.IsAny<GameSession>()), Times.Never);
@@ -188,12 +189,13 @@ public sealed class StartGameSessionCommandTests
         };
 
         var gameSaveResult = new DbGetOneResult<GameSave>(existingGameSave);
+        var noExistingSession = new DbGetOneResult<GameSession>(null!) { IsSuccessful = true };
 
         _mockGameSaveRepository.Setup(x => x.GetOne(gameSaveId)).ReturnsAsync(gameSaveResult);
 
         _mockGameSessionRepository
-            .Setup(x => x.DeleteAllSessionsByGameSaveIdAsync(gameSaveId))
-            .Returns(Task.CompletedTask);
+            .Setup(x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()))
+            .ReturnsAsync(noExistingSession);
 
         _mockGameSessionRepository
             .Setup(x => x.Create(It.IsAny<GameSession>()))
@@ -207,7 +209,7 @@ public sealed class StartGameSessionCommandTests
         Assert.Equal("Failed to add new game session", exception.Message);
         _mockGameSaveRepository.Verify(x => x.GetOne(gameSaveId), Times.Once);
         _mockGameSessionRepository.Verify(
-            x => x.DeleteAllSessionsByGameSaveIdAsync(gameSaveId),
+            x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()),
             Times.Once
         );
         _mockGameSessionRepository.Verify(x => x.Create(It.IsAny<GameSession>()), Times.Once);

@@ -2,8 +2,8 @@
 using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
+using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Persistence.Entities;
-using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Persistence.Contexts;
@@ -16,6 +16,9 @@ internal sealed class PokeGameContext : DbContext
     public DbSet<OwnedPokemonEntity> OwnedPokemons { get; set; }
     public DbSet<ItemStackEntity> ItemStacks { get; set; }
     public DbSet<GameSessionEntity> GameSessions { get; set; }
+    public DbSet<GameSaveDataEntity> GameSaveData { get; set; }
+    private static readonly JsonSerializerOptions _jsonBSerializerOptions =
+        new() { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
 
     public PokeGameContext(DbContextOptions<PokeGameContext> options)
         : base(options) { }
@@ -45,6 +48,25 @@ internal sealed class PokeGameContext : DbContext
     {
         UpdateDatesOnNewlyAddedOrModified();
         return base.SaveChanges();
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<GameSaveDataEntity>(ent =>
+        {
+            ent.HasOne<GameSaveEntity>()
+                .WithOne(x => x.GameSaveData)
+                .HasForeignKey<GameSaveDataEntity>(x => x.GameSaveId);
+
+            ent.Property(x => x.GameData)
+                .HasColumnType("jsonb")
+                .HasConversion(x => SerializeGameSaveData(x), x => DeserializeGameSaveData(x));
+        });
+
+        modelBuilder.Entity<OwnedPokemonEntity>(ent =>
+        {
+            ent.HasOne(x => x.GameSave).WithMany().HasForeignKey(x => x.GameSaveId);
+        });
     }
 
     private void UpdateDatesOnNewlyAddedOrModified()
@@ -138,5 +160,18 @@ internal sealed class PokeGameContext : DbContext
                 //This is ok because we are just trying to update values
             }
         }
+    }
+
+    private static string SerializeGameSaveData(GameSaveDataActual entity)
+    {
+        return JsonSerializer.Serialize(entity, _jsonBSerializerOptions);
+    }
+
+    private static GameSaveDataActual DeserializeGameSaveData(string json)
+    {
+        return JsonSerializer.Deserialize<GameSaveDataActual>(json, _jsonBSerializerOptions)
+            ?? throw new PokeGameApiServerException(
+                "Failed to deserialize GameSaveDataActual from db json"
+            );
     }
 }
