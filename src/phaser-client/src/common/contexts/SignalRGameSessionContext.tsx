@@ -29,7 +29,7 @@ export const SignalRGameSessionProvider: React.FC<{
     }
 
     if (error) {
-        return <ErrorComponent error={error} />;
+        return <ErrorComponent error={error} variant="fullscreen" />;
     }
 
     if (!data || !data.hubConnection || !data.gameSession) {
