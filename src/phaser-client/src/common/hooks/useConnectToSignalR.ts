@@ -44,6 +44,10 @@ export const useConnectToSignalRQuery = () => {
             await localHub.start();
             return localHub;
         },
+        gcTime: Infinity, // Prevent garbage collection of the connection
+        refetchOnWindowFocus: false, // Prevent reconnection on window focus
+        refetchOnMount: false,
+        refetchOnReconnect: false,
     });
 
     useEffect(() => {
@@ -58,31 +62,75 @@ export const useConnectToSignalRQuery = () => {
 
     useEffect(() => {
         if (state.hubConnection) {
+            const handleGameSessionStarted = (
+                data: WebOutcome<GameSession>
+            ) => {
+                setState((prev) => ({
+                    ...prev,
+                    gameSession:
+                        data.isSuccess && data.data ? data.data : undefined,
+                    isWaitingForGameSession: false,
+                }));
+            };
+
+            const handleGameSessionConnectionFailed = (
+                data: BaseWebOutcome
+            ) => {
+                setState((prev) => ({
+                    ...prev,
+                    error: new Error(data.exceptionMessage || "Unknown error"),
+                    isWaitingForGameSession: false,
+                }));
+            };
+
+            const handleGameSaveFailed = (data: BaseWebOutcome) => {
+                console.error(
+                    "Game save failed:",
+                    data.exceptionMessage || "Unknown error"
+                );
+            };
+
             state.hubConnection.on(
                 SignalREventKeys.GameSessionStarted,
-                (data: WebOutcome<GameSession>) => {
-                    setState((prev) => ({
-                        ...prev,
-                        gameSession:
-                            data.isSuccess && data.data ? data.data : undefined,
-                        isWaitingForGameSession: false,
-                    }));
-                }
+                handleGameSessionStarted
             );
             state.hubConnection.on(
                 SignalREventKeys.GameSessionConnectionFailed,
-                (data: BaseWebOutcome) => {
-                    setState((prev) => ({
-                        ...prev,
-                        error: new Error(
-                            data.exceptionMessage || "Unknown error"
-                        ),
-                        isWaitingForGameSession: false,
-                    }));
-                }
+                handleGameSessionConnectionFailed
             );
+            state.hubConnection.on(
+                SignalREventKeys.GameSaveFailed,
+                handleGameSaveFailed
+            );
+
+            // Cleanup: Remove event listeners and stop connection
+            return () => {
+                state.hubConnection?.off(
+                    SignalREventKeys.GameSessionStarted,
+                    handleGameSessionStarted
+                );
+                state.hubConnection?.off(
+                    SignalREventKeys.GameSessionConnectionFailed,
+                    handleGameSessionConnectionFailed
+                );
+                state.hubConnection?.off(
+                    SignalREventKeys.GameSaveFailed,
+                    handleGameSaveFailed
+                );
+            };
         }
     }, [state.hubConnection]);
+
+    // Cleanup: Stop the connection when component unmounts
+    useEffect(() => {
+        return () => {
+            if (query.data) {
+                query.data.stop().catch((err) => {
+                    console.error("Error stopping SignalR connection:", err);
+                });
+            }
+        };
+    }, [query.data]);
 
     return {
         ...query,

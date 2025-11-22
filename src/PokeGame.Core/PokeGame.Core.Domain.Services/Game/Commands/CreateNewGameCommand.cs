@@ -1,4 +1,5 @@
-﻿using BT.Common.Persistence.Shared.Utils;
+﻿using System.Net;
+using BT.Common.Persistence.Shared.Utils;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
@@ -48,6 +49,15 @@ internal sealed class CreateNewGameCommand
         var newGameSaveData = CreateNewGameSaveData((Guid)newGameSave.Id!);
         
         await _gameSaveValidator.ValidateAndThrowAsync(newGameSave, cancellationToken);
+
+        var gameSaveCount = await EntityFrameworkUtils
+            .TryDbOperation(() => _gameSaveRepository.GetCount(x => x.UserId == input.CurrentUser.Id)) 
+                ?? throw new PokeGameApiServerException("Failed to get game save count");
+
+        if (gameSaveCount.Data >= 5)
+        {
+            throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "You can only have 5 game saves");
+        }
 
         var createdSave =
             await EntityFrameworkUtils.TryDbOperation(

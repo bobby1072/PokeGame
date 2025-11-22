@@ -7,6 +7,8 @@ import {
 } from "react";
 import StartPokemonGame from "./MainGame";
 import { EventBus } from "./EventBus";
+import { HubConnection } from "@microsoft/signalr";
+import { GameSave } from "../common/models/GameSave";
 
 export interface IRefPokemonPhaserGame {
     game: Phaser.Game | null;
@@ -15,10 +17,12 @@ export interface IRefPokemonPhaserGame {
 
 interface IProps {
     currentActiveScene?: (scene_instance: Phaser.Scene) => void;
+    hubConnection: HubConnection;
+    currentGameSave: GameSave | null;
 }
 
 const ActualPokemonPhaserGame = (
-    { currentActiveScene }: IProps,
+    { currentActiveScene, hubConnection, currentGameSave }: IProps,
     ref: ForwardedRef<IRefPokemonPhaserGame>
 ) => {
     const game = useRef<Phaser.Game | null>(null!);
@@ -26,6 +30,12 @@ const ActualPokemonPhaserGame = (
     useLayoutEffect(() => {
         if (game.current === null) {
             game.current = StartPokemonGame("pokemon-game-container");
+
+            // Store SignalR connection and game save in the game registry
+            if (game.current) {
+                game.current.registry.set("hubConnection", hubConnection);
+                game.current.registry.set("currentGameSave", currentGameSave);
+            }
 
             if (typeof ref === "function") {
                 ref({ game: game.current, scene: null });
@@ -42,7 +52,7 @@ const ActualPokemonPhaserGame = (
                 }
             }
         };
-    }, [ref]);
+    }, [ref, hubConnection, currentGameSave]);
 
     useEffect(() => {
         EventBus.on("current-scene-ready", (scene_instance: Phaser.Scene) => {

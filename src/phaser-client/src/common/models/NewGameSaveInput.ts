@@ -1,3 +1,3 @@
-export interface NewGameSaveInput {
+export type NewGameSaveInput = {
     newCharacterName: string;
-}
+};

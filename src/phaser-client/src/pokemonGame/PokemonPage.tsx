@@ -1,9 +1,11 @@
 import { Box, Typography, Button } from "@mui/material";
 import { PokemonPhaserGame } from "./PokemonPhaserGame";
 import { useGameSaveContext } from "../common/contexts/GameSaveContext";
+import { useSignalRGameSession } from "../common/contexts/SignalRGameSessionContext";
 
 export default function PokemonPage() {
     const { currentGameSave, clearCurrentGameSave } = useGameSaveContext();
+    const { hubConnection } = useSignalRGameSession();
 
     const handleChangeGameSave = () => {
         clearCurrentGameSave();
@@ -36,7 +38,8 @@ export default function PokemonPage() {
                 }}
             >
                 <Typography variant="h6" component="div">
-                    Playing as: <strong>{currentGameSave?.characterName}</strong>
+                    Playing as:{" "}
+                    <strong>{currentGameSave?.characterName}</strong>
                 </Typography>
                 <Button
                     variant="outlined"
@@ -45,11 +48,7 @@ export default function PokemonPage() {
                 >
                     Change Game Save
                 </Button>
-                <Button
-                    variant="text"
-                    size="small"
-                    href="/"
-                >
+                <Button variant="text" size="small" href="/">
                     Back to Default Game
                 </Button>
             </Box>
@@ -71,11 +70,14 @@ export default function PokemonPage() {
                             width: "100% !important",
                             height: "100% !important",
                             objectFit: "contain", // Scale to fit while maintaining aspect ratio
-                        }
-                    }
+                        },
+                    },
                 }}
             >
-                <PokemonPhaserGame />
+                <PokemonPhaserGame
+                    hubConnection={hubConnection}
+                    currentGameSave={currentGameSave}
+                />
             </Box>
         </Box>
     );
