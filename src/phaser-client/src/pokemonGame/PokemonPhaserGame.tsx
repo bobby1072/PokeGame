@@ -9,6 +9,7 @@ import StartPokemonGame from "./MainGame";
 import { EventBus } from "./EventBus";
 import { HubConnection } from "@microsoft/signalr";
 import { GameSave } from "../common/models/GameSave";
+import { useGetAppSettingsContext } from "../common/contexts/AppSettingsContext";
 
 export interface IRefPokemonPhaserGame {
     game: Phaser.Game | null;
@@ -26,6 +27,7 @@ const ActualPokemonPhaserGame = (
     ref: ForwardedRef<IRefPokemonPhaserGame>
 ) => {
     const game = useRef<Phaser.Game | null>(null!);
+    const appSettings = useGetAppSettingsContext();
 
     useLayoutEffect(() => {
         if (game.current === null) {
@@ -35,6 +37,7 @@ const ActualPokemonPhaserGame = (
             if (game.current) {
                 game.current.registry.set("hubConnection", hubConnection);
                 game.current.registry.set("currentGameSave", currentGameSave);
+                game.current.registry.set("autoSaveIntervalSeconds", parseInt(appSettings.autoSaveIntervalSeconds || "12"));
             }
 
             if (typeof ref === "function") {
@@ -52,7 +55,7 @@ const ActualPokemonPhaserGame = (
                 }
             }
         };
-    }, [ref, hubConnection, currentGameSave]);
+    }, [ref, hubConnection, currentGameSave, appSettings.autoSaveIntervalSeconds]);
 
     useEffect(() => {
         EventBus.on("current-scene-ready", (scene_instance: Phaser.Scene) => {

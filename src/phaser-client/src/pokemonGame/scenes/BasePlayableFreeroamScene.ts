@@ -28,10 +28,11 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         this.hubConnection = this.game.registry.get("hubConnection");
         this.currentGameSave = this.game.registry.get("currentGameSave");
 
-        // Set up auto-save timer (20 seconds = 20000ms)
+        // Set up auto-save timer
         if (this.hubConnection && this.currentGameSave) {
+            const autoSaveIntervalSeconds = this.game.registry.get("autoSaveIntervalSeconds") || 12;
             this.autoSaveTimer = this.time.addEvent({
-                delay: 20000,
+                delay: autoSaveIntervalSeconds * 1000,
                 callback: this.saveGame,
                 callbackScope: this,
                 loop: true,

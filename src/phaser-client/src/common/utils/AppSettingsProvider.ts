@@ -5,6 +5,7 @@ enum AppSettingsKeys {
     releaseVersion = "releaseVersion",
     pokeGameCoreApiUrl = "pokeGameCoreApiUrl",
     pokeGameCoreSignalRUrl = "pokeGameCoreSignalRUrl",
+    autoSaveIntervalSeconds = "autoSaveIntervalSeconds",
 }
 
 export type AppSettings = {
