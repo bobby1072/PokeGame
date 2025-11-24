@@ -2,5 +2,6 @@
     "serviceName": "phaser-poke-game",
     "releaseVersion": "1.0",
     "pokeGameCoreApiUrl": "https://localhost:7244",
-    "pokeGameCoreSignalRUrl": "https://localhost:7017"
+    "pokeGameCoreSignalRUrl": "https://localhost:7017",
+    "autoSaveIntervalSeconds": "12"
 }

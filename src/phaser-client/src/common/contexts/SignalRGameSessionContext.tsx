@@ -1,5 +1,5 @@
 import { HubConnection } from "@microsoft/signalr";
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import { GameSession } from "../models/GameSession";
 import { useConnectToSignalRQuery } from "../hooks/useConnectToSignalR";
 import { LoadingComponent } from "../components/LoadingComponent";
@@ -8,6 +8,16 @@ import { ErrorComponent } from "../components/ErrorComponent";
 const SignalRGameSessionContext = createContext<
     { hubConnection: HubConnection; gameSession: GameSession } | undefined
 >(undefined);
+
+export const useSignalRGameSession = () => {
+    const context = useContext(SignalRGameSessionContext);
+    if (context === undefined) {
+        throw new Error(
+            "useSignalRGameSession must be used within a SignalRGameSessionProvider"
+        );
+    }
+    return context;
+};
 
 export const SignalRGameSessionProvider: React.FC<{
     children: React.ReactNode;
@@ -19,7 +29,7 @@ export const SignalRGameSessionProvider: React.FC<{
     }
 
     if (error) {
-        return <ErrorComponent error={error} />;
+        return <ErrorComponent error={error} variant="fullscreen" />;
     }
 
     if (!data || !data.hubConnection || !data.gameSession) {

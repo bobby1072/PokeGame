@@ -37,7 +37,8 @@ internal sealed class GetGameSavesByUserCommand
                 () =>
                     _gameSaveRepository.GetMany<Guid>(
                         (Guid)user.Id!,
-                        nameof(GameSaveEntity.UserId)
+                        nameof(GameSaveEntity.UserId),
+                        nameof(GameSaveEntity.GameSaveData)
                     ),
                 _logger
             ) ?? throw new PokeGameApiServerException("Failed to fetch game saves");

@@ -54,10 +54,15 @@ public sealed class CreateNewGameCommandTests
         var input = (characterName, user);
         
         var dbResult = new DbResult(true);
+        var countResult = new DbResult<int>(true, 2);
 
         _mockValidatorService
             .Setup(x => x.ValidateAndThrowAsync(It.IsAny<GameSave>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
+
+        _mockGameSaveRepository
+            .Setup(x => x.GetCount(It.IsAny<System.Linq.Expressions.Expression<Func<PokeGame.Core.Persistence.Entities.GameSaveEntity, bool>>>()))
+            .ReturnsAsync(countResult);
 
         _mockGameSaveRepository
             .Setup(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()))
@@ -117,17 +122,17 @@ public sealed class CreateNewGameCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSaveRepository
-            .Setup(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()))
-            .ReturnsAsync((DbResult)null!);
+            .Setup(x => x.GetCount(It.IsAny<System.Linq.Expressions.Expression<Func<PokeGame.Core.Persistence.Entities.GameSaveEntity, bool>>>()))
+            .ReturnsAsync((DbResult<int>)null!);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
             () => _command.ExecuteAsync(input)
         );
 
-        Assert.Equal("Failed to save game save", exception.Message);
+        Assert.Equal("Failed to get game save count", exception.Message);
         _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<GameSave>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockGameSaveRepository.Verify(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()), Times.Never);
     }
 
     [Fact]
@@ -138,11 +143,16 @@ public sealed class CreateNewGameCommandTests
         var user = _fixture.Create<User>();
         var input = (characterName, user);
         
+        var countResult = new DbResult<int>(true, 2);
         var dbResult = new DbResult(false);
 
         _mockValidatorService
             .Setup(x => x.ValidateAndThrowAsync(It.IsAny<GameSave>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
+
+        _mockGameSaveRepository
+            .Setup(x => x.GetCount(It.IsAny<System.Linq.Expressions.Expression<Func<PokeGame.Core.Persistence.Entities.GameSaveEntity, bool>>>()))
+            .ReturnsAsync(countResult);
 
         _mockGameSaveRepository
             .Setup(x => x.CreateGameSaveWithData(It.IsAny<GameSave>(), It.IsAny<GameSaveData>()))

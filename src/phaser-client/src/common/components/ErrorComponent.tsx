@@ -1,20 +1,76 @@
 import React from "react";
-import { Alert, Box } from "@mui/material";
+import { Alert, Box, SxProps, Theme } from "@mui/material";
 import { FieldErrors } from "react-hook-form";
 import { AxiosError } from "axios";
 
 interface ErrorComponentProps {
     error?: FieldErrors | Error | string | null;
+    /**
+     * The variant of the error component
+     * - 'fullscreen': Takes up the full viewport height (100vh) with centered alert
+     * - 'page-section': Standard error display with top margin
+     * - 'inline': Inline error display
+     */
+    variant?: "fullscreen" | "page-section" | "inline";
+    /**
+     * Additional sx props for custom styling
+     */
+    sx?: SxProps<Theme>;
 }
 
-export const ErrorComponent: React.FC<ErrorComponentProps> = ({ error }) => {
+export const ErrorComponent: React.FC<ErrorComponentProps> = ({
+    error,
+    variant = "page-section",
+    sx = {},
+}) => {
     if (!error) return null;
+
+    // Get container styles based on variant
+    const getVariantStyles = (): SxProps<Theme> => {
+        switch (variant) {
+            case "fullscreen":
+                return {
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: "100vh",
+                    padding: 2,
+                };
+            case "page-section":
+                return {
+                    mt: 2,
+                };
+            case "inline":
+                return {};
+            default:
+                return { mt: 2 };
+        }
+    };
+
+    // Get alert styles based on variant
+    const getAlertStyles = (): SxProps<Theme> => {
+        if (variant === "fullscreen") {
+            return {
+                maxWidth: "600px",
+                width: "100%",
+                fontSize: "1.1rem",
+            };
+        }
+        return {};
+    };
+
+    const variantStyles = getVariantStyles();
+    const alertStyles = getAlertStyles();
+    const combinedSx = Array.isArray(sx)
+        ? [variantStyles, ...sx]
+        : [variantStyles, sx];
 
     // Handle Error objects
     if (error instanceof AxiosError) {
         return (
-            <Box sx={{ mt: 2 }}>
-                <Alert severity="error">
+            <Box sx={combinedSx}>
+                <Alert severity="error" sx={alertStyles}>
                     {error.response?.data.exceptionMessage ||
                         "An unexpected error occurred"}
                 </Alert>
@@ -24,8 +80,10 @@ export const ErrorComponent: React.FC<ErrorComponentProps> = ({ error }) => {
 
     if (error instanceof Error) {
         return (
-            <Box sx={{ mt: 2 }}>
-                <Alert severity="error">{error.message}</Alert>
+            <Box sx={combinedSx}>
+                <Alert severity="error" sx={alertStyles}>
+                    {error.message}
+                </Alert>
             </Box>
         );
     }
@@ -33,8 +91,10 @@ export const ErrorComponent: React.FC<ErrorComponentProps> = ({ error }) => {
     // Handle string errors
     if (typeof error === "string") {
         return (
-            <Box sx={{ mt: 2 }}>
-                <Alert severity="error">{error}</Alert>
+            <Box sx={combinedSx}>
+                <Alert severity="error" sx={alertStyles}>
+                    {error}
+                </Alert>
             </Box>
         );
     }
@@ -49,12 +109,15 @@ export const ErrorComponent: React.FC<ErrorComponentProps> = ({ error }) => {
         if (errorMessages.length === 0) return null;
 
         return (
-            <Box sx={{ mt: 2 }}>
+            <Box sx={combinedSx}>
                 {errorMessages.map((message, index) => (
                     <Alert
                         key={index}
                         severity="error"
-                        sx={{ mb: index < errorMessages.length - 1 ? 1 : 0 }}
+                        sx={{
+                            ...alertStyles,
+                            mb: index < errorMessages.length - 1 ? 1 : 0,
+                        }}
                     >
                         {message}
                     </Alert>

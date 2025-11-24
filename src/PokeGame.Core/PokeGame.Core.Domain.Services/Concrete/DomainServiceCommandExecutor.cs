@@ -1,4 +1,4 @@
-﻿using BT.Common.OperationTimer.Proto;
+﻿using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Domain.Services.Abstract;
@@ -23,10 +23,12 @@ internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecuto
         var foundCommand = commandBuilder.Invoke(_serviceProvider);
         
         _logger.LogInformation("Attempting to execute {CommandName}", foundCommand.CommandName);
+
+        var timeTaken = Stopwatch.StartNew();
+        var result = await foundCommand.ExecuteAsync(input);
+        timeTaken.Stop();
         
-        var (timeTaken, result) = await OperationTimerUtils.TimeWithResultsAsync(() => foundCommand.ExecuteAsync(input));
-        
-        _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.Milliseconds);
+        _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.ElapsedMilliseconds);
 
         return result;
     }
@@ -38,9 +40,11 @@ internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecuto
         
         _logger.LogInformation("Attempting to execute {CommandName}", foundCommand.CommandName);
         
-        var (timeTaken, result) = await OperationTimerUtils.TimeWithResultsAsync(() => foundCommand.ExecuteAsync());
+        var timeTaken = Stopwatch.StartNew();
+        var result = await foundCommand.ExecuteAsync();
+        timeTaken.Stop();
         
-        _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.Milliseconds);
+        _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.ElapsedMilliseconds);
 
         return result;
     }
@@ -51,9 +55,11 @@ internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecuto
 
         _logger.LogInformation("Attempting to execute {CommandName}", foundCommand.CommandName);
         
-        var (timeTaken, result) = await OperationTimerUtils.TimeWithResultsAsync(() => foundCommand.ExecuteAsync(input));
+        var timeTaken = Stopwatch.StartNew();
+        var result = await foundCommand.ExecuteAsync(input);
+        timeTaken.Stop();
         
-        _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.Milliseconds);
+        _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.ElapsedMilliseconds);
 
         return result;
     }
@@ -65,9 +71,11 @@ internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecuto
 
         _logger.LogInformation("Attempting to execute {CommandName}", foundCommand.CommandName);
         
-        var (timeTaken, result) = await OperationTimerUtils.TimeWithResultsAsync(() => foundCommand.ExecuteAsync());
+        var timeTaken = Stopwatch.StartNew();
+        var result = await foundCommand.ExecuteAsync();
+        timeTaken.Stop();
         
-        _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.Milliseconds);
+        _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.ElapsedMilliseconds);
 
         return result;
     }

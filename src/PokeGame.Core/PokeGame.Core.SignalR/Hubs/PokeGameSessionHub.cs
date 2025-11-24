@@ -20,7 +20,7 @@ public sealed class PokeGameSessionHub : Hub
         _logger = logger;
     }
     #region  Hub Methods
-    [HubMethodName("SaveGame")]
+    [HubMethodName(nameof(SaveGame))]
     public async Task SaveGame(GameSaveData gameSaveData)
     {
         try
