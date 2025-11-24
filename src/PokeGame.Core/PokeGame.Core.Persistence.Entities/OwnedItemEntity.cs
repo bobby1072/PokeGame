@@ -4,16 +4,16 @@ using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Persistence.Entities;
 
-[Table("item_stack", Schema = "public")]
-public sealed class ItemStackEntity : BasePokeGameEntity<Guid?, ItemStack>
+[Table("owned_item", Schema = "public")]
+public sealed class OwnedItemEntity : BasePokeGameEntity<Guid?, OwnedItem>
 {
     public required Guid GameSaveId { get; set; }
     public required string ResourceName { get; set; }
     public required int Quantity { get; set; }
 
-    public override ItemStack ToModel()
+    public override OwnedItem ToModel()
     {
-        return new ItemStack
+        return new OwnedItem
         {
             Id = Id,
             GameSaveId = GameSaveId,

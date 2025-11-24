@@ -69,7 +69,7 @@ public static class PersistenceServiceCollectionExtensions
             .AddScoped<IPokedexPokemonRepository, PokedexPokemonRepository>()
             .AddScoped<IGameSaveRepository, GameSaveRepository>()
             .AddScoped<IOwnedPokemonRepository, OwnedPokemonRepository>()
-            .AddScoped<IItemStackRepository, ItemStackRepository>()
+            .AddScoped<IOwnedItemRepository, OwnedOwnedItemRepository>()
             .AddScoped<IGameSessionRepository, GameSessionRepository>()
             .AddScoped<IGameSaveDataRepository, GameSaveDataRepository>();
 

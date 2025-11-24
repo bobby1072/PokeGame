@@ -14,7 +14,7 @@ internal sealed class PokeGameContext : DbContext
     public DbSet<PokedexPokemonEntity> PokedexPokemon { get; set; }
     public DbSet<GameSaveEntity> GameSaves { get; set; }
     public DbSet<OwnedPokemonEntity> OwnedPokemons { get; set; }
-    public DbSet<ItemStackEntity> ItemStacks { get; set; }
+    public DbSet<OwnedItemEntity> OwnedItems { get; set; }
     public DbSet<GameSessionEntity> GameSessions { get; set; }
     public DbSet<GameSaveDataEntity> GameSaveData { get; set; }
     private static readonly JsonSerializerOptions _jsonBSerializerOptions =

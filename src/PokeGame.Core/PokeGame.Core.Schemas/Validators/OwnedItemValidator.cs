@@ -3,9 +3,9 @@ using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Schemas.Validators;
 
-internal sealed class ItemStackValidator: BaseValidator<ItemStack>
+internal sealed class OwnedItemValidator: BaseValidator<OwnedItem>
 {
-    public ItemStackValidator()
+    public OwnedItemValidator()
     {
         RuleFor(x => x.ResourceName).NotEmpty().WithMessage("Resource name cannot be empty");
         RuleFor(x => x.ResourceName).Must(IsValidUri).WithMessage("Resource names must be valid Uris");

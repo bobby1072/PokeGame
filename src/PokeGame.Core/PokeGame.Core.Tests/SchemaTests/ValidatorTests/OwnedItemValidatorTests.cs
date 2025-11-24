@@ -5,22 +5,22 @@ using PokeGame.Core.Schemas.Validators;
 
 namespace PokeGame.Core.Tests.SchemaTests.ValidatorTests;
 
-public sealed class ItemStackValidatorTests
+public sealed class OwnedItemValidatorTests
 {
     private readonly Fixture _fixture;
-    private readonly ItemStackValidator _validator;
+    private readonly OwnedItemValidator _validator;
 
-    public ItemStackValidatorTests()
+    public OwnedItemValidatorTests()
     {
         _fixture = new Fixture();
-        _validator = new ItemStackValidator();
+        _validator = new OwnedItemValidator();
     }
 
     [Fact]
     public void Should_Have_Error_When_ResourceName_Is_Empty()
     {
         // Arrange
-        var itemStack = _fixture.Build<ItemStack>()
+        var itemStack = _fixture.Build<OwnedItem>()
             .With(x => x.ResourceName, string.Empty)
             .With(x => x.Quantity, _fixture.Create<int>() % 99 + 1) // Valid quantity
             .Create();
@@ -35,7 +35,7 @@ public sealed class ItemStackValidatorTests
     public void Should_Have_Error_When_ResourceName_Is_Null()
     {
         // Arrange
-        var itemStack = _fixture.Build<ItemStack>()
+        var itemStack = _fixture.Build<OwnedItem>()
             .With(x => x.ResourceName, (string)null!)
             .With(x => x.Quantity, _fixture.Create<int>() % 99 + 1) // Valid quantity
             .Create();
@@ -54,7 +54,7 @@ public sealed class ItemStackValidatorTests
     public void Should_Have_Error_When_ResourceName_Is_Invalid_Uri(string invalidUri)
     {
         // Arrange
-        var itemStack = _fixture.Build<ItemStack>()
+        var itemStack = _fixture.Build<OwnedItem>()
             .With(x => x.ResourceName, invalidUri)
             .With(x => x.Quantity, _fixture.Create<int>() % 99 + 1) // Valid quantity
             .Create();
@@ -73,7 +73,7 @@ public sealed class ItemStackValidatorTests
     public void Should_Not_Have_Error_When_ResourceName_Is_Valid_Uri(string validUri)
     {
         // Arrange
-        var itemStack = _fixture.Build<ItemStack>()
+        var itemStack = _fixture.Build<OwnedItem>()
             .With(x => x.ResourceName, validUri)
             .With(x => x.Quantity, _fixture.Create<int>() % 99 + 1) // Valid quantity
             .Create();
@@ -90,7 +90,7 @@ public sealed class ItemStackValidatorTests
     public void Should_Have_Error_When_Quantity_Is_Less_Than_One(int invalidQuantity)
     {
         // Arrange
-        var itemStack = _fixture.Build<ItemStack>()
+        var itemStack = _fixture.Build<OwnedItem>()
             .With(x => x.ResourceName, "https://example.com/items/potion")
             .With(x => x.Quantity, invalidQuantity)
             .Create();
@@ -108,7 +108,7 @@ public sealed class ItemStackValidatorTests
     public void Should_Have_Error_When_Quantity_Is_Greater_Than_99(int invalidQuantity)
     {
         // Arrange
-        var itemStack = _fixture.Build<ItemStack>()
+        var itemStack = _fixture.Build<OwnedItem>()
             .With(x => x.ResourceName, "https://example.com/items/potion")
             .With(x => x.Quantity, invalidQuantity)
             .Create();
@@ -126,7 +126,7 @@ public sealed class ItemStackValidatorTests
     public void Should_Not_Have_Error_When_Quantity_Is_Valid(int validQuantity)
     {
         // Arrange
-        var itemStack = _fixture.Build<ItemStack>()
+        var itemStack = _fixture.Build<OwnedItem>()
             .With(x => x.ResourceName, "https://example.com/items/potion")
             .With(x => x.Quantity, validQuantity)
             .Create();
@@ -140,7 +140,7 @@ public sealed class ItemStackValidatorTests
     public void Should_Pass_Validation_When_All_Fields_Are_Valid()
     {
         // Arrange
-        var itemStack = _fixture.Build<ItemStack>()
+        var itemStack = _fixture.Build<OwnedItem>()
             .With(x => x.ResourceName, "https://pokemon.com/items/pokeball")
             .With(x => x.Quantity, 10)
             .Create();
@@ -154,7 +154,7 @@ public sealed class ItemStackValidatorTests
     public void Should_Have_Multiple_Errors_When_Multiple_Fields_Are_Invalid()
     {
         // Arrange
-        var itemStack = _fixture.Build<ItemStack>()
+        var itemStack = _fixture.Build<OwnedItem>()
             .With(x => x.ResourceName, "invalid-uri")
             .With(x => x.Quantity, 0)
             .Create();
@@ -169,7 +169,7 @@ public sealed class ItemStackValidatorTests
     public void Should_Not_Validate_Other_Properties()
     {
         // Arrange
-        var itemStack = _fixture.Build<ItemStack>()
+        var itemStack = _fixture.Build<OwnedItem>()
             .With(x => x.ResourceName, "https://example.com/items/potion")
             .With(x => x.Quantity, 25)
             .With(x => x.Id, (Guid?)null) // Invalid ID shouldn't matter
@@ -195,7 +195,7 @@ public sealed class ItemStackValidatorTests
 
         foreach (var uri in validUris)
         {
-            var itemStack = _fixture.Build<ItemStack>()
+            var itemStack = _fixture.Build<OwnedItem>()
                 .With(x => x.ResourceName, uri)
                 .With(x => x.Quantity, 1)
                 .Create();
