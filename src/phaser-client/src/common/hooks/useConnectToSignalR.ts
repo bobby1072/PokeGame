@@ -121,9 +121,20 @@ export const useConnectToSignalRQuery = () => {
         }
     }, [state.hubConnection]);
 
-    // Cleanup: Stop the connection when component unmounts
+    // Cleanup: Stop the connection when component unmounts or page unloads
     useEffect(() => {
+        const handleBeforeUnload = () => {
+            // Synchronously stop the connection before page unload
+            if (query.data && query.data.state === "Connected") {
+                query.data.stop();
+            }
+        };
+
+        // Add beforeunload listener to handle tab/window close
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
         return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
             if (query.data) {
                 query.data.stop().catch((err) => {
                     console.error("Error stopping SignalR connection:", err);

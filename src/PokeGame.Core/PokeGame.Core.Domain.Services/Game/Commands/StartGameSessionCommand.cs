@@ -63,16 +63,6 @@ internal sealed class StartGameSessionCommand
                 "Invalid game save id provided"
             );
         }
-
-        var foundExistingGameSession = await EntityFrameworkUtils.TryDbOperation(
-            () => _gameSessionRepository.GetOne(input.GameSaveId, nameof(GameSessionEntity.GameSaveId)),
-            _logger
-        );
-
-        if (foundExistingGameSession?.Data is not null)
-        {
-            throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "There is currently another game session already in progress");
-        }
         
         var newSession = new GameSession
         {
