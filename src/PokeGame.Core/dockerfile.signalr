@@ -20,7 +20,6 @@ COPY src/PokeGame.Core/PokeGame.Core.Persistence/*.csproj ./PokeGame.Core/PokeGa
 COPY src/PokeGame.Core/PokeGame.Core.Persistence.Entities/*.csproj ./PokeGame.Core/PokeGame.Core.Persistence.Entities/
 COPY src/PokeGame.Core/PokeGame.Core.Schemas/*.csproj ./PokeGame.Core/PokeGame.Core.Schemas/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.FastArray/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.FastArray/
-COPY src/Submodules/BT/src/BT.Common/BT.Common.OperationTimer/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.OperationTimer/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Helpers/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Helpers/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Polly/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Polly/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/
@@ -36,7 +35,6 @@ COPY src/PokeGame.Core/PokeGame.Core.Persistence/ ./PokeGame.Core/PokeGame.Core.
 COPY src/PokeGame.Core/PokeGame.Core.Persistence.Entities/ ./PokeGame.Core/PokeGame.Core.Persistence.Entities/
 COPY src/PokeGame.Core/PokeGame.Core.Schemas/ ./PokeGame.Core/PokeGame.Core.Schemas/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.FastArray/ ./Submodules/BT/src/BT.Common/BT.Common.FastArray/
-COPY src/Submodules/BT/src/BT.Common/BT.Common.OperationTimer/ ./Submodules/BT/src/BT.Common/BT.Common.OperationTimer/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Helpers/ ./Submodules/BT/src/BT.Common/BT.Common.Helpers/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Polly/ ./Submodules/BT/src/BT.Common/BT.Common.Polly/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/ ./Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/
