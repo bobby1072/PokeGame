@@ -13,7 +13,7 @@ CREATE TABLE "public".owned_pokemon(
 );
 
 
-CREATE TABLE "public".item_stack(
+CREATE TABLE "public".owned_item(
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     game_save_id UUID NOT NULL REFERENCES public.game_save(id) ON DELETE CASCADE ON UPDATE CASCADE,
     resource_name TEXT NOT NULL,

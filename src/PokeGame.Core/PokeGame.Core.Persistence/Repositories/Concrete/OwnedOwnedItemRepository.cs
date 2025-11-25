@@ -5,20 +5,19 @@ using PokeGame.Core.Persistence.Contexts;
 using PokeGame.Core.Persistence.Entities;
 using PokeGame.Core.Persistence.Entities.Extensions;
 using PokeGame.Core.Persistence.Repositories.Abstract;
-using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Persistence.Repositories.Concrete;
 
-internal sealed class ItemStackRepository : BaseRepository<ItemStackEntity, Guid?, ItemStack, PokeGameContext>, IItemStackRepository
+internal sealed class OwnedOwnedItemRepository : BaseRepository<OwnedItemEntity, Guid?, OwnedItem, PokeGameContext>, IOwnedItemRepository
 {
-    public ItemStackRepository(
+    public OwnedOwnedItemRepository(
         IDbContextFactory<PokeGameContext> dbContextFactory,
-        ILogger<ItemStackRepository> logger
+        ILogger<OwnedOwnedItemRepository> logger
     ) : base(dbContextFactory, logger) { }
 
-    protected override ItemStackEntity RuntimeToEntity(ItemStack itemStack)
+    protected override OwnedItemEntity RuntimeToEntity(OwnedItem ownedItem)
     {
-        return itemStack.ToEntity();
+        return ownedItem.ToEntity();
     }
 }
