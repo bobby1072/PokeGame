@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using BT.Common.FastArray.Proto;
+using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Game.Abstract;
@@ -156,7 +157,9 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
             (
                 2
                     * (
-                        ownedPokemon.PokedexPokemon?.Stats.Hp
+                        ownedPokemon.Pokemon?.Stats
+                            .FastArrayFirst(x => x.Stat.Name == "hp")
+                            .BaseStat
                         ?? throw new PokeGameApiServerException(
                             "Pokedex pokemon not attached to owned pokemon"
                         )
