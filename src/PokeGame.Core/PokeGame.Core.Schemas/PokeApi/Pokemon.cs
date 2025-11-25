@@ -19,7 +19,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// Whether or not this ability originated in the main series of the video games.
@@ -30,35 +30,35 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The generation this ability originated in.
         /// </summary>
-        public NamedApiResource<Generation> Generation { get; set; }
+        public required NamedApiResource<Generation> Generation { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
 
         /// <summary>
         /// The effect of this ability listed in different languages.
         /// </summary>
         [JsonPropertyName("effect_entries")]
-        public List<VerboseEffect> EffectEntries { get; set; }
+        public required List<VerboseEffect> EffectEntries { get; set; }
 
         /// <summary>
         /// The list of previous effects this ability has had across version groups.
         /// </summary>
         [JsonPropertyName("effect_changes")]
-        public List<AbilityEffectChange> EffectChanges { get; set; }
+        public required List<AbilityEffectChange> EffectChanges { get; set; }
 
         /// <summary>
         /// The flavor text of this ability listed in different languages.
         /// </summary>
         [JsonPropertyName("flavor_text_entries")]
-        public List<AbilityFlavorText> FlavorTextEntries { get; set; }
+        public required List<AbilityFlavorText> FlavorTextEntries { get; set; }
 
         /// <summary>
         /// A list of Pokémon that could potentially have this ability.
         /// </summary>
-        public List<AbilityPokemon> Pokemon { get; set; }
+        public required List<AbilityPokemon> Pokemon { get; set; }
     }
 
     /// <summary>
@@ -70,13 +70,13 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The previous effect of this ability listed in different languages.
         /// </summary>
         [JsonPropertyName("effect_entries")]
-        public List<Effects> EffectEntries { get; set; }
+        public required List<Effects> EffectEntries { get; set; }
 
         /// <summary>
         /// The version group in which the previous effect of this ability originated.
         /// </summary>
         [JsonPropertyName("version_group")]
-        public NamedApiResource<VersionGroup> VersionGroup { get; set; }
+        public required NamedApiResource<VersionGroup> VersionGroup { get; set; }
     }
 
     /// <summary>
@@ -88,18 +88,18 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The localized name for an API resource in a specific language.
         /// </summary>
         [JsonPropertyName("flavor_text")]
-        public string FlavorText { get; set; }
+        public required string FlavorText { get; set; }
 
         /// <summary>
         /// The language this text resource is in.
         /// </summary>
-        public NamedApiResource<Language> Language { get; set; }
+        public required NamedApiResource<Language> Language { get; set; }
 
         /// <summary>
         /// The version group that uses this flavor text.
         /// </summary>
         [JsonPropertyName("version_group")]
-        public NamedApiResource<VersionGroup> VersionGroup { get; set; }
+        public required NamedApiResource<VersionGroup> VersionGroup { get; set; }
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The Pokémon this ability could belong to.
         /// </summary>
-        public NamedApiResource<Pokemon> Pokemon { get; set; }
+        public required NamedApiResource<Pokemon> Pokemon { get; set; }
     }
 
     /// <summary>
@@ -151,18 +151,18 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// a Pokémon recieving this characteristic when divided by 5.
         /// </summary>
         [JsonPropertyName("possible_values")]
-        public List<int> PossibleValues { get; set; }
+        public required List<int> PossibleValues { get; set; }
 
         /// <summary>
         /// The highest stat of this characteristic.
         /// </summary>
         [JsonPropertyName("highest_stat")]
-        public NamedApiResource<Stat> HighestStat { get; set; }
+        public required NamedApiResource<Stat> HighestStat { get; set; }
 
         /// <summary>
         /// The descriptions of this characteristic listed in different languages.
         /// </summary>
-        public List<Descriptions> Descriptions { get; set; }
+        public required List<Descriptions> Descriptions { get; set; }
     }
 
     /// <summary>
@@ -181,18 +181,18 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         ///	The name of this resource listed in different languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
 
         /// <summary>
         /// A list of all Pokémon species that are members of this egg group.
         /// </summary>
         [JsonPropertyName("pokemon_species")]
-        public List<NamedApiResource<PokemonSpecies>> PokemonSpecies { get; set; }
+        public required List<NamedApiResource<PokemonSpecies>> PokemonSpecies { get; set; }
     }
 
     /// <summary>
@@ -212,21 +212,21 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// A list of Pokémon species that can be this gender and how likely it
         /// is that they will be.
         /// </summary>
         [JsonPropertyName("pokemon_species_details")]
-        public List<PokemonSpeciesGender> PokemonSpeciesDetails { get; set; }
+        public required List<PokemonSpeciesGender> PokemonSpeciesDetails { get; set; }
 
         /// <summary>
         /// A list of Pokémon species that required this gender in order for a
         /// Pokémon to evolve into them.
         /// </summary>
         [JsonPropertyName("required_for_evolution")]
-        public List<NamedApiResource<PokemonSpecies>> RequiredForEvolution { get; set; }
+        public required List<NamedApiResource<PokemonSpecies>> RequiredForEvolution { get; set; }
     }
 
     /// <summary>
@@ -244,7 +244,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// A Pokémon species that can be the referenced gender.
         /// </summary>
         [JsonPropertyName("pokemon_species")]
-        public NamedApiResource<PokemonSpecies> PokemonSpecies { get; set; }
+        public required NamedApiResource<PokemonSpecies> PokemonSpecies { get; set; }
     }
 
     /// <summary>
@@ -262,30 +262,30 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// The formula used to calculate the rate at which the Pokémon species
         /// gains level.
         /// </summary>
-        public string Formula { get; set; }
+        public required string Formula { get; set; }
 
         /// <summary>
         /// The descriptions of this characteristic listed in different languages.
         /// </summary>
-        public List<Descriptions> Descriptions { get; set; }
+        public required List<Descriptions> Descriptions { get; set; }
 
         /// <summary>
         /// A list of levels and the amount of experienced needed to atain them
         /// based on this growth rate.
         /// </summary>
-        public List<GrowthRateExperienceLevel> Levels { get; set; }
+        public required List<GrowthRateExperienceLevel> Levels { get; set; }
 
         /// <summary>
         /// A list of Pokémon species that gain levels at this growth rate.
         /// </summary>
         [JsonPropertyName("pokemon_species")]
-        public List<NamedApiResource<PokemonSpecies>> PokemonSpecies { get; set; }
+        public required List<NamedApiResource<PokemonSpecies>> PokemonSpecies { get; set; }
     }
 
     /// <summary>
@@ -319,50 +319,50 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// The stat decreased by 10% in Pokémon with this nature.
         /// </summary>
         [JsonPropertyName("decreased_stat")]
-        public NamedApiResource<Stat> DecreasedStat { get; set; }
+        public required NamedApiResource<Stat> DecreasedStat { get; set; }
 
         /// <summary>
         /// The stat increased by 10% in Pokémon with this nature.
         /// </summary>
         [JsonPropertyName("increased_stat")]
-        public NamedApiResource<Stat> IncreasedStat { get; set; }
+        public required NamedApiResource<Stat> IncreasedStat { get; set; }
 
         /// <summary>
         /// The flavor hated by Pokémon with this nature.
         /// </summary>
         [JsonPropertyName("hates_flavor")]
-        public NamedApiResource<BerryFlavor> HatesFlavor { get; set; }
+        public required NamedApiResource<BerryFlavor> HatesFlavor { get; set; }
 
         /// <summary>
         /// The flavor liked by Pokémon with this nature.
         /// </summary>
         [JsonPropertyName("likes_flavor")]
-        public NamedApiResource<BerryFlavor> LikesFlavor { get; set; }
+        public required NamedApiResource<BerryFlavor> LikesFlavor { get; set; }
 
         /// <summary>
         /// A list of Pokéathlon stats this nature effects and how much it
         /// effects them.
         /// </summary>
         [JsonPropertyName("pokeathlon_stat_changes")]
-        public List<NatureStatChange> PokeathlonStatChanges { get; set; }
+        public required List<NatureStatChange> PokeathlonStatChanges { get; set; }
 
         /// <summary>
         /// A list of battle styles and how likely a Pokémon with this nature is
         /// to use them in the Battle Palace or Battle Tent.
         /// </summary>
         [JsonPropertyName("move_battle_style_preferences")]
-        public List<MoveBattleStylePreference> MoveBattleStylePreferences { get; set; }
+        public required List<MoveBattleStylePreference> MoveBattleStylePreferences { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
     }
 
     /// <summary>
@@ -380,7 +380,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The stat being affected.
         /// </summary>
         [JsonPropertyName("pokeathlon_stat")]
-        public NamedApiResource<PokeathlonStat> PokeathlonStat { get; set; }
+        public required NamedApiResource<PokeathlonStat> PokeathlonStat { get; set; }
     }
 
     /// <summary>
@@ -404,7 +404,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The move battle style.
         /// </summary>
         [JsonPropertyName("move_battle_style")]
-        public NamedApiResource<MoveBattleStyle> MoveBattleStyle { get; set; }
+        public required NamedApiResource<MoveBattleStyle> MoveBattleStyle { get; set; }
     }
 
     /// <summary>
@@ -424,19 +424,19 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
 
         /// <summary>
         /// A detail of natures which affect this Pokéathlon stat positively
         /// or negatively.
         /// </summary>
         [JsonPropertyName("affecting_natures")]
-        public NaturePokeathlonStatAffectSets AffectingNatures { get; set; }
+        public required NaturePokeathlonStatAffectSets AffectingNatures { get; set; }
     }
 
     /// <summary>
@@ -447,12 +447,12 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// A list of natures and how they change the referenced Pokéathlon stat.
         /// </summary>
-        public List<NaturePokeathlonStatAffect> Increase { get; set; }
+        public required List<NaturePokeathlonStatAffect> Increase { get; set; }
 
         /// <summary>
         /// A list of natures and how they change the referenced Pokéathlon stat.
         /// </summary>
-        public List<NaturePokeathlonStatAffect> Decrease { get; set; }
+        public required List<NaturePokeathlonStatAffect> Decrease { get; set; }
     }
 
     /// <summary>
@@ -469,7 +469,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The nature causing the change.
         /// </summary>
-        public NamedApiResource<Nature> Nature { get; set; }
+        public required NamedApiResource<Nature> Nature { get; set; }
     }
 
     /// <summary>
@@ -491,7 +491,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// The base experience gained for defeating this Pokémon.
@@ -524,63 +524,63 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// A list of abilities this Pokémon could potentially have.
         /// </summary>
-        public List<PokemonAbility> Abilities { get; set; }
+        public required List<PokemonAbility> Abilities { get; set; }
 
         /// <summary>
         /// A list of forms this Pokémon can take on.
         /// </summary>
-        public List<NamedApiResource<PokemonForm>> Forms { get; set; }
+        public required List<NamedApiResource<PokemonForm>> Forms { get; set; }
 
         /// <summary>
         /// A list of game indices relevent to Pokémon item by generation.
         /// </summary>
         [JsonPropertyName("game_indices")]
-        public List<VersionGameIndex> GameIndicies { get; set; }
+        public required List<VersionGameIndex> GameIndicies { get; set; }
 
         /// <summary>
         /// A list of items this Pokémon may be holding when encountered.
         /// </summary>
         [JsonPropertyName("held_items")]
-        public List<PokemonHeldItem> HeldItems { get; set; }
+        public required List<PokemonHeldItem> HeldItems { get; set; }
 
         /// <summary>
         /// A link to a list of location areas, as well as encounter
         /// details pertaining to specific versions.
         /// </summary>
         [JsonPropertyName("location_area_encounters")]
-        public string LocationAreaEncounters { get; set; }
+        public required string LocationAreaEncounters { get; set; }
 
         /// <summary>
         /// A list of moves along with learn methods and level
         /// details pertaining to specific version groups.
         /// </summary>
-        public List<PokemonMove> Moves { get; set; }
+        public required List<PokemonMove> Moves { get; set; }
 
         /// <summary>
         /// Type data in previous generations for this Pokemon.
         /// </summary>
         [JsonPropertyName("past_types")]
-        public List<PokemonPastTypes> PastTypes { get; set; }
+        public required List<PokemonPastTypes> PastTypes { get; set; }
 
         /// <summary>
         /// A set of sprites used to depict this Pokémon in the game.
         /// </summary>
-        public PokemonSprites Sprites { get; set; }
+        public required PokemonSprites Sprites { get; set; }
 
         /// <summary>
         /// The species this Pokémon belongs to.
         /// </summary>
-        public NamedApiResource<PokemonSpecies> Species { get; set; }
+        public required NamedApiResource<PokemonSpecies> Species { get; set; }
 
         /// <summary>
         /// A list of base stat values for this Pokémon.
         /// </summary>
-        public List<PokemonStat> Stats { get; set; }
+        public required List<PokemonStat> Stats { get; set; }
 
         /// <summary>
         /// A list of details showing types this Pokémon has.
         /// </summary>
-        public List<PokemonType> Types { get; set; }
+        public required List<PokemonType> Types { get; set; }
     }
 
     /// <summary>
@@ -602,7 +602,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The ability the Pokémon may have.
         /// </summary>
-        public NamedApiResource<Ability> Ability { get; set; }
+        public required NamedApiResource<Ability> Ability { get; set; }
     }
 
     /// <summary>
@@ -618,7 +618,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The type the referenced Pokémon has.
         /// </summary>
-        public NamedApiResource<Type> Type { get; set; }
+        public required NamedApiResource<Type> Type { get; set; }
     }
 
     /// <summary>
@@ -644,13 +644,13 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The item the referenced Pokémon holds.
         /// </summary>
-        public NamedApiResource<Item> Item { get; set; }
+        public required NamedApiResource<Item> Item { get; set; }
 
         /// <summary>
         /// The details of the different versions in which the item is held.
         /// </summary>
         [JsonPropertyName("version_details")]
-        public List<PokemonHeldItemVersion> VersionDetails { get; set; }
+        public required List<PokemonHeldItemVersion> VersionDetails { get; set; }
     }
 
     /// <summary>
@@ -661,7 +661,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The version in which the item is held.
         /// </summary>
-        public NamedApiResource<Version> Version { get; set; }
+        public required NamedApiResource<Version> Version { get; set; }
 
         /// <summary>
         /// How often the item is held.
@@ -677,13 +677,13 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The move the Pokémon can learn.
         /// </summary>
-        public NamedApiResource<Move> Move { get; set; }
+        public required NamedApiResource<Move> Move { get; set; }
 
         /// <summary>
         /// The details of the version in which the Pokémon can learn the move.
         /// </summary>
         [JsonPropertyName("version_group_details")]
-        public List<PokemonMoveVersion> VersionGroupDetails { get; set; }
+        public required List<PokemonMoveVersion> VersionGroupDetails { get; set; }
     }
 
     /// <summary>
@@ -695,13 +695,13 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The method by which the move is learned.
         /// </summary>
         [JsonPropertyName("move_learn_method")]
-        public NamedApiResource<MoveLearnMethod> MoveLearnMethod { get; set; }
+        public required NamedApiResource<MoveLearnMethod> MoveLearnMethod { get; set; }
 
         /// <summary>
         /// The version group in which the move is learned.
         /// </summary>
         [JsonPropertyName("version_group")]
-        public NamedApiResource<VersionGroup> VersionGroup { get; set; }
+        public required NamedApiResource<VersionGroup> VersionGroup { get; set; }
 
         /// <summary>
         /// The minimum level to learn the move.
@@ -718,7 +718,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The stat the Pokémon has.
         /// </summary>
-        public NamedApiResource<Stat> Stat { get; set; }
+        public required NamedApiResource<Stat> Stat { get; set; }
 
         /// <summary>
         /// The effort points (EV) the Pokémon has in the stat.
@@ -832,13 +832,13 @@ namespace PokeGame.Core.Schemas.PokeApi
                 /// The default depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_default")]
-                public string FrontDefault { get; set; }
+                public required string FrontDefault { get; set; }
 
                 /// <summary>
                 /// The female depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_female")]
-                public string FrontFemale { get; set; }
+                public required string FrontFemale { get; set; }
             }
 
             /// <summary>
@@ -850,25 +850,25 @@ namespace PokeGame.Core.Schemas.PokeApi
                 /// The default depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_default")]
-                public string FrontDefault { get; set; }
+                public required string FrontDefault { get; set; }
 
                 /// <summary>
                 /// The female depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_female")]
-                public string FrontFemale { get; set; }
+                public required string FrontFemale { get; set; }
 
                 /// <summary>
                 /// The shiny depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_shiny")]
-                public string FrontShiny { get; set; }
+                public required string FrontShiny { get; set; }
 
                 /// <summary>
                 /// The shiny female depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_shiny_female")]
-                public string FrontShinyFemale { get; set; }
+                public required string FrontShinyFemale { get; set; }
             }
 
             /// <summary>
@@ -880,13 +880,13 @@ namespace PokeGame.Core.Schemas.PokeApi
                 /// The default depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_default")]
-                public string FrontDefault { get; set; }
+                public required string FrontDefault { get; set; }
 
                 /// <summary>
                 /// The shiny depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_shiny")]
-                public string FrontShiny { get; set; }
+                public required string FrontShiny { get; set; }
             }
 
             /// <summary>
@@ -898,49 +898,49 @@ namespace PokeGame.Core.Schemas.PokeApi
                 /// The default depiction of this Pokémon from the back in battle.
                 /// </summary>
                 [JsonPropertyName("back_default")]
-                public string BackDefault { get; set; }
+                public required string BackDefault { get; set; }
 
                 /// <summary>
                 /// The female depiction of this Pokémon from the back in battle.
                 /// </summary>
                 [JsonPropertyName("back_female")]
-                public string BackFemale { get; set; }
+                public required string BackFemale { get; set; }
 
                 /// <summary>
                 /// The shiny depiction of this Pokémon from the back in battle.
                 /// </summary>
                 [JsonPropertyName("back_shiny")]
-                public string BackShiny { get; set; }
+                public required string BackShiny { get; set; }
 
                 /// <summary>
                 /// The shiny female depiction of this Pokémon from the back in battle.
                 /// </summary>
                 [JsonPropertyName("back_shiny_female")]
-                public string BackShinyFemale { get; set; }
+                public required string BackShinyFemale { get; set; }
 
                 /// <summary>
                 /// The default depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_default")]
-                public string FrontDefault { get; set; }
+                public required string FrontDefault { get; set; }
 
                 /// <summary>
                 /// The female depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_female")]
-                public string FrontFemale { get; set; }
+                public required string FrontFemale { get; set; }
 
                 /// <summary>
                 /// The shiny depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_shiny")]
-                public string FrontShiny { get; set; }
+                public required string FrontShiny { get; set; }
 
                 /// <summary>
                 /// The shiny female depiction of this Pokémon from the front in battle.
                 /// </summary>
                 [JsonPropertyName("front_shiny_female")]
-                public string FrontShinyFemale { get; set; }
+                public required string FrontShinyFemale { get; set; }
             }
         }
 

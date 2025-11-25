@@ -17,7 +17,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public override required string Name { get; set; }
 
         /// <summary>
         /// A good value for sorting.
@@ -28,7 +28,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The name of this resource listed in different
         /// languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
     }
 
     /// <summary>
@@ -47,18 +47,18 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public override required string Name { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different
         /// languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
 
         /// <summary>
         /// A list of possible values for this encounter condition.
         /// </summary>
-        public List<NamedApiResource<EncounterConditionValue>> Values { get; set; }
+        public required List<NamedApiResource<EncounterConditionValue>> Values { get; set; }
     }
 
     /// <summary>
@@ -77,18 +77,18 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public override required string Name { get; set; }
 
         /// <summary>
         /// The condition this encounter condition value pertains
         /// to.
         /// </summary>
-        public NamedApiResource<EncounterCondition> Condition { get; set; }
+        public required NamedApiResource<EncounterCondition> Condition { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different
         /// languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
     }
 }

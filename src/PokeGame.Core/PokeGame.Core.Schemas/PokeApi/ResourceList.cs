@@ -36,7 +36,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// A list of un-named API resources.
         /// </summary>
         [JsonPropertyName("results")]
-        public List<ApiResource<T>> Results { get; set; }
+        public required List<ApiResource<T>> Results { get; set; }
     }
 
     /// <summary>
@@ -49,6 +49,6 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// A list of named API resources.
         /// </summary>
         [JsonPropertyName("results")]
-        public List<NamedApiResource<T>> Results { get; set; }
+        public required List<NamedApiResource<T>> Results { get; set; }
     }
 }
