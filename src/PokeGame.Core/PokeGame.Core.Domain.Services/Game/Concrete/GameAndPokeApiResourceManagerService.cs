@@ -5,6 +5,7 @@ using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.PokeApi;
 
 namespace PokeGame.Core.Domain.Services.Game.Concrete;
 
@@ -39,6 +40,61 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
         }
 
 
-        throw new NotImplementedException();
+        var getResourcesJobList = foundPokemonFromDb.Data.FastArraySelect(GetResourcesFromApiAsync).ToArray();
+        
+        await Task.WhenAll(getResourcesJobList);
+
+        var finalOwnedPokemon = new List<OwnedPokemon>();
+
+        foreach (var resource in getResourcesJobList)
+        {
+            finalOwnedPokemon.Add(await resource);
+        }
+        
+        return finalOwnedPokemon;
+    }
+
+
+    private async Task<OwnedPokemon> GetResourcesFromApiAsync(OwnedPokemon ownedPokemon)
+    {
+        var pokemonJob = _pokeApiClient.GetResourceAsync<Pokemon>(ownedPokemon.PokemonResourceName);
+        var speciesJob = _pokeApiClient.GetResourceAsync<PokemonSpecies>(ownedPokemon.PokemonResourceName);
+        
+        var moveJobList = new List<Task<Move>>();
+        
+        moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveOneResourceName));
+        if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveTwoResourceName))
+        {
+            moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveTwoResourceName));
+        }
+        if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveThreeResourceName))
+        {
+            moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveThreeResourceName));
+        }
+        if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveFourResourceName))
+        {
+            moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveFourResourceName));
+        }
+        
+        var executionList = new List<Task>()
+            .Append(pokemonJob)
+            .Append(speciesJob)
+            .Concat(moveJobList)
+            .ToArray();
+        
+        await Task.WhenAll(executionList);
+        
+        var finalMoveTwo = moveJobList.ElementAtOrDefault(1);
+        var finalMoveThree = moveJobList.ElementAtOrDefault(2);
+        var finalMoveFour = moveJobList.ElementAtOrDefault(3);
+
+        ownedPokemon.Pokemon = await pokemonJob;
+        ownedPokemon.PokemonSpecies = await speciesJob;
+        ownedPokemon.MoveOne = await moveJobList[0];
+        ownedPokemon.MoveTwo = finalMoveTwo is null ? null : await finalMoveTwo;
+        ownedPokemon.MoveThree = finalMoveThree is null ? null : await finalMoveThree;
+        ownedPokemon.MoveFour = finalMoveFour is null ? null : await finalMoveFour;
+        
+        return ownedPokemon;
     }
 }

@@ -196,7 +196,7 @@ public sealed class SaveGameDataCommandTests
         {
             Id = newPokemonId,
             GameSaveId = gameSaveId,
-            ResourceName = "pikachu",
+            PokemonResourceName = "pikachu",
             PokemonLevel = 5,
             CurrentHp = 20,
             MoveOneResourceName = "tackle",
@@ -687,7 +687,7 @@ public sealed class SaveGameDataCommandTests
         {
             Id = newPokemonId,
             GameSaveId = Guid.NewGuid(),
-            ResourceName = "pikachu",
+            PokemonResourceName = "pikachu",
             PokemonLevel = 5,
             CurrentHp = 20,
             MoveOneResourceName = "tackle",

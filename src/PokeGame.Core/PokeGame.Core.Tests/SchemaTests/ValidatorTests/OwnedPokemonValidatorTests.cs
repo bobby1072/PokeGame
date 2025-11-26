@@ -290,12 +290,12 @@ public sealed class OwnedPokemonValidatorTests
     {
         // Arrange
         var ownedPokemon = CreateValidOwnedPokemon()
-            .With(x => x.ResourceName, string.Empty)
+            .With(x => x.PokemonResourceName, string.Empty)
             .Create();
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.ResourceName)
+        result.ShouldHaveValidationErrorFor(x => x.PokemonResourceName)
               .WithErrorMessage("Resource name cannot be empty");
     }
 
@@ -307,12 +307,12 @@ public sealed class OwnedPokemonValidatorTests
     {
         // Arrange
         var ownedPokemon = CreateValidOwnedPokemon()
-            .With(x => x.ResourceName, invalidUri)
+            .With(x => x.PokemonResourceName, invalidUri)
             .Create();
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.ResourceName)
+        result.ShouldHaveValidationErrorFor(x => x.PokemonResourceName)
               .WithErrorMessage("Resource names must be valid Uris");
     }
 
@@ -340,7 +340,7 @@ public sealed class OwnedPokemonValidatorTests
             .With(x => x.CurrentExperience, 0) // Invalid
             .With(x => x.CurrentHp, -1) // Invalid
             .With(x => x.MoveOneResourceName, "invalid-uri") // Invalid
-            .With(x => x.ResourceName, "invalid-uri") // Invalid
+            .With(x => x.PokemonResourceName, "invalid-uri") // Invalid
             .Create();
 
         // Act & Assert
@@ -349,7 +349,7 @@ public sealed class OwnedPokemonValidatorTests
         result.ShouldHaveValidationErrorFor(x => x.CurrentExperience);
         result.ShouldHaveValidationErrorFor(x => x.CurrentHp);
         result.ShouldHaveValidationErrorFor(x => x.MoveOneResourceName);
-        result.ShouldHaveValidationErrorFor(x => x.ResourceName);
+        result.ShouldHaveValidationErrorFor(x => x.PokemonResourceName);
     }
 
     [Fact]
@@ -377,7 +377,7 @@ public sealed class OwnedPokemonValidatorTests
             .With(x => x.PokemonLevel, _fixture.Create<int>() % 99 + 1) // 1-99
             .With(x => x.CurrentExperience, _fixture.Create<int>() % 10000 + 1) // > 0
             .With(x => x.CurrentHp, Math.Abs(_fixture.Create<int>()) % 1000) // >= 0
-            .With(x => x.ResourceName, "https://pokemon.com/pokemon/pikachu")
+            .With(x => x.PokemonResourceName, "https://pokemon.com/pokemon/pikachu")
             .With(x => x.MoveOneResourceName, "https://pokemon.com/moves/tackle")
             .With(x => x.MoveTwoResourceName, "https://pokemon.com/moves/thunderbolt")
             .With(x => x.MoveThreeResourceName, "https://pokemon.com/moves/surf")

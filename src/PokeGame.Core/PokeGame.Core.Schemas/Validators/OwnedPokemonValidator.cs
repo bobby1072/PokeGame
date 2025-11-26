@@ -7,8 +7,8 @@ internal sealed class OwnedPokemonValidator: BaseValidator<OwnedPokemon>
 {
     public OwnedPokemonValidator()
     {
-        RuleFor(x => x.ResourceName).NotEmpty().WithMessage("Resource name cannot be empty");
-        RuleFor(x => x.ResourceName).Must(IsValidUri).WithMessage("Resource names must be valid Uris");
+        RuleFor(x => x.PokemonResourceName).NotEmpty().WithMessage("Resource name cannot be empty");
+        RuleFor(x => x.PokemonResourceName).Must(IsValidUri).WithMessage("Resource names must be valid Uris");
         RuleFor(x => x.PokemonLevel).Must(x => x is > 0 and < 100).WithMessage("Pokemon level must be between 1 - 99");
         RuleFor(x => x.CurrentExperience).Must(x => x is > 0).WithMessage("Current experience must be greater than 0");
         RuleFor(x => x.CurrentHp).Must(x => x is >= 0).WithMessage("Current hp cannot be negative");

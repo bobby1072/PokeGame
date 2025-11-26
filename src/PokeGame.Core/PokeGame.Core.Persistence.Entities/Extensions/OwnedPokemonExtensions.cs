@@ -10,7 +10,7 @@ public static class OwnedPokemonExtensions
         {
             Id = ownedPokemon.Id,
             GameSaveId = ownedPokemon.GameSaveId,
-            ResourceName = ownedPokemon.ResourceName,
+            ResourceName = ownedPokemon.PokemonResourceName,
             CaughtAt = ownedPokemon.CaughtAt,
             PokemonLevel = ownedPokemon.PokemonLevel,
             CurrentExperience = ownedPokemon.CurrentExperience,
