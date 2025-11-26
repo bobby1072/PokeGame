@@ -400,6 +400,6 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
             $"{resourceUrl} --> {typeName}";
 
         private static DateTimeOffset GetCacheItemTTL() =>
-            new(DateTime.UtcNow, TimeSpan.FromHours(12));
+            new(DateTime.UtcNow, TimeSpan.FromHours(24));
     }
 }
