@@ -7,7 +7,7 @@ namespace PokeGame.Core.Persistence.Repositories.Abstract;
 
 public interface IGameSessionRepository : IRepository<GameSessionEntity, Guid?, GameSession>
 {
+    Task<DbGetOneResult<GameSession>> GetOneWithGameSaveAndDataByConnectionIdAsync(string connectionId);
     Task<DbResult> EndGameSession(GameSession gameSession);
     Task DeleteAllSessionsByGameSaveIdAsync(Guid gameSaveId);
-    Task DeleteAllSessionsByConnectionIdAsync(string connectionId);
 }
