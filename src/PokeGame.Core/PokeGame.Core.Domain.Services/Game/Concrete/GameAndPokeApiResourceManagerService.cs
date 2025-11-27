@@ -26,6 +26,33 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
         _logger = logger;
     }
 
+    public async Task<IReadOnlyCollection<OwnedPokemon>> GetDeepOwnedPokemon(
+        IReadOnlyCollection<OwnedPokemon> ownedPokemons)
+    {
+        try
+        {
+            var getResourcesJobList = ownedPokemons.FastArraySelect(GetResourcesFromApiAsync).ToArray();
+
+            await Task.WhenAll(getResourcesJobList);
+
+            var finalOwnedPokemon = new List<OwnedPokemon>();
+
+            foreach (var resource in getResourcesJobList)
+            {
+                finalOwnedPokemon.Add(await resource);
+            }
+
+            return finalOwnedPokemon;
+        }
+        catch (PokeGameApiException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new PokeGameApiServerException("Failed to fetch owned pokemon resources", ex);
+        }
+    }
     public async Task<IReadOnlyCollection<OwnedPokemon>> GetFullOwnedPokemon(IReadOnlyCollection<Guid> ownedPokemonId)
     {
         try
@@ -42,19 +69,7 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
                 throw new PokeGameApiServerException("Pokemon could not be retrieved from database");
             }
 
-
-            var getResourcesJobList = foundPokemonFromDb.Data.FastArraySelect(GetResourcesFromApiAsync).ToArray();
-
-            await Task.WhenAll(getResourcesJobList);
-
-            var finalOwnedPokemon = new List<OwnedPokemon>();
-
-            foreach (var resource in getResourcesJobList)
-            {
-                finalOwnedPokemon.Add(await resource);
-            }
-
-            return finalOwnedPokemon;
+            return await GetDeepOwnedPokemon(foundPokemonFromDb.Data);
         }
         catch (PokeGameApiException)
         {

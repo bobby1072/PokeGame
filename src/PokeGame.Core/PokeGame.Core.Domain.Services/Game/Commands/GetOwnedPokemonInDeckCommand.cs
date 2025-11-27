@@ -35,7 +35,7 @@ internal sealed class GetOwnedPokemonInDeckCommand: IDomainCommand<(bool DeepVer
         _logger.LogInformation("About to get owned pokemon in deck for user with id: {UserId}", input.CurrentUser.Id);
 
         var foundGameSaveData = await EntityFrameworkUtils.TryDbOperation(() =>
-            _gameSaveDataRepository.GetOne(input.GameSaveId, nameof(GameSaveData.GameSaveId)))
+            _gameSaveDataRepository.GetOne(input.GameSaveId, nameof(GameSaveData.GameSaveId)), _logger)
                 ?? throw new PokeGameApiServerException("Failed to fetch game save data");
 
         if (foundGameSaveData.Data is null || !foundGameSaveData.IsSuccessful)
