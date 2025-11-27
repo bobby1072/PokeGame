@@ -101,8 +101,10 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<StartGameSessionCommand>()
             .AddScoped<EndGameSessionCommand>()
             .AddScoped<SaveGameDataCommand>()
+            .AddScoped<GetOwnedPokemonInDeckCommand>()
             .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>()
-            .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>();
+            .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>()
+            .AddScoped<IGameAndPokeApiResourceManagerService, GameAndPokeApiResourceManagerService>();
 
         return services;
     }

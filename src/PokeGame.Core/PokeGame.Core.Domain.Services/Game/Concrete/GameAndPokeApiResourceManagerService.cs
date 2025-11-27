@@ -28,30 +28,42 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
 
     public async Task<IReadOnlyCollection<OwnedPokemon>> GetFullOwnedPokemon(IReadOnlyCollection<Guid> ownedPokemonId)
     {
-        var foundPokemonFromDb = await EntityFrameworkUtils
-            .TryDbOperation(() => _ownedPokemonRepository
-                .GetMany(ownedPokemonId.FastArraySelect(x => (Guid?)x).ToArray()),
-                _logger)
-                    ?? throw new PokeGameApiServerException("Failed to fetch owned pokemon from database");
-
-        if (!foundPokemonFromDb.IsSuccessful || foundPokemonFromDb.Data.Count < 1)
+        try
         {
-            throw new PokeGameApiServerException("Pokemon could not be retrieved from database");
+            var foundPokemonFromDb = await EntityFrameworkUtils
+                                         .TryDbOperation(() => _ownedPokemonRepository
+                                                 .GetMany(ownedPokemonId.FastArraySelect(x => (Guid?)x).ToArray()),
+                                             _logger)
+                                     ?? throw new PokeGameApiServerException(
+                                         "Failed to fetch owned pokemon from database");
+
+            if (!foundPokemonFromDb.IsSuccessful || foundPokemonFromDb.Data.Count < 1)
+            {
+                throw new PokeGameApiServerException("Pokemon could not be retrieved from database");
+            }
+
+
+            var getResourcesJobList = foundPokemonFromDb.Data.FastArraySelect(GetResourcesFromApiAsync).ToArray();
+
+            await Task.WhenAll(getResourcesJobList);
+
+            var finalOwnedPokemon = new List<OwnedPokemon>();
+
+            foreach (var resource in getResourcesJobList)
+            {
+                finalOwnedPokemon.Add(await resource);
+            }
+
+            return finalOwnedPokemon;
         }
-
-
-        var getResourcesJobList = foundPokemonFromDb.Data.FastArraySelect(GetResourcesFromApiAsync).ToArray();
-        
-        await Task.WhenAll(getResourcesJobList);
-
-        var finalOwnedPokemon = new List<OwnedPokemon>();
-
-        foreach (var resource in getResourcesJobList)
+        catch (PokeGameApiException)
         {
-            finalOwnedPokemon.Add(await resource);
+            throw;
         }
-        
-        return finalOwnedPokemon;
+        catch (Exception ex)
+        {
+            throw new PokeGameApiServerException("Failed to fetch owned pokemon resources", ex);
+        }
     }
 
 
