@@ -15,17 +15,17 @@ internal sealed class GetOwnedPokemonInDeckCommand: IDomainCommand<(bool DeepVer
 {
     public string CommandName => nameof(GetOwnedPokemonInDeckCommand);
     private readonly IGameAndPokeApiResourceManagerService _gameAndPokeApiResourceManagerService;
-    private readonly IGameSaveDataRepository _gameSaveDataRepository;
+    private readonly IGameSaveRepository _gameSaveRepository;
     private readonly IOwnedPokemonRepository _ownedPokemonRepository;
     private readonly ILogger<GetOwnedPokemonInDeckCommand> _logger;
 
     public GetOwnedPokemonInDeckCommand(IGameAndPokeApiResourceManagerService gameAndPokeApiResourceManagerService,
-        IGameSaveDataRepository gameSaveDataRepository,
+        IGameSaveRepository gameSaveRepository,
         IOwnedPokemonRepository ownedPokemonRepository,
         ILogger<GetOwnedPokemonInDeckCommand> logger)
     {
         _gameAndPokeApiResourceManagerService = gameAndPokeApiResourceManagerService;
-        _gameSaveDataRepository = gameSaveDataRepository;
+        _gameSaveRepository = gameSaveRepository;
         _ownedPokemonRepository = ownedPokemonRepository;
         _logger = logger;
     }
@@ -35,7 +35,7 @@ internal sealed class GetOwnedPokemonInDeckCommand: IDomainCommand<(bool DeepVer
         _logger.LogInformation("About to get owned pokemon in deck for user with id: {UserId}", input.CurrentUser.Id);
 
         var foundGameSaveData = await EntityFrameworkUtils.TryDbOperation(() =>
-            _gameSaveDataRepository.GetOne(input.GameSaveId, nameof(GameSaveData.GameSaveId)), _logger)
+            _gameSaveRepository.GetOne(input.GameSaveId, relations: nameof(GameSave.GameSaveData)), _logger)
                 ?? throw new PokeGameApiServerException("Failed to fetch game save data");
 
         if (foundGameSaveData.Data is null || !foundGameSaveData.IsSuccessful)
@@ -43,19 +43,23 @@ internal sealed class GetOwnedPokemonInDeckCommand: IDomainCommand<(bool DeepVer
             throw new PokeGameApiUserException(HttpStatusCode.BadRequest,"Failed to find game save data");
         }
 
-        if (foundGameSaveData.Data.GameData.DeckPokemon.Count < 1)
+        if (foundGameSaveData.Data.UserId != input.CurrentUser.Id)
+        {
+            throw new PokeGameApiUserException(HttpStatusCode.Unauthorized, "User does not have permission to access this deck");
+        }
+        if (foundGameSaveData.Data.GameSaveData?.GameData.DeckPokemon.Count is null or < 1)
         {
             throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Empty pokemon deck for game save");
         }
 
         _logger.LogInformation("Going to fetch {PokemonInDeckCount} OwnedPokemon from deck for game save: {GameSaveId}",
-            foundGameSaveData.Data.GameData.DeckPokemon.Count,
+            foundGameSaveData.Data.GameSaveData.GameData.DeckPokemon.Count,
             input.GameSaveId);
         
         if (!input.DeepVersion)
         {
             _logger.LogInformation("Simply getting shallow owned pokemon in deck from db");
-            var allPokemon = await GetShallowDeck(foundGameSaveData.Data.GameData.DeckPokemon.FastArraySelect(x => (Guid?)x.OwnedPokemonId)
+            var allPokemon = await GetShallowDeck(foundGameSaveData.Data.GameSaveData.GameData.DeckPokemon.FastArraySelect(x => (Guid?)x.OwnedPokemonId)
                 .ToArray());
             
             return new DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>
@@ -66,7 +70,7 @@ internal sealed class GetOwnedPokemonInDeckCommand: IDomainCommand<(bool DeepVer
         else
         {
             _logger.LogInformation("Fetching deep owned pokemon in deck from db and poke api");
-            var allPokemon = await _gameAndPokeApiResourceManagerService.GetFullOwnedPokemon(foundGameSaveData.Data.GameData.DeckPokemon.FastArraySelect(x => (Guid)x.OwnedPokemonId).ToArray());
+            var allPokemon = await _gameAndPokeApiResourceManagerService.GetFullOwnedPokemon(foundGameSaveData.Data.GameSaveData.GameData.DeckPokemon.FastArraySelect(x => (Guid)x.OwnedPokemonId).ToArray());
 
             return new DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>
             {

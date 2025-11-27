@@ -9,7 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common;
 using PokeGame.Core.Common.Configurations;
-using PokeGame.Core.Common.Extensions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
 using PokeGame.Core.Domain.Services.Game.Abstract;
