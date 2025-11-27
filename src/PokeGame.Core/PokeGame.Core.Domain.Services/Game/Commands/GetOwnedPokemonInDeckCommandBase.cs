@@ -1,3 +1,4 @@
+using System.Net;
 using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Utils;
 using Microsoft.Extensions.Logging;
@@ -28,8 +29,22 @@ internal abstract class GetOwnedPokemonInDeckCommandBase<TInput>: IDomainCommand
     
     public abstract Task<DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>> ExecuteAsync(TInput input, CancellationToken cancellationToken);
 
-    protected async Task<IReadOnlyCollection<OwnedPokemon>> FetchPokemon(GameSession gameSession, bool deepVersion)
+    protected async Task<IReadOnlyCollection<OwnedPokemon>> FetchPokemon(GameSession? gameSession, bool deepVersion, Schemas.Game.User currentUser)
     {
+        if (gameSession is null)
+        {
+            throw new PokeGameApiUserException(HttpStatusCode.BadRequest,"Failed to find game save data");
+        }
+
+        if (gameSession.UserId != currentUser.Id)
+        {
+            throw new PokeGameApiUserException(HttpStatusCode.Unauthorized, "User does not have permission to access this deck");
+        }
+        if (gameSession.GameSave?.GameSaveData?.GameData.DeckPokemon.Count is null or < 1)
+        {
+            throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Empty pokemon deck for game save");
+        }
+        
         _logger.LogInformation(
             "Going to fetch {PokemonInDeckCount} OwnedPokemon from deck for game session: {GameSessionId} and game save: {GameSaveId}",
             gameSession.GameSave!.GameSaveData!.GameData.DeckPokemon.Count,

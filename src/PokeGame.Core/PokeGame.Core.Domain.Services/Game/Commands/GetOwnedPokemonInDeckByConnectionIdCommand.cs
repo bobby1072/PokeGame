@@ -35,22 +35,8 @@ internal sealed class GetOwnedPokemonInDeckByConnectionIdCommand: GetOwnedPokemo
         var foundGameSession = await EntityFrameworkUtils.TryDbOperation(() =>
             _gameSessionRepository.GetOneWithGameSaveAndDataByConnectionIdAsync(input.ConnectionId), _logger)
                 ?? throw new PokeGameApiServerException("Failed to fetch game save data");
-
-        if (foundGameSession.Data is null || !foundGameSession.IsSuccessful)
-        {
-            throw new PokeGameApiUserException(HttpStatusCode.BadRequest,"Failed to find game save data");
-        }
-
-        if (foundGameSession.Data.UserId != input.CurrentUser.Id)
-        {
-            throw new PokeGameApiUserException(HttpStatusCode.Unauthorized, "User does not have permission to access this deck");
-        }
-        if (foundGameSession.Data.GameSave?.GameSaveData?.GameData.DeckPokemon.Count is null or < 1)
-        {
-            throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Empty pokemon deck for game save");
-        }
-
-        var result = await FetchPokemon(foundGameSession.Data, input.DeepVersion);
+        
+        var result = await FetchPokemon(foundGameSession.Data, input.DeepVersion, input.CurrentUser);
         
         return new DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>
         {

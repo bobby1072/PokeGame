@@ -33,9 +33,4 @@ internal sealed class GameSessionProcessingManager : IGameSessionProcessingManag
             .RunCommandAsync<EndGameSessionCommand, string,
                     DomainCommandResult>
                 (connectionId);
-
-    public async Task<IReadOnlyCollection<OwnedPokemon>> GetShallowPokemonDeck(string connectionId, )
-    {
-        
-    }
 }

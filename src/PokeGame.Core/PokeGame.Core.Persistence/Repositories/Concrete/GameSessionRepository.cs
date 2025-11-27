@@ -29,6 +29,18 @@ internal sealed class GameSessionRepository
         return gameSession.ToEntity();
     }
 
+    public async Task<DbGetOneResult<GameSession>> GetOneWithGameSaveAndDataByGameSessionIdAsync(Guid gameSessionId)
+    {
+        await using var dbContext = await ContextFactory.CreateDbContextAsync();
+        
+        var result = await TimeAndLogDbOperation(() => dbContext.GameSessions
+                .Include(x => x.GameSave)
+                .ThenInclude(x => x.GameSaveData)
+                .FirstOrDefaultAsync(gs => gs.Id == gameSessionId),
+            nameof(GetOneWithGameSaveAndDataByConnectionIdAsync));
+        
+        return new DbGetOneResult<GameSession>(result?.ToModel());
+    }
     public async Task<DbGetOneResult<GameSession>> GetOneWithGameSaveAndDataByConnectionIdAsync(string connectionId)
     {
         await using var dbContext = await ContextFactory.CreateDbContextAsync();
