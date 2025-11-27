@@ -69,6 +69,17 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
 
     private async Task<OwnedPokemon> GetResourcesFromApiAsync(OwnedPokemon ownedPokemon)
     {
+        _logger.LogInformation("Fetching OwnedPokemon resources from PokeApi with params: {@Params}",
+            new
+            {
+                ownedPokemon.Id,
+                ownedPokemon.PokemonResourceName,
+                ownedPokemon.MoveOneResourceName,
+                ownedPokemon.MoveTwoResourceName,
+                ownedPokemon.MoveThreeResourceName,
+                ownedPokemon.MoveFourResourceName,
+            });
+        
         var pokemonJob = _pokeApiClient.GetResourceAsync<Pokemon>(ownedPokemon.PokemonResourceName);
         var speciesJob = _pokeApiClient.GetResourceAsync<PokemonSpecies>(ownedPokemon.PokemonResourceName);
         

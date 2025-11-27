@@ -48,9 +48,13 @@ internal sealed class GetOwnedPokemonInDeckCommand: IDomainCommand<(bool DeepVer
             throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Empty pokemon deck for game save");
         }
 
+        _logger.LogInformation("Going to fetch {PokemonInDeckCount} OwnedPokemon from deck for game save: {GameSaveId}",
+            foundGameSaveData.Data.GameData.DeckPokemon.Count,
+            input.GameSaveId);
         
         if (!input.DeepVersion)
         {
+            _logger.LogInformation("Simply getting shallow owned pokemon in deck from db");
             var allPokemon = await GetShallowDeck(foundGameSaveData.Data.GameData.DeckPokemon.FastArraySelect(x => (Guid?)x.OwnedPokemonId)
                 .ToArray());
             
@@ -61,6 +65,7 @@ internal sealed class GetOwnedPokemonInDeckCommand: IDomainCommand<(bool DeepVer
         }
         else
         {
+            _logger.LogInformation("Fetching deep owned pokemon in deck from db and poke api");
             var allPokemon = await _gameAndPokeApiResourceManagerService.GetFullOwnedPokemon(foundGameSaveData.Data.GameData.DeckPokemon.FastArraySelect(x => (Guid)x.OwnedPokemonId).ToArray());
 
             return new DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>
