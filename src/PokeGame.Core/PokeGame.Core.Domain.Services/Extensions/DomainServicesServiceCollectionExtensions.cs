@@ -105,7 +105,10 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<GetOwnedPokemonByIdCommand>()
             .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>()
             .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>()
-            .AddScoped<IGameAndPokeApiResourceManagerService, GameAndPokeApiResourceManagerService>();
+            .AddScoped<
+                IGameAndPokeApiResourceManagerService,
+                GameAndPokeApiResourceManagerService
+            >();
 
         return services;
     }
