@@ -97,10 +97,12 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
         
         var pokemonJob = _pokeApiClient.GetResourceAsync<Pokemon>(ownedPokemon.PokemonResourceName, cancellationToken);
         var speciesJob = _pokeApiClient.GetResourceAsync<PokemonSpecies>(ownedPokemon.PokemonResourceName, cancellationToken);
+
+        var moveJobList = new List<Task<Move>>
+        {
+            _pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveOneResourceName, cancellationToken)
+        };
         
-        var moveJobList = new List<Task<Move>>();
-        
-        moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveOneResourceName, cancellationToken));
         if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveTwoResourceName))
         {
             moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveTwoResourceName, cancellationToken));
@@ -113,10 +115,8 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
         {
             moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveFourResourceName, cancellationToken));
         }
-        
-        var executionList = new List<Task>()
-            .Append(pokemonJob)
-            .Append(speciesJob)
+
+        var executionList = new List<Task> { pokemonJob, speciesJob }
             .Concat(moveJobList)
             .ToArray();
         
