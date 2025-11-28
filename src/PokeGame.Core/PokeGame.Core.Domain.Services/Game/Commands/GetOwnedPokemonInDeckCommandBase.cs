@@ -29,7 +29,7 @@ internal abstract class GetOwnedPokemonInDeckCommandBase<TInput>: IDomainCommand
     
     public abstract Task<DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>> ExecuteAsync(TInput input, CancellationToken cancellationToken);
 
-    protected async Task<IReadOnlyCollection<OwnedPokemon>> FetchPokemon(GameSession? gameSession, bool deepVersion, Schemas.Game.User currentUser)
+    protected async Task<IReadOnlyCollection<OwnedPokemon>> FetchPokemon(GameSession? gameSession, bool deepVersion, Schemas.Game.User currentUser, CancellationToken cancellationToken)
     {
         if (gameSession is null)
         {

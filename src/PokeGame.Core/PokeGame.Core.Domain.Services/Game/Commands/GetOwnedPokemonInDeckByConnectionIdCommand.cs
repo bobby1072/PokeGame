@@ -36,7 +36,7 @@ internal sealed class GetOwnedPokemonInDeckByConnectionIdCommand: GetOwnedPokemo
             _gameSessionRepository.GetOneWithGameSaveAndDataByConnectionIdAsync(input.ConnectionId), _logger)
                 ?? throw new PokeGameApiServerException("Failed to fetch game save data");
         
-        var result = await FetchPokemon(foundGameSession.Data, input.DeepVersion, input.CurrentUser);
+        var result = await FetchPokemon(foundGameSession.Data, input.DeepVersion, input.CurrentUser, ct);
         
         return new DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>
         {

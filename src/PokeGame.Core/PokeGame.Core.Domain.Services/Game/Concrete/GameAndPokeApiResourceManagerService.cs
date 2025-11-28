@@ -27,11 +27,11 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
     }
 
     public async Task<IReadOnlyCollection<OwnedPokemon>> GetDeepOwnedPokemon(
-        IReadOnlyCollection<OwnedPokemon> ownedPokemons)
+        IReadOnlyCollection<OwnedPokemon> ownedPokemons, CancellationToken cancellationToken = default)
     {
         try
         {
-            var getResourcesJobList = ownedPokemons.FastArraySelect(GetResourcesFromApiAsync).ToArray();
+            var getResourcesJobList = ownedPokemons.FastArraySelect(x => GetResourcesFromApiAsync(x, cancellationToken)).ToArray();
 
             await Task.WhenAll(getResourcesJobList);
 
@@ -53,7 +53,7 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
             throw new PokeGameApiServerException("Failed to fetch owned pokemon resources", ex);
         }
     }
-    public async Task<IReadOnlyCollection<OwnedPokemon>> GetFullOwnedPokemon(IReadOnlyCollection<Guid> ownedPokemonId)
+    public async Task<IReadOnlyCollection<OwnedPokemon>> GetFullOwnedPokemon(IReadOnlyCollection<Guid> ownedPokemonId, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -69,7 +69,7 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
                 throw new PokeGameApiServerException("Pokemon could not be retrieved from database");
             }
 
-            return await GetDeepOwnedPokemon(foundPokemonFromDb.Data);
+            return await GetDeepOwnedPokemon(foundPokemonFromDb.Data, cancellationToken);
         }
         catch (PokeGameApiException)
         {
@@ -82,7 +82,7 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
     }
 
 
-    private async Task<OwnedPokemon> GetResourcesFromApiAsync(OwnedPokemon ownedPokemon)
+    private async Task<OwnedPokemon> GetResourcesFromApiAsync(OwnedPokemon ownedPokemon, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Fetching OwnedPokemon resources from PokeApi with params: {@Params}",
             new
@@ -95,23 +95,23 @@ internal sealed class GameAndPokeApiResourceManagerService: IGameAndPokeApiResou
                 ownedPokemon.MoveFourResourceName,
             });
         
-        var pokemonJob = _pokeApiClient.GetResourceAsync<Pokemon>(ownedPokemon.PokemonResourceName);
-        var speciesJob = _pokeApiClient.GetResourceAsync<PokemonSpecies>(ownedPokemon.PokemonResourceName);
+        var pokemonJob = _pokeApiClient.GetResourceAsync<Pokemon>(ownedPokemon.PokemonResourceName, cancellationToken);
+        var speciesJob = _pokeApiClient.GetResourceAsync<PokemonSpecies>(ownedPokemon.PokemonResourceName, cancellationToken);
         
         var moveJobList = new List<Task<Move>>();
         
-        moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveOneResourceName));
+        moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveOneResourceName, cancellationToken));
         if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveTwoResourceName))
         {
-            moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveTwoResourceName));
+            moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveTwoResourceName, cancellationToken));
         }
         if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveThreeResourceName))
         {
-            moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveThreeResourceName));
+            moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveThreeResourceName, cancellationToken));
         }
         if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveFourResourceName))
         {
-            moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveFourResourceName));
+            moveJobList.Add(_pokeApiClient.GetResourceAsync<Move>(ownedPokemon.MoveFourResourceName, cancellationToken));
         }
         
         var executionList = new List<Task>()

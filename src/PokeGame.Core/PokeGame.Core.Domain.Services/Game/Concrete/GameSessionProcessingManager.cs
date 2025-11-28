@@ -35,10 +35,10 @@ internal sealed class GameSessionProcessingManager : IGameSessionProcessingManag
                 (connectionId);
 
 
-    public async Task<IReadOnlyCollection<OwnedPokemon>> GetShallowOwnedPokemonInDeck(Guid GameSessionId,
-        Schemas.Game.User user)
+    public async Task<IReadOnlyCollection<OwnedPokemon>> GetShallowOwnedPokemonInDeck(Guid gameSessionId,
+        Schemas.Game.User user, CancellationToken cancellationToken = default)
         => (await _domainServiceCommandExecutor
             .RunCommandAsync<GetOwnedPokemonInDeckByGameSessionIdCommand,
                 (bool DeepVersion, Guid GameSessionId, Schemas.Game.User CurrentUser),
-                DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>>((false, GameSessionId, user))).CommandResult;
+                DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>>((false, gameSessionId, user), cancellationToken)).CommandResult;
 }

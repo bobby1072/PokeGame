@@ -17,7 +17,7 @@ internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecuto
     }
 
     public async Task<TOutput> RunCommandAsync<TCommand, TInput, TOutput>(TInput input,
-        Func<IServiceProvider, TCommand> commandBuilder) where TCommand : IDomainCommand<TInput, TOutput>
+        Func<IServiceProvider, TCommand> commandBuilder, CancellationToken cancellationToken = default) where TCommand : IDomainCommand<TInput, TOutput>
         where TOutput : DomainCommandResult
     {
         var foundCommand = commandBuilder.Invoke(_serviceProvider);
@@ -25,7 +25,7 @@ internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecuto
         _logger.LogInformation("Attempting to execute {CommandName}", foundCommand.CommandName);
 
         var timeTaken = Stopwatch.StartNew();
-        var result = await foundCommand.ExecuteAsync(input);
+        var result = await foundCommand.ExecuteAsync(input, cancellationToken);
         timeTaken.Stop();
         
         _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.ElapsedMilliseconds);
@@ -33,7 +33,7 @@ internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecuto
         return result;
     }
 
-    public async Task<TOutput> RunCommandAsync<TCommand, TOutput>(Func<IServiceProvider, TCommand> commandBuilder)
+    public async Task<TOutput> RunCommandAsync<TCommand, TOutput>(Func<IServiceProvider, TCommand> commandBuilder, CancellationToken cancellationToken = default)
         where TCommand : IDomainCommand<TOutput> where TOutput : DomainCommandResult
     {
         var foundCommand = commandBuilder.Invoke(_serviceProvider);
@@ -41,14 +41,14 @@ internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecuto
         _logger.LogInformation("Attempting to execute {CommandName}", foundCommand.CommandName);
         
         var timeTaken = Stopwatch.StartNew();
-        var result = await foundCommand.ExecuteAsync();
+        var result = await foundCommand.ExecuteAsync(cancellationToken);
         timeTaken.Stop();
         
         _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.ElapsedMilliseconds);
 
         return result;
     }
-    public async Task<TOutput> RunCommandAsync<TCommand, TInput, TOutput>(TInput input) where TCommand : IDomainCommand<TInput, TOutput>
+    public async Task<TOutput> RunCommandAsync<TCommand, TInput, TOutput>(TInput input, CancellationToken cancellationToken = default) where TCommand : IDomainCommand<TInput, TOutput>
         where TOutput : DomainCommandResult
     {
         var foundCommand = _serviceProvider.GetRequiredService<TCommand>();
@@ -56,7 +56,7 @@ internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecuto
         _logger.LogInformation("Attempting to execute {CommandName}", foundCommand.CommandName);
         
         var timeTaken = Stopwatch.StartNew();
-        var result = await foundCommand.ExecuteAsync(input);
+        var result = await foundCommand.ExecuteAsync(input, cancellationToken);
         timeTaken.Stop();
         
         _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.ElapsedMilliseconds);
@@ -64,7 +64,7 @@ internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecuto
         return result;
     }
 
-    public async Task<TOutput> RunCommandAsync<TCommand, TOutput>() where TCommand : IDomainCommand<TOutput>
+    public async Task<TOutput> RunCommandAsync<TCommand, TOutput>(CancellationToken cancellationToken = default) where TCommand : IDomainCommand<TOutput>
         where TOutput : DomainCommandResult
     {
         var foundCommand = _serviceProvider.GetRequiredService<TCommand>();
@@ -72,7 +72,7 @@ internal sealed class DomainServiceCommandExecutor: IDomainServiceCommandExecuto
         _logger.LogInformation("Attempting to execute {CommandName}", foundCommand.CommandName);
         
         var timeTaken = Stopwatch.StartNew();
-        var result = await foundCommand.ExecuteAsync();
+        var result = await foundCommand.ExecuteAsync(cancellationToken);
         timeTaken.Stop();
         
         _logger.LogInformation("Executed {CommandName} in {TimeTaken}ms", foundCommand.CommandName, timeTaken.ElapsedMilliseconds);
