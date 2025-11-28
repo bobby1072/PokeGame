@@ -86,7 +86,11 @@ public sealed class GetOwnedPokemonByIdCommandTests
             Times.Once
         );
         _mockGameAndPokeApiResourceManagerService.Verify(
-            x => x.GetDeepOwnedPokemon(It.IsAny<IReadOnlyCollection<OwnedPokemon>>()),
+            x =>
+                x.GetDeepOwnedPokemon(
+                    It.IsAny<IReadOnlyCollection<OwnedPokemon>>(),
+                    It.IsAny<CancellationToken>()
+                ),
             Times.Never
         );
     }
@@ -150,7 +154,12 @@ public sealed class GetOwnedPokemonByIdCommandTests
             .ReturnsAsync(dbResult);
 
         _mockGameAndPokeApiResourceManagerService
-            .Setup(x => x.GetDeepOwnedPokemon(It.IsAny<IReadOnlyCollection<OwnedPokemon>>()))
+            .Setup(x =>
+                x.GetDeepOwnedPokemon(
+                    It.IsAny<IReadOnlyCollection<OwnedPokemon>>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(new[] { deepOwnedPokemon });
 
         // Act
@@ -167,7 +176,11 @@ public sealed class GetOwnedPokemonByIdCommandTests
             Times.Once
         );
         _mockGameAndPokeApiResourceManagerService.Verify(
-            x => x.GetDeepOwnedPokemon(It.IsAny<IReadOnlyCollection<OwnedPokemon>>()),
+            x =>
+                x.GetDeepOwnedPokemon(
+                    It.IsAny<IReadOnlyCollection<OwnedPokemon>>(),
+                    It.IsAny<CancellationToken>()
+                ),
             Times.Once
         );
     }

@@ -62,7 +62,7 @@ internal abstract class GetOwnedPokemonInDeckCommandBase<TInput>: IDomainCommand
         else
         {
             _logger.LogInformation("Fetching deep owned pokemon in deck from db and poke api");
-            var allPokemon = await _gameAndPokeApiResourceManagerService.GetFullOwnedPokemon(gameSession.GameSave.GameSaveData.GameData.DeckPokemon.FastArraySelect(x => (Guid)x.OwnedPokemonId).ToArray());
+            var allPokemon = await _gameAndPokeApiResourceManagerService.GetFullOwnedPokemon(gameSession.GameSave.GameSaveData.GameData.DeckPokemon.FastArraySelect(x => (Guid)x.OwnedPokemonId).ToArray(), cancellationToken);
 
             return allPokemon;
         }
