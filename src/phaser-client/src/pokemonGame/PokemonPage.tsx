@@ -2,14 +2,31 @@ import { Box, Typography, Button } from "@mui/material";
 import { PokemonPhaserGame } from "./PokemonPhaserGame";
 import { useGameSaveContext } from "../common/contexts/GameSaveContext";
 import { useSignalRGameSession } from "../common/contexts/SignalRGameSessionContext";
+import { useGetShallowOwnedPokemonInDeck } from "../common/hooks/useGetShallowOwnedPokemonInDeck";
+import { LoadingComponent } from "../common/components/LoadingComponent";
+import { ErrorComponent } from "../common/components/ErrorComponent";
 
 export default function PokemonPage() {
     const { currentGameSave, clearCurrentGameSave } = useGameSaveContext();
-    const { hubConnection } = useSignalRGameSession();
+    const { hubConnection, gameSession } = useSignalRGameSession();
+
+    const {
+        data: shallowDeck,
+        isLoading,
+        error,
+    } = useGetShallowOwnedPokemonInDeck(gameSession.id);
 
     const handleChangeGameSave = () => {
         clearCurrentGameSave();
     };
+
+    if (isLoading) {
+        return <LoadingComponent variant="fullscreen" />;
+    }
+
+    if (error) {
+        return <ErrorComponent error={error} variant="fullscreen" />;
+    }
 
     return (
         <Box
@@ -77,6 +94,7 @@ export default function PokemonPage() {
                 <PokemonPhaserGame
                     hubConnection={hubConnection}
                     currentGameSave={currentGameSave}
+                    shallowDeck={shallowDeck}
                 />
             </Box>
         </Box>

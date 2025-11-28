@@ -11,73 +11,115 @@ using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Domain.Services.Game.Commands;
 
-internal abstract class GetOwnedPokemonInDeckCommandBase<TInput>: IDomainCommand<TInput, DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>>
+internal abstract class GetOwnedPokemonInDeckCommandBase<TInput>
+    : IDomainCommand<TInput, DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>>
 {
     public abstract string CommandName { get; }
     private readonly IGameAndPokeApiResourceManagerService _gameAndPokeApiResourceManagerService;
     private readonly IOwnedPokemonRepository _ownedPokemonRepository;
     private readonly ILogger<GetOwnedPokemonInDeckCommandBase<TInput>> _logger;
 
-    public GetOwnedPokemonInDeckCommandBase(IGameAndPokeApiResourceManagerService gameAndPokeApiResourceManagerService,
+    public GetOwnedPokemonInDeckCommandBase(
+        IGameAndPokeApiResourceManagerService gameAndPokeApiResourceManagerService,
         IOwnedPokemonRepository ownedPokemonRepository,
-        ILogger<GetOwnedPokemonInDeckCommandBase<TInput>> logger)
+        ILogger<GetOwnedPokemonInDeckCommandBase<TInput>> logger
+    )
     {
         _gameAndPokeApiResourceManagerService = gameAndPokeApiResourceManagerService;
         _ownedPokemonRepository = ownedPokemonRepository;
         _logger = logger;
     }
-    
-    public abstract Task<DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>> ExecuteAsync(TInput input, CancellationToken cancellationToken);
 
-    protected async Task<IReadOnlyCollection<OwnedPokemon>> FetchPokemon(GameSession? gameSession, bool deepVersion, Schemas.Game.User currentUser, CancellationToken cancellationToken)
+    public abstract Task<DomainCommandResult<IReadOnlyCollection<OwnedPokemon>>> ExecuteAsync(
+        TInput input,
+        CancellationToken cancellationToken
+    );
+
+    protected async Task<IReadOnlyCollection<OwnedPokemon>> FetchPokemon(
+        GameSession? gameSession,
+        bool deepVersion,
+        Schemas.Game.User currentUser,
+        CancellationToken cancellationToken
+    )
     {
         if (gameSession is null)
         {
-            throw new PokeGameApiUserException(HttpStatusCode.BadRequest,"Failed to find game save data");
+            throw new PokeGameApiUserException(
+                HttpStatusCode.BadRequest,
+                "Failed to find game save data"
+            );
         }
 
         if (gameSession.UserId != currentUser.Id)
         {
-            throw new PokeGameApiUserException(HttpStatusCode.Unauthorized, "User does not have permission to access this deck");
+            throw new PokeGameApiUserException(
+                HttpStatusCode.Unauthorized,
+                "User does not have permission to access this deck"
+            );
         }
-        if (gameSession.GameSave?.GameSaveData?.GameData.DeckPokemon.Count is null or < 1)
+        if (gameSession.GameSave?.GameSaveData?.GameData.DeckPokemon is null)
         {
-            throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "Empty pokemon deck for game save");
+            throw new PokeGameApiUserException(
+                HttpStatusCode.BadRequest,
+                "Empty pokemon deck for game save"
+            );
         }
-        
+        if (gameSession.GameSave.GameSaveData.GameData.DeckPokemon.Count < 1)
+        {
+            return [];
+        }
+
         _logger.LogInformation(
             "Going to fetch {PokemonInDeckCount} OwnedPokemon from deck for game session: {GameSessionId} and game save: {GameSaveId}",
             gameSession.GameSave.GameSaveData.GameData.DeckPokemon.Count,
             gameSession.Id,
-            gameSession.GameSaveId);
-        
+            gameSession.GameSaveId
+        );
+
         if (!deepVersion)
         {
             _logger.LogInformation("Simply getting shallow owned pokemon in deck from db");
-            var allPokemon = await GetShallowDeck(gameSession.GameSave.GameSaveData.GameData.DeckPokemon.FastArraySelect(x => (Guid?)x.OwnedPokemonId)
-                .ToArray());
-            
+            var allPokemon = await GetShallowDeck(
+                gameSession
+                    .GameSave.GameSaveData.GameData.DeckPokemon.FastArraySelect(x =>
+                        (Guid?)x.OwnedPokemonId
+                    )
+                    .ToArray()
+            );
+
             return allPokemon;
         }
         else
         {
             _logger.LogInformation("Fetching deep owned pokemon in deck from db and poke api");
-            var allPokemon = await _gameAndPokeApiResourceManagerService.GetFullOwnedPokemon(gameSession.GameSave.GameSaveData.GameData.DeckPokemon.FastArraySelect(x => (Guid)x.OwnedPokemonId).ToArray(), cancellationToken);
+            var allPokemon = await _gameAndPokeApiResourceManagerService.GetFullOwnedPokemon(
+                gameSession
+                    .GameSave.GameSaveData.GameData.DeckPokemon.FastArraySelect(x =>
+                        x.OwnedPokemonId
+                    )
+                    .ToArray(),
+                cancellationToken
+            );
 
             return allPokemon;
         }
     }
-    private async Task<IReadOnlyCollection<OwnedPokemon>> GetShallowDeck(IReadOnlyCollection<Guid?> deckPokemonIds)
+
+    private async Task<IReadOnlyCollection<OwnedPokemon>> GetShallowDeck(
+        IReadOnlyCollection<Guid?> deckPokemonIds
+    )
     {
         var foundPokemon =
-            await EntityFrameworkUtils.TryDbOperation(() => _ownedPokemonRepository.GetMany(entityIds: deckPokemonIds), _logger)
-            ?? throw new PokeGameApiServerException("Failed to fetch own pokemon in deck");
+            await EntityFrameworkUtils.TryDbOperation(
+                () => _ownedPokemonRepository.GetMany(entityIds: deckPokemonIds),
+                _logger
+            ) ?? throw new PokeGameApiServerException("Failed to fetch own pokemon in deck");
 
         if (foundPokemon.Data.Count < 1 || !foundPokemon.IsSuccessful)
         {
             throw new PokeGameApiServerException("Failed to fetch own pokemon in deck");
         }
-        
+
         return foundPokemon.Data;
     }
 }

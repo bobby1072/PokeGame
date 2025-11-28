@@ -9,7 +9,7 @@ namespace PokeGame.Core.Api.Controllers;
 
 [AllowAnonymous]
 [RequireValidUserIdHeader]
-public sealed class GameSessionController: BaseController
+public sealed class GameSessionController : BaseController
 {
     private readonly IGameSessionProcessingManager _gameSessionProcessingManager;
 
@@ -17,17 +17,23 @@ public sealed class GameSessionController: BaseController
     {
         _gameSessionProcessingManager = gameSessionProcessingManager;
     }
-    
-    [HttpGet(nameof(GetOwnedShallowOwnedPokemonInDeck))]
-    public async Task<ActionResult<WebOutcome<IReadOnlyCollection<OwnedPokemon>>>> GetOwnedShallowOwnedPokemonInDeck(Guid gameSessionId, CancellationToken cancellationToken = default)
+
+    [HttpGet(nameof(GetShallowOwnedPokemonInDeck))]
+    public async Task<
+        ActionResult<WebOutcome<IReadOnlyCollection<OwnedPokemon>>>
+    > GetShallowOwnedPokemonInDeck(
+        [FromQuery] Guid gameSessionId,
+        CancellationToken cancellationToken = default
+    )
     {
         var currentUser = await GetCurrentUserAsync();
-        
-        var result = await _gameSessionProcessingManager.GetShallowOwnedPokemonInDeck(gameSessionId, currentUser, cancellationToken);
 
-        return new WebOutcome<IReadOnlyCollection<OwnedPokemon>>
-        {
-            Data = result,
-        };
+        var result = await _gameSessionProcessingManager.GetShallowOwnedPokemonInDeck(
+            gameSessionId,
+            currentUser,
+            cancellationToken
+        );
+
+        return new WebOutcome<IReadOnlyCollection<OwnedPokemon>> { Data = result };
     }
 }

@@ -9,6 +9,7 @@ import StartPokemonGame from "./MainGame";
 import { EventBus } from "./EventBus";
 import { HubConnection } from "@microsoft/signalr";
 import { GameSave } from "../common/models/GameSave";
+import { ShallowOwnedPokemon } from "../common/models/ShallowOwnedPokemon";
 import { useGetAppSettingsContext } from "../common/contexts/AppSettingsContext";
 
 export interface IRefPokemonPhaserGame {
@@ -20,10 +21,11 @@ interface IProps {
     currentActiveScene?: (scene_instance: Phaser.Scene) => void;
     hubConnection: HubConnection;
     currentGameSave: GameSave | null;
+    shallowDeck?: ShallowOwnedPokemon[];
 }
 
 const ActualPokemonPhaserGame = (
-    { currentActiveScene, hubConnection, currentGameSave }: IProps,
+    { currentActiveScene, hubConnection, currentGameSave, shallowDeck }: IProps,
     ref: ForwardedRef<IRefPokemonPhaserGame>
 ) => {
     const game = useRef<Phaser.Game | null>(null!);
@@ -37,7 +39,11 @@ const ActualPokemonPhaserGame = (
             if (game.current) {
                 game.current.registry.set("hubConnection", hubConnection);
                 game.current.registry.set("currentGameSave", currentGameSave);
-                game.current.registry.set("autoSaveIntervalSeconds", parseInt(appSettings.autoSaveIntervalSeconds || "12"));
+                game.current.registry.set("shallowDeck", shallowDeck || []);
+                game.current.registry.set(
+                    "autoSaveIntervalSeconds",
+                    parseInt(appSettings.autoSaveIntervalSeconds || "12")
+                );
             }
 
             if (typeof ref === "function") {
@@ -55,7 +61,13 @@ const ActualPokemonPhaserGame = (
                 }
             }
         };
-    }, [ref, hubConnection, currentGameSave, appSettings.autoSaveIntervalSeconds]);
+    }, [
+        ref,
+        hubConnection,
+        currentGameSave,
+        shallowDeck,
+        appSettings.autoSaveIntervalSeconds,
+    ]);
 
     useEffect(() => {
         EventBus.on("current-scene-ready", (scene_instance: Phaser.Scene) => {
