@@ -47,7 +47,7 @@ internal abstract class GetOwnedPokemonInDeckCommandBase<TInput>: IDomainCommand
         
         _logger.LogInformation(
             "Going to fetch {PokemonInDeckCount} OwnedPokemon from deck for game session: {GameSessionId} and game save: {GameSaveId}",
-            gameSession.GameSave!.GameSaveData!.GameData.DeckPokemon.Count,
+            gameSession.GameSave.GameSaveData.GameData.DeckPokemon.Count,
             gameSession.Id,
             gameSession.GameSaveId);
         

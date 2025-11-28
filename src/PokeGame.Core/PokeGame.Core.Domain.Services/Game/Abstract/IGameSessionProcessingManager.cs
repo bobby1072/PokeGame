@@ -11,4 +11,7 @@ public interface IGameSessionProcessingManager
     );
 
     Task EndGameSession(string connectionId);
+
+    Task<IReadOnlyCollection<OwnedPokemon>> GetShallowOwnedPokemonInDeck(Guid GameSessionId,
+        Schemas.Game.User user);
 }
