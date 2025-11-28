@@ -50,7 +50,8 @@ public sealed class PokeGameSessionHub : Hub
                         {
                             { EventKey, EventKeys.GetDeepOwnedPokemonInDeckFailed },
                         },
-                    }
+                    },
+                    ct
                 );
 
                 return;
