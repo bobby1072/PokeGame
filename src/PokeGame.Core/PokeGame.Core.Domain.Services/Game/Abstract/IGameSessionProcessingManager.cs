@@ -14,4 +14,7 @@ public interface IGameSessionProcessingManager
 
     Task<IReadOnlyCollection<OwnedPokemon>> GetShallowOwnedPokemonInDeck(Guid gameSessionId,
         Schemas.Game.User user, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyCollection<OwnedPokemon>> GetDeepOwnedPokemonInDeck(string connectionId,
+        Schemas.Game.User user, CancellationToken cancellationToken = default);
 }

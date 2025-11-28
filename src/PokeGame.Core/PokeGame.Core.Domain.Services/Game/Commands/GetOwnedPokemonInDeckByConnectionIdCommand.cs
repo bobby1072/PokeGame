@@ -1,5 +1,3 @@
-using System.Net;
-using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Utils;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;

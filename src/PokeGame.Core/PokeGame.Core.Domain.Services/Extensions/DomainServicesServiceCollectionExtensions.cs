@@ -101,6 +101,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<EndGameSessionCommand>()
             .AddScoped<SaveGameDataCommand>()
             .AddScoped<GetOwnedPokemonInDeckByConnectionIdCommand>()
+            .AddScoped<GetOwnedPokemonInDeckByGameSessionIdCommand>()
             .AddScoped<GetOwnedPokemonByIdCommand>()
             .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>()
             .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>()
