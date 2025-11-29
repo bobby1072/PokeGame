@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using BT.Common.Persistence.Shared.Utils;
+using BT.Common.Services.Concrete;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
@@ -10,61 +11,79 @@ using PokeGame.Core.Schemas.Input;
 
 namespace PokeGame.Core.Domain.Services.User.Commands;
 
-internal sealed class SaveUserCommand: IDomainCommand<SaveUserInput, DomainCommandResult<Schemas.Game.User>>
+internal sealed class SaveUserCommand
+    : IDomainCommand<SaveUserInput, DomainCommandResult<Schemas.Game.User>>
 {
     public string CommandName => nameof(SaveUserCommand);
     private readonly IUserRepository _userRepository;
     private readonly IValidatorService _validator;
     private readonly ILogger<SaveUserCommand> _logger;
-    public SaveUserCommand(IUserRepository userRepository, IValidatorService validator, ILogger<SaveUserCommand> logger)
+
+    public SaveUserCommand(
+        IUserRepository userRepository,
+        IValidatorService validator,
+        ILogger<SaveUserCommand> logger
+    )
     {
         _userRepository = userRepository;
         _validator = validator;
         _logger = logger;
     }
-    
-    
-    public async Task<DomainCommandResult<Schemas.Game.User>> ExecuteAsync(SaveUserInput input, CancellationToken cancellationToken = default)
+
+    public async Task<DomainCommandResult<Schemas.Game.User>> ExecuteAsync(
+        SaveUserInput input,
+        CancellationToken cancellationToken = default
+    )
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity(CommandName);
+        activity?.SetTag("userId", input.Id?.ToString());
+        activity?.SetTag("email", input.Email);
+
         var parsedUser = input.ToUserModel();
-        
+
         await _validator.ValidateAndThrowAsync(parsedUser, cancellationToken);
 
         if (parsedUser.Id is not null)
         {
-            _logger.LogInformation("The user is to be updated not created. About to attempt to retrieve existing user with id: {UserId}...", parsedUser.Id);
-            
-            var foundExistingUser = await EntityFrameworkUtils
-                .TryDbOperation(() => _userRepository.GetOne(parsedUser.Id))
-                    ?? throw new PokeGameApiServerException("Failed to retrieve existing user");
-            
+            _logger.LogInformation(
+                "The user is to be updated not created. About to attempt to retrieve existing user with id: {UserId}...",
+                parsedUser.Id
+            );
+
+            var foundExistingUser =
+                await EntityFrameworkUtils.TryDbOperation(
+                    () => _userRepository.GetOne(parsedUser.Id)
+                ) ?? throw new PokeGameApiServerException("Failed to retrieve existing user");
+
             if (!foundExistingUser.IsSuccessful || foundExistingUser.Data is null)
             {
                 throw new PokeGameApiServerException("Failed to retrieve existing user");
             }
-            
+
             parsedUser.DateCreated = foundExistingUser.Data.DateCreated;
             parsedUser.DateModified = DateTime.UtcNow;
         }
-        
-        var createdUser = await EntityFrameworkUtils
-            .TryDbOperation(() => parsedUser.Id is null ? _userRepository.Create(parsedUser): _userRepository.Update(parsedUser), _logger)
-                ?? throw new PokeGameApiServerException("Failed to save user");
+
+        var createdUser =
+            await EntityFrameworkUtils.TryDbOperation(
+                () =>
+                    parsedUser.Id is null
+                        ? _userRepository.Create(parsedUser)
+                        : _userRepository.Update(parsedUser),
+                _logger
+            ) ?? throw new PokeGameApiServerException("Failed to save user");
 
         _logger.LogDebug("User saved: {@FullUser}", createdUser);
-        
+
         if (!createdUser.IsSuccessful || createdUser.Data.Count == 0)
         {
             throw new PokeGameApiServerException("Failed to save user");
         }
 
         var result = createdUser.FirstResult;
-        
+
         _logger.LogInformation("Successfully saved user with name: {Name}", result.Name);
-        
-        return new DomainCommandResult<Schemas.Game.User> 
-        {
-            CommandResult = result
-        };
+
+        return new DomainCommandResult<Schemas.Game.User> { CommandResult = result };
     }
 }

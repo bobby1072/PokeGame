@@ -1,5 +1,6 @@
 ﻿using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Utils;
+using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Game.Abstract;
@@ -31,6 +32,11 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
+            nameof(GetDeepOwnedPokemon)
+        );
+        activity?.SetTag("ownedPokemons.count", ownedPokemons.Count);
+
         try
         {
             var getResourcesJobList = ownedPokemons
@@ -63,6 +69,11 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
+            nameof(GetFullOwnedPokemon)
+        );
+        activity?.SetTag("ownedPokemonId.count", ownedPokemonId.Count);
+
         try
         {
             var foundPokemonFromDb =
@@ -101,6 +112,12 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
+            nameof(GetResourcesFromApiAsync)
+        );
+        activity?.SetTag("ownedPokemon.id", ownedPokemon.Id.ToString());
+        activity?.SetTag("ownedPokemon.pokemonResourceName", ownedPokemon.PokemonResourceName);
+
         _logger.LogInformation(
             "Fetching OwnedPokemon resources from PokeApi with params: {@Params}",
             new

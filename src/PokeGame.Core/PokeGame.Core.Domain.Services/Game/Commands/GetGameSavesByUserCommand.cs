@@ -1,4 +1,5 @@
 ﻿using BT.Common.Persistence.Shared.Utils;
+using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
@@ -30,6 +31,9 @@ internal sealed class GetGameSavesByUserCommand
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity(CommandName);
+        activity?.SetTag("userId", user.Id?.ToString());
+
         _logger.LogInformation("About to get game saves for user with id: {UserId}", user.Id);
 
         var foundGameSaves =

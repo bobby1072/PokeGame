@@ -1,6 +1,7 @@
 using System.Net;
 using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Utils;
+using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Pokedex.Abstract;
@@ -30,6 +31,11 @@ internal sealed class PokedexService : IPokedexService
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
+            nameof(CreatePokedexPokemonAsync)
+        );
+        activity?.SetTag("pokemonToCreate.count", pokemonToCreate.Count);
+
         _logger.LogInformation(
             "Input contains {PokedexPokemonSaveCount} pokedex pokemon records...",
             pokemonToCreate.Count
@@ -72,6 +78,11 @@ internal sealed class PokedexService : IPokedexService
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
+            nameof(GetPokedexPokemonAsync)
+        );
+        activity?.SetTag("fetchMultiple", input.FetchMultiple);
+
         _logger.LogInformation(
             "About to get pokedex pokemon with input of: {@PokedexQueryInput}",
             input
@@ -99,8 +110,8 @@ internal sealed class PokedexService : IPokedexService
         if (input.FetchMultiple)
         {
             var dbRes =
-                await EntityFrameworkUtils.TryDbOperation(() =>
-                    _pokedexPokemonRepository.GetMany(input.ToLangNameDictionary())
+                await EntityFrameworkUtils.TryDbOperation(
+                    () => _pokedexPokemonRepository.GetMany(input.ToLangNameDictionary())
                 )
                 ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 
@@ -117,8 +128,8 @@ internal sealed class PokedexService : IPokedexService
         else
         {
             var dbRes =
-                await EntityFrameworkUtils.TryDbOperation(() =>
-                    _pokedexPokemonRepository.GetOne(input.ToLangNameDictionary())
+                await EntityFrameworkUtils.TryDbOperation(
+                    () => _pokedexPokemonRepository.GetOne(input.ToLangNameDictionary())
                 )
                 ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 
