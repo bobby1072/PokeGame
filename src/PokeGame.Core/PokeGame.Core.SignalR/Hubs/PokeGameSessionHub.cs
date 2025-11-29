@@ -14,20 +14,23 @@ public sealed class PokeGameSessionHub : Hub
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<PokeGameSessionHub> _logger;
     private const string EventKey = "EventKey";
+
     public PokeGameSessionHub(IServiceProvider serviceProvider, ILogger<PokeGameSessionHub> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
     }
+
     #region  Hub Methods
 
     [HubMethodName(nameof(GetDeepOwnedPokemonInDeck))]
-    public async Task GetDeepOwnedPokemonInDeck(CancellationToken ct = default)
+    public async Task GetDeepOwnedPokemonInDeck()
     {
+        var ct = Context.ConnectionAborted;
         try
         {
             var httpContext = Context.GetHttpContext();
-            
+
             var foundUserIdQueryString = httpContext?.GetStringFromRequestQuery(
                 Constants.ApiConstants.UserIdHeaderKey
             );
@@ -37,9 +40,7 @@ public sealed class PokeGameSessionHub : Hub
                 || !Guid.TryParse(foundUserIdQueryString, out var userId)
             )
             {
-                _logger.LogInformation(
-                    "Invalid user id included with connection request"
-                );
+                _logger.LogInformation("Invalid user id included with connection request");
 
                 await Clients.Caller.SendAsync(
                     EventKeys.GetDeepOwnedPokemonInDeckFailed,
@@ -56,24 +57,32 @@ public sealed class PokeGameSessionHub : Hub
 
                 return;
             }
-            
+
             var userManager = _serviceProvider.GetRequiredService<IUserProcessingManager>();
             var foundUser = await userManager.GetUserAsync(userId);
-            
-            var gameSessionProcessingManager = _serviceProvider.GetRequiredService<IGameSessionProcessingManager>();
 
-            var pokemonInDeck =
-                await gameSessionProcessingManager.GetDeepOwnedPokemonInDeck(Context.ConnectionId, foundUser, ct);
+            var gameSessionProcessingManager =
+                _serviceProvider.GetRequiredService<IGameSessionProcessingManager>();
 
+            var pokemonInDeck = await gameSessionProcessingManager.GetDeepOwnedPokemonInDeck(
+                Context.ConnectionId,
+                foundUser,
+                ct
+            );
 
+            int deckCounter = 0;
             foreach (var poke in pokemonInDeck)
             {
+                deckCounter++;
                 await Clients.Caller.SendAsync(
-                    EventKeys.SingleDeepOwnedPokemonFromDeck,
+                    $"{EventKeys.SingleDeepOwnedPokemonFromDeck}-{deckCounter}",
                     new SignalRClientEvent<OwnedPokemon>
                     {
                         Data = poke,
-                        ExtraData = new Dictionary<string, object> { { EventKey, EventKeys.SingleDeepOwnedPokemonFromDeck } }
+                        ExtraData = new Dictionary<string, object>
+                        {
+                            { EventKey, EventKeys.SingleDeepOwnedPokemonFromDeck },
+                        },
                     },
                     ct
                 );
@@ -81,16 +90,22 @@ public sealed class PokeGameSessionHub : Hub
         }
         catch (PokeGameApiUserException ex)
         {
-            _logger.LogInformation(ex, "Poke game user exception occurred during get deep owned pokemon");
+            _logger.LogInformation(
+                ex,
+                "Poke game user exception occurred during get deep owned pokemon"
+            );
             await Clients.Caller.SendAsync(
                 EventKeys.GetDeepOwnedPokemonInDeckFailed,
                 new SignalRClientEvent
                 {
                     ExceptionMessage = $"Failed to get owned pokemon in deck. {ex.Message}",
-                    ExtraData = new Dictionary<string, object> { { EventKey, EventKeys.GetDeepOwnedPokemonInDeckFailed } },
+                    ExtraData = new Dictionary<string, object>
+                    {
+                        { EventKey, EventKeys.GetDeepOwnedPokemonInDeckFailed },
+                    },
                 },
                 ct
-            );   
+            );
         }
         catch (Exception ex)
         {
@@ -100,19 +115,23 @@ public sealed class PokeGameSessionHub : Hub
                 new SignalRClientEvent
                 {
                     ExceptionMessage = "Failed to get owned pokemon in deck",
-                    ExtraData = new Dictionary<string, object> { { EventKey, EventKeys.GetDeepOwnedPokemonInDeckFailed } },
+                    ExtraData = new Dictionary<string, object>
+                    {
+                        { EventKey, EventKeys.GetDeepOwnedPokemonInDeckFailed },
+                    },
                 },
                 ct
-            ); 
+            );
         }
     }
+
     [HubMethodName(nameof(SaveGame))]
     public async Task SaveGame(GameSaveData gameSaveData)
     {
         try
         {
             var httpContext = Context.GetHttpContext();
-            
+
             var foundUserIdQueryString = httpContext?.GetStringFromRequestQuery(
                 Constants.ApiConstants.UserIdHeaderKey
             );
@@ -122,9 +141,7 @@ public sealed class PokeGameSessionHub : Hub
                 || !Guid.TryParse(foundUserIdQueryString, out var userId)
             )
             {
-                _logger.LogInformation(
-                    "Invalid user id included with connection request"
-                );
+                _logger.LogInformation("Invalid user id included with connection request");
 
                 await Clients.Caller.SendAsync(
                     EventKeys.GameSaveFailed,
@@ -143,9 +160,14 @@ public sealed class PokeGameSessionHub : Hub
 
             var userManager = _serviceProvider.GetRequiredService<IUserProcessingManager>();
             var foundUser = await userManager.GetUserAsync(userId);
-            
-            var gameSaveProcessingManager = _serviceProvider.GetRequiredService<IGameSaveProcessingManager>();
-            await gameSaveProcessingManager.SaveGameDataAsync(gameSaveData, Context.ConnectionId, foundUser);
+
+            var gameSaveProcessingManager =
+                _serviceProvider.GetRequiredService<IGameSaveProcessingManager>();
+            await gameSaveProcessingManager.SaveGameDataAsync(
+                gameSaveData,
+                Context.ConnectionId,
+                foundUser
+            );
         }
         catch (PokeGameApiUserException ex)
         {
@@ -155,9 +177,12 @@ public sealed class PokeGameSessionHub : Hub
                 new SignalRClientEvent
                 {
                     ExceptionMessage = $"Failed to save game. {ex.Message}",
-                    ExtraData = new Dictionary<string, object> { { EventKey, EventKeys.GameSaveFailed } },
+                    ExtraData = new Dictionary<string, object>
+                    {
+                        { EventKey, EventKeys.GameSaveFailed },
+                    },
                 }
-            );   
+            );
         }
         catch (Exception ex)
         {
@@ -167,9 +192,12 @@ public sealed class PokeGameSessionHub : Hub
                 new SignalRClientEvent
                 {
                     ExceptionMessage = "Failed to save game",
-                    ExtraData = new Dictionary<string, object> { { EventKey, EventKeys.GameSaveFailed } },
+                    ExtraData = new Dictionary<string, object>
+                    {
+                        { EventKey, EventKeys.GameSaveFailed },
+                    },
                 }
-            ); 
+            );
         }
     }
     #endregion
