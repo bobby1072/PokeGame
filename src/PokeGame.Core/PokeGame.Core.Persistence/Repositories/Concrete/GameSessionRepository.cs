@@ -29,6 +29,42 @@ internal sealed class GameSessionRepository
         return gameSession.ToEntity();
     }
 
+    public async Task<DbGetOneResult<GameSession>> GetOneWithGameSaveAndDataByGameSessionIdAsync(
+        Guid gameSessionId
+    )
+    {
+        await using var dbContext = await ContextFactory.CreateDbContextAsync();
+
+        var result = await TimeAndLogDbOperation(
+            () =>
+                dbContext
+                    .GameSessions.Include(x => x.GameSave)
+                    .ThenInclude(x => x!.GameSaveData)
+                    .FirstOrDefaultAsync(gs => gs.Id == gameSessionId),
+            nameof(GetOneWithGameSaveAndDataByConnectionIdAsync)
+        );
+
+        return new DbGetOneResult<GameSession>(result?.ToModel());
+    }
+
+    public async Task<DbGetOneResult<GameSession>> GetOneWithGameSaveAndDataByConnectionIdAsync(
+        string connectionId
+    )
+    {
+        await using var dbContext = await ContextFactory.CreateDbContextAsync();
+
+        var result = await TimeAndLogDbOperation(
+            () =>
+                dbContext
+                    .GameSessions.Include(x => x.GameSave)
+                    .ThenInclude(x => x!.GameSaveData)
+                    .FirstOrDefaultAsync(gs => gs.ConnectionId == connectionId),
+            nameof(GetOneWithGameSaveAndDataByConnectionIdAsync)
+        );
+
+        return new DbGetOneResult<GameSession>(result?.ToModel());
+    }
+
     public async Task<DbResult> EndGameSession(GameSession gameSession)
     {
         await using var dbContext = await ContextFactory.CreateDbContextAsync();
@@ -36,32 +72,40 @@ internal sealed class GameSessionRepository
 
         try
         {
-            var deleteGameSessionJob = TimeAndLogDbOperation(() => dbContext.
-                GameSessions
-                .Where(x => x.Id == gameSession.Id)
-                .ExecuteDeleteAsync(), $"{nameof(EndGameSession)}-DeleteGameSession");
+            var deleteGameSessionJob = TimeAndLogDbOperation(
+                () =>
+                    dbContext.GameSessions.Where(x => x.Id == gameSession.Id).ExecuteDeleteAsync(),
+                $"{nameof(EndGameSession)}-DeleteGameSession"
+            );
 
-            var updateLatestPlayedJob = TimeAndLogDbOperation( () => dbContext.GameSaves
-                .Where(x => x.Id == gameSession.GameSaveId)
-                .ExecuteUpdateAsync(x => x.SetProperty(y => y.LastPlayed, DateTime.UtcNow)),
-                $"{nameof(EndGameSession)}-UpdateGameSave");
+            var updateLatestPlayedJob = TimeAndLogDbOperation(
+                () =>
+                    dbContext
+                        .GameSaves.Where(x => x.Id == gameSession.GameSaveId)
+                        .ExecuteUpdateAsync(x => x.SetProperty(y => y.LastPlayed, DateTime.UtcNow)),
+                $"{nameof(EndGameSession)}-UpdateGameSave"
+            );
 
             await Task.WhenAll(deleteGameSessionJob, updateLatestPlayedJob);
-            
+
             await dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
 
             return new DbResult(true);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexcepted exception occurred during EndGameSession transaction...");
-            
+            _logger.LogError(
+                ex,
+                "Unexcepted exception occurred during EndGameSession transaction..."
+            );
+
             await AttemptToRollbackTransaction(transaction);
-            
+
             return new DbResult(false);
         }
     }
+
     public async Task DeleteAllSessionsByGameSaveIdAsync(Guid gameSaveId)
     {
         await using var dbContext = await ContextFactory.CreateDbContextAsync();

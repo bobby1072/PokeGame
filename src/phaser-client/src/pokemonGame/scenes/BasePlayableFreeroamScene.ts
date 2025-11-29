@@ -2,6 +2,7 @@ import Phaser, { Types } from "phaser";
 import { Scene } from "phaser";
 import { HubConnection } from "@microsoft/signalr";
 import { GameSave } from "../../common/models/GameSave";
+import { OwnedPokemon } from "../../common/models/OwnedPokemon";
 
 export abstract class BasePlayableFreeroamScene extends Scene {
     protected player!: Types.Physics.Arcade.SpriteWithDynamicBody;
@@ -30,7 +31,8 @@ export abstract class BasePlayableFreeroamScene extends Scene {
 
         // Set up auto-save timer
         if (this.hubConnection && this.currentGameSave) {
-            const autoSaveIntervalSeconds = this.game.registry.get("autoSaveIntervalSeconds") || 12;
+            const autoSaveIntervalSeconds =
+                this.game.registry.get("autoSaveIntervalSeconds") || 12;
             this.autoSaveTimer = this.time.addEvent({
                 delay: autoSaveIntervalSeconds * 1000,
                 callback: this.saveGame,
@@ -251,6 +253,19 @@ export abstract class BasePlayableFreeroamScene extends Scene {
             const clampedX = Math.max(0, Math.min(29, tileX));
             const clampedY = Math.max(0, Math.min(29, tileY));
 
+            // Get current Pokemon deck from registry (may have been updated)
+            const currentDeck = this.game.registry.get("pokemonDeck") as
+                | OwnedPokemon[]
+                | undefined;
+
+            // Build deck Pokemon array from context
+            const deckPokemon =
+                currentDeck && currentDeck.length > 0
+                    ? currentDeck.map((pokemon) => ({
+                          ownedPokemonId: pokemon.Id,
+                      }))
+                    : this.currentGameSave.gameSaveData.gameData.deckPokemon;
+
             const gameSaveData = {
                 id: this.currentGameSave.gameSaveData.id,
                 gameSaveId: this.currentGameSave.gameSaveData.gameSaveId,
@@ -258,8 +273,7 @@ export abstract class BasePlayableFreeroamScene extends Scene {
                     lastPlayedScene: this.scene.key,
                     lastPlayedLocationX: clampedX,
                     lastPlayedLocationY: clampedY,
-                    deckPokemon:
-                        this.currentGameSave.gameSaveData.gameData.deckPokemon,
+                    deckPokemon,
                 },
             };
 

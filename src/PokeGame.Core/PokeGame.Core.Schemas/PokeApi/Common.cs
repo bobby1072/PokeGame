@@ -62,12 +62,12 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The localized description for an API resource in a
         /// specific language.
         /// </summary>
-        public string Description { get; set; }
+        public required string Description { get; set; }
 
         /// <summary>
         /// The language this name is in.
         /// </summary>
-        public NamedApiResource<Language> Language { get; set; }
+        public required NamedApiResource<Language> Language { get; set; }
     }
 
     /// <summary>
@@ -79,12 +79,12 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The localized effect text for an API resource in a
         /// specific language.
         /// </summary>
-        public string Effect { get; set; }
+        public required string Effect { get; set; }
 
         /// <summary>
         /// The language this effect is in.
         /// </summary>
-        public NamedApiResource<Language> Language { get; set; }
+        public required NamedApiResource<Language> Language { get; set; }
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// encounter to occur.
         /// </summary>
         [JsonPropertyName("condition_values")]
-        public List<NamedApiResource<EncounterConditionValue>> ConditionValues { get; set; }
+        public required List<NamedApiResource<EncounterConditionValue>> ConditionValues { get; set; }
 
         /// <summary>
         /// Percent chance that this encounter will occur.
@@ -119,7 +119,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The method by which this encounter happens.
         /// </summary>
-        public NamedApiResource<EncounterMethod> Method { get; set; }
+        public required NamedApiResource<EncounterMethod> Method { get; set; }
     }
 
     /// <summary>
@@ -131,12 +131,12 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The localized flavor text for an API resource in a specific language.
         /// </summary>
         [JsonPropertyName("flavor_text")]
-        public string FlavorText { get; set; }
+        public required string FlavorText { get; set; }
 
         /// <summary>
         /// The language this name is in.
         /// </summary>
-        public NamedApiResource<Language> Language { get; set; }
+        public required NamedApiResource<Language> Language { get; set; }
     }
 
     /// <summary>
@@ -153,7 +153,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The generation relevent to this game index.
         /// </summary>
-        public NamedApiResource<Generation> Generation { get; set; }
+        public required NamedApiResource<Generation> Generation { get; set; }
     }
 
     /// <summary>
@@ -164,13 +164,13 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The machine that teaches a move from an item.
         /// </summary>
-        public ApiResource<Machine> Machine { get; set; }
+        public required ApiResource<Machine> Machine { get; set; }
 
         /// <summary>
         /// The version group of this specific machine.
         /// </summary>
         [JsonPropertyName("version_group")]
-        public NamedApiResource<VersionGroup> VersionGroup { get; set; }
+        public required NamedApiResource<VersionGroup> VersionGroup { get; set; }
     }
 
     /// <summary>
@@ -181,12 +181,12 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The localized name for an API resource in a specific language.
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         /// <summary>
         /// The language this name is in.
         /// </summary>
-        public NamedApiResource<Language> Language { get; set; }
+        public required NamedApiResource<Language> Language { get; set; }
     }
 
     /// <summary>
@@ -198,7 +198,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name of the referenced resource.
         /// </summary>
-        public string Name { get; set; }
+        public required string Name { get; set; }
     }
 
     /// <summary>
@@ -210,12 +210,12 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The final generation in which the Pokemon had the given data.
         /// </summary>
-        public NamedApiResource<Generation> Generation { get; set; }
+        public required NamedApiResource<Generation> Generation { get; set; }
 
         /// <summary>
         /// The previous data.
         /// </summary>
-        protected TData Data { get; set; }
+        public required TData Data { get; set; }
     }
 
     /// <summary>
@@ -227,18 +227,18 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The localized effect text for an API resource in a
         /// specific language.
         /// </summary>
-        public string Effect { get; set; }
+        public required string Effect { get; set; }
 
         /// <summary>
         /// The localized effect text in brief.
         /// </summary>
         [JsonPropertyName("short_effect")]
-        public string ShortEffect { get; set; }
+        public required string ShortEffect { get; set; }
 
         /// <summary>
         /// The language this effect is in.
         /// </summary>
-        public NamedApiResource<Language> Language { get; set; }
+        public required NamedApiResource<Language> Language { get; set; }
     }
 
     /// <summary>
@@ -249,7 +249,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The game version this encounter happens in.
         /// </summary>
-        public NamedApiResource<Version> Version { get; set; }
+        public required NamedApiResource<Version> Version { get; set; }
 
         /// <summary>
         /// The total percentage of all encounter potential.
@@ -261,7 +261,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// A list of encounters and their specifics.
         /// </summary>
         [JsonPropertyName("encounter_details")]
-        public List<Encounter> EncounterDetails { get; set; }
+        public required List<Encounter> EncounterDetails { get; set; }
     }
 
     /// <summary>
@@ -278,7 +278,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The version relevent to this game index.
         /// </summary>
-        public NamedApiResource<Version> Version { get; set; }
+        public required NamedApiResource<Version> Version { get; set; }
     }
 
     /// <summary>
@@ -289,17 +289,17 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The localized name for an API resource in a specific language.
         /// </summary>
-        public string Text { get; set; }
+        public required string Text { get; set; }
 
         /// <summary>
         /// The language this name is in.
         /// </summary>
-        public NamedApiResource<Language> Language { get; set; }
+        public required NamedApiResource<Language> Language { get; set; }
 
         /// <summary>
         /// The version group which uses this flavor text.
         /// </summary>
         [JsonPropertyName("version_group")]
-        public NamedApiResource<VersionGroup> VersionGroup { get; set; }
+        public required NamedApiResource<VersionGroup> VersionGroup { get; set; }
     }
 }

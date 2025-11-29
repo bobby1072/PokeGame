@@ -3,4 +3,8 @@ export abstract class SignalREventKeys {
     public static readonly GameSessionConnectionFailed =
         "GameSessionConnectionFailed";
     public static readonly GameSaveFailed = "GameSaveFailed";
+    public static readonly GetDeepOwnedPokemonInDeckFailed =
+        "GetDeepOwnedPokemonInDeckFailed";
+    public static readonly SingleDeepOwnedPokemonFromDeck =
+        "SingleDeepOwnedPokemonFromDeck";
 }

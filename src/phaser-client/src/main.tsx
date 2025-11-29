@@ -8,6 +8,7 @@ import { PokeGameUserContextProvider } from "./common/contexts/PokeGameUserConte
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PokemonPage from "./pokemonGame/PokemonPage";
 import { SignalRGameSessionProvider } from "./common/contexts/SignalRGameSessionContext.tsx";
+import { PokemonDeckProvider } from "./common/contexts/PokemonDeckContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
@@ -17,15 +18,20 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                     <PokeGameCoreHttpClientContextProvider>
                         <PokeGameUserContextProvider>
                             <SignalRGameSessionProvider>
-                                <BrowserRouter>
-                                    <Routes>
-                                        <Route path="/" element={<PokemonPage />} />
-                                        <Route
-                                            path="/pokemon"
-                                            element={<PokemonPage />}
-                                        />
-                                    </Routes>
-                                </BrowserRouter>
+                                <PokemonDeckProvider>
+                                    <BrowserRouter>
+                                        <Routes>
+                                            <Route
+                                                path="/"
+                                                element={<PokemonPage />}
+                                            />
+                                            <Route
+                                                path="/pokemon"
+                                                element={<PokemonPage />}
+                                            />
+                                        </Routes>
+                                    </BrowserRouter>
+                                </PokemonDeckProvider>
                             </SignalRGameSessionProvider>
                         </PokeGameUserContextProvider>
                     </PokeGameCoreHttpClientContextProvider>

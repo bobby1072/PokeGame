@@ -253,9 +253,12 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
             )
             {
                 _logger.LogInformation(
-                    "Found request resource in memory cache: {ResourceURL}, skipping poke api http request...",
+                    "Found request resource in memory cache for Url: {ResourceURL}, skipping poke api http request...",
                     fullPath.RequestUri.ToString()
                 );
+                
+                _logger.LogDebug(
+                    "Data found in cache: {@CacheData}", foundCacheVal);
 
                 _memoryCache.Set(resourceCacheKey, foundCacheVal, GetCacheItemTTL());
 
@@ -279,7 +282,7 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
                 );
                 throw new PokeGameApiServerException("Failed to deserialize response");
             }
-
+            _logger.LogInformation("Successfully fetched PokeApi resource");
             _logger.LogDebug(
                 "Successfully deserialized response from {Url} to {@ResponseData}",
                 url,
@@ -400,6 +403,6 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
             $"{resourceUrl} --> {typeName}";
 
         private static DateTimeOffset GetCacheItemTTL() =>
-            new(DateTime.UtcNow, TimeSpan.FromHours(12));
+            new(DateTime.UtcNow, TimeSpan.FromHours(24));
     }
 }

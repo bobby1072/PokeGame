@@ -25,7 +25,7 @@ public sealed class OwnedPokemonEntity : BasePokeGameEntity<Guid?, OwnedPokemon>
         {
             Id = Id,
             GameSaveId = GameSaveId,
-            ResourceName = ResourceName,
+            PokemonResourceName = ResourceName,
             CaughtAt = CaughtAt,
             PokemonLevel = PokemonLevel,
             CurrentExperience = CurrentExperience,

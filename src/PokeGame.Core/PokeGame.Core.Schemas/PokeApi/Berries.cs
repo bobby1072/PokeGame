@@ -18,7 +18,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public override required string Name { get; set; }
 
         /// <summary>
         /// Time it takes the tree to grow one stage, in hours.
@@ -65,27 +65,27 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The firmness of this berry, used in making Pokeblocks
         /// or Poffins.
         /// </summary>
-        public NamedApiResource<BerryFirmness> Firmness { get; set; }
+        public required NamedApiResource<BerryFirmness> Firmness { get; set; }
 
         /// <summary>
         /// A list of references to each flavor a berry can have
         /// and the potency of each of those flavors in regards
         /// to this berry.
         /// </summary>
-        public List<BerryFlavorMap> Flavors { get; set; }
+        public required List<BerryFlavorMap> Flavors { get; set; }
 
         /// <summary>
         /// Berries are actually items. This is a reference to
         /// the item specific data for this berry.
         /// </summary>
-        public NamedApiResource<Item> Item { get; set; }
+        public required NamedApiResource<Item> Item { get; set; }
 
         /// <summary>
         /// The type inherited by "Natural Gift" when used with
         /// this Berry.
         /// </summary>
         [JsonPropertyName("natural_gift_type")]
-        public NamedApiResource<Type> NaturalGiftType { get; set; }
+        public required NamedApiResource<Type> NaturalGiftType { get; set; }
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The referenced berry flavor.
         /// </summary>
-        public NamedApiResource<BerryFlavor> Flavor { get; set; }
+        public required NamedApiResource<BerryFlavor> Flavor { get; set; }
     }
 
     /// <summary>
@@ -120,18 +120,18 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public override required string Name { get; set; }
 
         /// <summary>
         /// A list of berries with this firmness.
         /// </summary>
-        public List<NamedApiResource<Berry>> Berries { get; set; }
+        public required List<NamedApiResource<Berry>> Berries { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different
         /// languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
     }
 
     /// <summary>
@@ -150,24 +150,24 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public override required string Name { get; set; }
 
         /// <summary>
         /// A list of berries with this firmness.
         /// </summary>
-        public List<FlavorBerryMap> Berries { get; set; }
+        public required List<FlavorBerryMap> Berries { get; set; }
 
         /// <summary>
         /// The contest type that correlates with this berry
         /// flavor.
         /// </summary>
         [JsonPropertyName("contest_type")]
-        public NamedApiResource<ContestType> ContestType { get; set; }
+        public required NamedApiResource<ContestType> ContestType { get; set; }
 
         /// <summary>
         /// The name of this resource in different languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
     }
 
     /// <summary>
@@ -184,6 +184,6 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The berry with the referenced flavor.
         /// </summary>
-        public NamedApiResource<Berry> Berry { get; set; }
+        public required NamedApiResource<Berry> Berry { get; set; }
     }
 }

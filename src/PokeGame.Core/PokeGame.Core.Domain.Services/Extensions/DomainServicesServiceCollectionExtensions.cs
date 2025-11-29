@@ -9,7 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common;
 using PokeGame.Core.Common.Configurations;
-using PokeGame.Core.Common.Extensions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Concrete;
 using PokeGame.Core.Domain.Services.Game.Abstract;
@@ -101,8 +100,15 @@ public static class DomainServicesServiceCollectionExtensions
             .AddScoped<StartGameSessionCommand>()
             .AddScoped<EndGameSessionCommand>()
             .AddScoped<SaveGameDataCommand>()
+            .AddScoped<GetOwnedPokemonInDeckByConnectionIdCommand>()
+            .AddScoped<GetOwnedPokemonInDeckByGameSessionIdCommand>()
+            .AddScoped<GetOwnedPokemonByIdCommand>()
             .AddScoped<IGameSaveProcessingManager, GameSaveProcessingManager>()
-            .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>();
+            .AddScoped<IGameSessionProcessingManager, GameSessionProcessingManager>()
+            .AddScoped<
+                IGameAndPokeApiResourceManagerService,
+                GameAndPokeApiResourceManagerService
+            >();
 
         return services;
     }

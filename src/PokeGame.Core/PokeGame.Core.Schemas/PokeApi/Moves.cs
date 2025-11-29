@@ -57,25 +57,25 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// A detail of normal and super contest combos that require this move.
         /// </summary>
         [JsonPropertyName("contest_combos")]
-        public ContestComboSets ContestCombos { get; set; }
+        public ContestComboSets? ContestCombos { get; set; }
 
         /// <summary>
         /// The type of appeal this move gives a Pokémon when used in a contest.
         /// </summary>
         [JsonPropertyName("contest_type")]
-        public NamedApiResource<ContestType> ContestType { get; set; }
+        public NamedApiResource<ContestType>? ContestType { get; set; }
 
         /// <summary>
         /// The effect the move has when used in a contest.
         /// </summary>
         [JsonPropertyName("contest_effect")]
-        public ApiResource<ContestEffect> ContestEffect { get; set; }
+        public ApiResource<ContestEffect>? ContestEffect { get; set; }
 
         /// <summary>
         /// The type of damage the move inflicts on the target, e.g. physical.
         /// </summary>
         [JsonPropertyName("damage_class")]
-        public NamedApiResource<MoveDamageClass> DamageClass { get; set; }
+        public required NamedApiResource<MoveDamageClass> DamageClass { get; set; }
 
         /// <summary>
         /// The effect of this move listed in different languages.
@@ -88,67 +88,67 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// groups of the games.
         /// </summary>
         [JsonPropertyName("effect_changes")]
-        public List<AbilityEffectChange> EffectChanges { get; set; }
+        public required List<AbilityEffectChange> EffectChanges { get; set; }
 
         /// <summary>
         /// The flavor text of this move listed in different languages.
         /// </summary>
         [JsonPropertyName("flavor_text_entries")]
-        public List<MoveFlavorText> FlavorTextEntries { get; set; }
+        public required List<MoveFlavorText> FlavorTextEntries { get; set; }
 
         /// <summary>
         /// The generation in which this move was introduced.
         /// </summary>
-        public NamedApiResource<Generation> Generation { get; set; }
+        public required NamedApiResource<Generation> Generation { get; set; }
 
         /// <summary>The pokemon that learn this move.</summary>
         [JsonPropertyName("learned_by_pokemon")]
-        public List<NamedApiResource<Pokemon>> LearnedByPokemon { get; set; }
+        public required List<NamedApiResource<Pokemon>> LearnedByPokemon { get; set; }
 
         /// <summary>
         /// A list of the machines that teach this move.
         /// </summary>
-        public List<MachineVersionDetail> Machines { get; set; }
+        public required List<MachineVersionDetail> Machines { get; set; }
 
         /// <summary>
         /// Metadata about this move
         /// </summary>
-        public MoveMetaData Meta { get; set; }
+        public required MoveMetaData Meta { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
 
         /// <summary>
         /// A list of move resource value changes across version groups
         /// of the game.
         /// </summary>
         [JsonPropertyName("past_values")]
-        public List<PastMoveStatValues> PastValues { get; set; }
+        public required List<PastMoveStatValues> PastValues { get; set; }
 
         /// <summary>
         /// A list of stats this moves effects and how much it
         /// effects them.
         /// </summary>
         [JsonPropertyName("stat_changes")]
-        public List<MoveStatChange> StatChanges { get; set; }
+        public required List<MoveStatChange> StatChanges { get; set; }
 
         /// <summary>
         /// The effect the move has when used in a super contest.
         /// </summary>
         [JsonPropertyName("super_contest_effect")]
-        public ApiResource<SuperContestEffect> SuperContestEffect { get; set; }
+        public ApiResource<SuperContestEffect>? SuperContestEffect { get; set; }
 
         /// <summary>
         /// The type of target that will receive the effects of the attack.
         /// </summary>
-        public NamedApiResource<MoveTarget> Target { get; set; }
+        public required NamedApiResource<MoveTarget> Target { get; set; }
 
         /// <summary>
         /// The elemental type of this move.
         /// </summary>
-        public NamedApiResource<Type> Type { get; set; }
+        public required NamedApiResource<Type> Type { get; set; }
     }
 
     /// <summary>
@@ -160,13 +160,13 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// A detail of moves this move can be used before or after,
         /// granting additional appeal points in contests.
         /// </summary>
-        public ContestComboDetail Normal { get; set; }
+        public ContestComboDetail? Normal { get; set; }
 
         /// <summary>
         /// A detail of moves this move can be used before or after,
         /// granting additional appeal points in super contests.
         /// </summary>
-        public ContestComboDetail Super { get; set; }
+        public ContestComboDetail? Super { get; set; }
     }
 
     /// <summary>
@@ -178,13 +178,13 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// A list of moves to use before this move.
         /// </summary>
         [JsonPropertyName("use_before")]
-        public List<NamedApiResource<Move>> UseBefore { get; set; }
+        public required List<NamedApiResource<Move>> UseBefore { get; set; }
 
         /// <summary>
         /// A list of moves to use after this move.
         /// </summary>
         [JsonPropertyName("use_after")]
-        public List<NamedApiResource<Move>> UseAfter { get; set; }
+        public required List<NamedApiResource<Move>> UseAfter { get; set; }
     }
 
     /// <summary>
@@ -197,18 +197,18 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// specific language.
         /// </summary>
         [JsonPropertyName("flavor_text")]
-        public string FlavorText { get; set; }
+        public required string FlavorText { get; set; }
 
         /// <summary>
         /// The language this name is in.
         /// </summary>
-        public NamedApiResource<Language> Language { get; set; }
+        public required NamedApiResource<Language> Language { get; set; }
 
         /// <summary>
         /// The version group that uses this flavor text.
         /// </summary>
         [JsonPropertyName("version_group")]
-        public NamedApiResource<VersionGroup> VersionGroup { get; set; }
+        public required NamedApiResource<VersionGroup> VersionGroup { get; set; }
     }
 
     /// <summary>
@@ -219,13 +219,13 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The status ailment this move inflicts on its target.
         /// </summary>
-        public NamedApiResource<MoveAilment> Ailment { get; set; }
+        public required NamedApiResource<MoveAilment> Ailment { get; set; }
 
         /// <summary>
         /// The category of move this move falls under, e.g. damage or
         /// ailment.
         /// </summary>
-        public NamedApiResource<MoveCategory> Category { get; set; }
+        public required NamedApiResource<MoveCategory> Category { get; set; }
 
         /// <summary>
         /// The minimum number of times this move hits. Null if it always
@@ -306,7 +306,7 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The stat being affected.
         /// </summary>
-        public NamedApiResource<Stat> Stat { get; set; }
+        public required NamedApiResource<Stat> Stat { get; set; }
     }
 
     /// <summary>
@@ -342,18 +342,18 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The effect of this move listed in different languages.
         /// </summary>
         [JsonPropertyName("effect_entries")]
-        public List<VerboseEffect> EffectEntries { get; set; }
+        public required List<VerboseEffect> EffectEntries { get; set; }
 
         /// <summary>
         /// The elemental type of this move.
         /// </summary>
-        public NamedApiResource<Type> Type { get; set; }
+        public NamedApiResource<Type>? Type { get; set; }
 
         /// <summary>
         /// The version group in which these move stat values were in effect.
         /// </summary>
         [JsonPropertyName("version_group")]
-        public NamedApiResource<VersionGroup> VersionGroup { get; set; }
+        public required NamedApiResource<VersionGroup> VersionGroup { get; set; }
     }
 
     /// <summary>
@@ -371,17 +371,17 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// A list of moves that cause this ailment.
         /// </summary>
-        public List<NamedApiResource<Move>> Moves { get; set; }
+        public required List<NamedApiResource<Move>> Moves { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
     }
 
     /// <summary>
@@ -399,12 +399,12 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
     }
 
     /// <summary>
@@ -422,17 +422,17 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// A list of moves that fall into this category.
         /// </summary>
-        public List<NamedApiResource<Move>> Moves { get; set; }
+        public required List<NamedApiResource<Move>> Moves { get; set; }
 
         /// <summary>
         /// The description of this resource listed in different languages.
         /// </summary>
-        public List<Descriptions> Descriptions { get; set; }
+        public required List<Descriptions> Descriptions { get; set; }
     }
 
     /// <summary>
@@ -450,22 +450,22 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// A list of moves that fall into this damage public class.
         /// </summary>
-        public List<NamedApiResource<Move>> Moves { get; set; }
+        public required List<NamedApiResource<Move>> Moves { get; set; }
 
         /// <summary>
         /// The description of this resource listed in different languages.
         /// </summary>
-        public List<Descriptions> Descriptions { get; set; }
+        public required List<Descriptions> Descriptions { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
     }
 
     /// <summary>
@@ -483,23 +483,23 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// The description of this resource listed in different languages.
         /// </summary>
-        public List<Descriptions> Descriptions { get; set; }
+        public required List<Descriptions> Descriptions { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
 
         /// <summary>
         /// A list of version groups where moves can be learned through this method.
         /// </summary>
         [JsonPropertyName("version_groups")]
-        public List<NamedApiResource<VersionGroup>> VersionGroups { get; set; }
+        public required List<NamedApiResource<VersionGroup>> VersionGroups { get; set; }
     }
 
     /// <summary>
@@ -518,21 +518,21 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override string Name { get; set; }
+        public required override string Name { get; set; }
 
         /// <summary>
         /// The description of this resource listed in different languages.
         /// </summary>
-        public List<Descriptions> Descriptions { get; set; }
+        public required List<Descriptions> Descriptions { get; set; }
 
         /// <summary>
         /// A list of moves that that are directed at this target.
         /// </summary>
-        public List<NamedApiResource<Move>> Moves { get; set; }
+        public required List<NamedApiResource<Move>> Moves { get; set; }
 
         /// <summary>
         /// The name of this resource listed in different languages.
         /// </summary>
-        public List<Names> Names { get; set; }
+        public required List<Names> Names { get; set; }
     }
 }

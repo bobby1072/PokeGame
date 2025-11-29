@@ -5,5 +5,5 @@ namespace PokeGame.Core.SignalR.Models;
 internal sealed record SignalRClientEvent: WebOutcome
 { }
 
-internal sealed record SignalRServerEvent<T> : WebOutcome<T>
+internal sealed record SignalRClientEvent<T> : WebOutcome<T>
 { }
