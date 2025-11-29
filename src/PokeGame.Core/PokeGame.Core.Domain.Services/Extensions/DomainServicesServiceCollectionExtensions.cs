@@ -44,7 +44,6 @@ public static class DomainServicesServiceCollectionExtensions
 
         services
             .AddHttpClient()
-            .AddLogging()
             .AddMemoryCache()
             .AddDomainModelValidators()
             .AddTelemetryService(

@@ -21,15 +21,8 @@ try
     }
 
     builder.Services.ConfigureSingletonOptions<ServiceInfo>(serviceInfo);
-    
-    builder.Services.AddLogging(opts =>
-    {
-        opts.AddJsonConsole(ctx =>
-        {
-            ctx.IncludeScopes = true;
-            ctx.UseUtcTimestamp = true;
-        });
-    });
+
+    builder.Logging.AddJsonLogging();
     
     var requestTimeout = builder.Configuration.GetValue<int>("RequestTimeout");
 

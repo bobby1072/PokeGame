@@ -27,7 +27,7 @@ try
         };
     });
 
-    builder.Services.AddJsonLogging();
+    builder.Logging.AddJsonLogging();
 
     builder
         .Services.AddControllers()
