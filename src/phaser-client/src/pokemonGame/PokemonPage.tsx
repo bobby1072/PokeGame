@@ -15,10 +15,8 @@ export default function PokemonPage() {
     const { currentGameSave, clearCurrentGameSave } = useGameSaveContext();
     const { hubConnection, gameSession } = useSignalRGameSession();
     const {
-        pokemonDeck,
         setPokemonDeck,
         updatePokemonWithDeepData,
-        isLoadingDeepData,
         setIsLoadingDeepData,
         setDeepDataError,
     } = usePokemonDeck();
