@@ -11,7 +11,7 @@ using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Persistence.Repositories.Concrete;
 
-internal sealed class UserRepository: BaseRepository<UserEntity, Guid?, User, PokeGameContext>, IUserRepository
+internal sealed class UserRepository: BasePokeGameRepository<UserEntity, Guid?, User, PokeGameContext>, IUserRepository
 {
     public UserRepository(
         IDbContextFactory<PokeGameContext> dbContextFactory,

@@ -10,7 +10,7 @@ using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Persistence.Repositories.Concrete;
 
-internal sealed class OwnedOwnedItemRepository : BaseRepository<OwnedItemEntity, Guid?, OwnedItem, PokeGameContext>, IOwnedItemRepository
+internal sealed class OwnedOwnedItemRepository : BasePokeGameRepository<OwnedItemEntity, Guid?, OwnedItem, PokeGameContext>, IOwnedItemRepository
 {
     public OwnedOwnedItemRepository(
         IDbContextFactory<PokeGameContext> dbContextFactory,

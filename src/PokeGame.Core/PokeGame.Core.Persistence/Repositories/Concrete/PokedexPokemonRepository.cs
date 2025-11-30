@@ -11,7 +11,7 @@ using PokeGame.Core.Schemas.Pokedex;
 
 namespace PokeGame.Core.Persistence.Repositories.Concrete;
 
-internal sealed class PokedexPokemonRepository: BaseRepository<PokedexPokemonEntity, int, PokedexPokemon, PokeGameContext>, IPokedexPokemonRepository
+internal sealed class PokedexPokemonRepository: BasePokeGameRepository<PokedexPokemonEntity, int, PokedexPokemon, PokeGameContext>, IPokedexPokemonRepository
 {
     public PokedexPokemonRepository(
         IDbContextFactory<PokeGameContext> dbContextFactory,
