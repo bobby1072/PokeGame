@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Npgsql;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Persistence.Configurations;
 using PokeGame.Core.Persistence.Contexts;
 using PokeGame.Core.Persistence.Migrations.Abstract;
@@ -29,7 +30,15 @@ public static class PersistenceServiceCollectionExtensions
             throw new ArgumentNullException(DbMigrationSettings.Key);
         }
 
-        services.ConfigureSingletonOptions<DbMigrationSettings>(migrationConfigSection);
+        var dbRetrySettingsSection = configuration.GetSection(DbOperationRetrySettings.Key);
+        if (!dbRetrySettingsSection.Exists())
+        {
+            throw new ArgumentNullException(DbOperationRetrySettings.Key);
+        }
+        
+        services
+            .ConfigureSingletonOptions<DbOperationRetrySettings>(dbRetrySettingsSection)
+            .ConfigureSingletonOptions<DbMigrationSettings>(migrationConfigSection);
 
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
 

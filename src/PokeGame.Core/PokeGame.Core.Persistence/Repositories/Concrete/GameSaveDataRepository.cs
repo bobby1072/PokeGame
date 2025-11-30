@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Persistence.Contexts;
 using PokeGame.Core.Persistence.Entities;
 using PokeGame.Core.Persistence.Entities.Extensions;
@@ -12,8 +13,9 @@ internal sealed class GameSaveDataRepository: BasePokeGameRepository<GameSaveDat
 {
     public GameSaveDataRepository(
         IDbContextFactory<PokeGameContext> dbContextFactory,
-        ILogger<GameSaveDataRepository> logger
-    ) : base(dbContextFactory, logger){}
+        ILogger<GameSaveDataRepository> logger,
+        DbOperationRetrySettings retrySettings
+    ) : base(dbContextFactory, logger, retrySettings){}
 
     protected override GameSaveDataEntity RuntimeToEntity(GameSaveData runtimeObj)
     {

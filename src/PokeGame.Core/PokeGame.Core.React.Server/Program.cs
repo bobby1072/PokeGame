@@ -10,6 +10,7 @@ var localLogger = LoggingHelper.CreateLogger();
 
 try
 {
+    localLogger.LogInformation("Application starting...");
     var builder = WebApplication.CreateBuilder(args);
     builder.WebHost.ConfigureKestrel(server => server.AddServerHeader = false);
     
