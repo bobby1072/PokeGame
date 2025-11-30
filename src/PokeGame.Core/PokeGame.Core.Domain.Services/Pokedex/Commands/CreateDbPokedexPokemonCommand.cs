@@ -1,5 +1,6 @@
 ﻿using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Utils;
+using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
@@ -10,7 +11,11 @@ using PokeGame.Core.Schemas.Pokedex;
 
 namespace PokeGame.Core.Domain.Services.Pokedex.Commands;
 
-internal sealed class CreateDbPokedexPokemonCommand : IDomainCommand<IReadOnlyCollection<PokedexPokemon>, DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>>
+internal sealed class CreateDbPokedexPokemonCommand
+    : IDomainCommand<
+        IReadOnlyCollection<PokedexPokemon>,
+        DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>
+    >
 {
     public string CommandName => nameof(CreateDbPokedexPokemonCommand);
     private readonly IPokedexPokemonRepository _pokedexPokemonRepository;
@@ -25,27 +30,46 @@ internal sealed class CreateDbPokedexPokemonCommand : IDomainCommand<IReadOnlyCo
         _logger = logger;
     }
 
-    public async Task<DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>> ExecuteAsync(IReadOnlyCollection<PokedexPokemon> input, CancellationToken cancellationToken = default)
+    public async Task<DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>> ExecuteAsync(
+        IReadOnlyCollection<PokedexPokemon> input,
+        CancellationToken cancellationToken = default
+    )
     {
-        _logger.LogInformation("Input contains {PokedexPokemonSaveCount} pokedex pokemon records...", input.Count);
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity(CommandName);
+        activity?.SetTag("input.count", input.Count);
 
-        var existingPokedex = await EntityFrameworkUtils.TryDbOperation(() => _pokedexPokemonRepository.GetAll(), _logger) ?? throw new PokeGameApiServerException("Failed to get existing pokedex count");
+        _logger.LogInformation(
+            "Input contains {PokedexPokemonSaveCount} pokedex pokemon records...",
+            input.Count
+        );
 
-        var pokemonToCreate = input.FastArrayWhere(x => !existingPokedex.Data.Any(y => y.Equals(x))).ToArray();
+        var existingPokedex =
+            await EntityFrameworkUtils.TryDbOperation(
+                () => _pokedexPokemonRepository.GetAll(),
+                _logger
+            ) ?? throw new PokeGameApiServerException("Failed to get existing pokedex count");
+
+        var pokemonToCreate = input
+            .FastArrayWhere(x => !existingPokedex.Data.Any(y => y.Equals(x)))
+            .ToArray();
 
         if (pokemonToCreate.Length == 0)
         {
-            _logger.LogWarning("None of the new entries are unique so no pokedex pokemon records to created.");
+            _logger.LogWarning(
+                "None of the new entries are unique so no pokedex pokemon records to created."
+            );
 
             return new DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>
             {
-                CommandResult = []
+                CommandResult = [],
             };
         }
 
-        var saveResult = await
-            EntityFrameworkUtils.TryDbOperation(() => _pokedexPokemonRepository.Create(pokemonToCreate), _logger)
-                ?? throw new PokeGameApiServerException("Failed to create pokedex pokemon");
+        var saveResult =
+            await EntityFrameworkUtils.TryDbOperation(
+                () => _pokedexPokemonRepository.Create(pokemonToCreate),
+                _logger
+            ) ?? throw new PokeGameApiServerException("Failed to create pokedex pokemon");
 
         if (saveResult.IsSuccessful != true || saveResult.Data.Count == 0)
         {
@@ -54,7 +78,7 @@ internal sealed class CreateDbPokedexPokemonCommand : IDomainCommand<IReadOnlyCo
 
         return new DomainCommandResult<IReadOnlyCollection<PokedexPokemon>>
         {
-            CommandResult = saveResult.Data
+            CommandResult = saveResult.Data,
         };
     }
 }

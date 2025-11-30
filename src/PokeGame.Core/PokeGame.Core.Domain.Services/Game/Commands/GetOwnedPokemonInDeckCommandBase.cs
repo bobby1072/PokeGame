@@ -1,6 +1,7 @@
 using System.Net;
 using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Utils;
+using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
@@ -42,6 +43,13 @@ internal abstract class GetOwnedPokemonInDeckCommandBase<TInput>
         CancellationToken cancellationToken
     )
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
+            nameof(FetchPokemon)
+        );
+        activity?.SetTag("deepVersion", deepVersion);
+        activity?.SetTag("userId", currentUser.Id?.ToString());
+        activity?.SetTag("gameSessionId", gameSession?.Id.ToString());
+
         if (gameSession is null)
         {
             throw new PokeGameApiUserException(

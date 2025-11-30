@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using BT.Common.Persistence.Shared.Utils;
+using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
@@ -37,6 +38,11 @@ internal sealed class StartGameSessionCommand
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity(CommandName);
+        activity?.SetTag("gameSaveId", input.GameSaveId.ToString());
+        activity?.SetTag("connectionId", input.ConnectionId);
+        activity?.SetTag("userId", input.CurrentUser.Id?.ToString());
+
         _logger.LogInformation(
             "About to start new game session for user with id: {UserId}...",
             input.CurrentUser.Id
@@ -63,7 +69,7 @@ internal sealed class StartGameSessionCommand
                 "Invalid game save id provided"
             );
         }
-        
+
         var newSession = new GameSession
         {
             GameSaveId = input.GameSaveId,

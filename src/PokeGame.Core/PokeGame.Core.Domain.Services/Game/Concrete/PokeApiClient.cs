@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using BT.Common.Http.Extensions;
+using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
@@ -40,6 +41,12 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
         )
             where T : ResourceBase
         {
+            using var activity = TelemetryHelperService.ActivitySource.StartActivity(
+                nameof(GetResourceAsync)
+            );
+            activity?.SetTag("resourceType", typeof(T).Name);
+            activity?.SetTag("id", id);
+
             return await GetResourcesWithParamsAsync<T>(id.ToString(), cancellationToken);
         }
 
@@ -49,6 +56,12 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
         )
             where T : NamedApiResource
         {
+            using var activity = TelemetryHelperService.ActivitySource.StartActivity(
+                nameof(GetResourceAsync)
+            );
+            activity?.SetTag("resourceType", typeof(T).Name);
+            activity?.SetTag("name", name);
+
             _logger.LogInformation(
                 "Getting resource of type {Type} by name {Name}",
                 typeof(T).Name,
@@ -256,9 +269,8 @@ namespace PokeGame.Core.Domain.Services.Game.Concrete
                     "Found request resource in memory cache for Url: {ResourceURL}, skipping poke api http request...",
                     fullPath.RequestUri.ToString()
                 );
-                
-                _logger.LogDebug(
-                    "Data found in cache: {@CacheData}", foundCacheVal);
+
+                _logger.LogDebug("Data found in cache: {@CacheData}", foundCacheVal);
 
                 _memoryCache.Set(resourceCacheKey, foundCacheVal, GetCacheItemTTL());
 

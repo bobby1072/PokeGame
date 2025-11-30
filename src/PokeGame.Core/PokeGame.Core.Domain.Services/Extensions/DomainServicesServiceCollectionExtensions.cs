@@ -2,6 +2,7 @@
 using BT.Common.Api.Helpers.Models;
 using BT.Common.Helpers.Extensions;
 using BT.Common.Http.Extensions;
+using BT.Common.Services.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,9 +44,15 @@ public static class DomainServicesServiceCollectionExtensions
 
         services
             .AddHttpClient()
-            .AddLogging()
             .AddMemoryCache()
             .AddDomainModelValidators()
+            .AddTelemetryService(
+                serviceInfoSection.GetValue<string>(nameof(ServiceInfo.ReleaseName))
+                    ?? Assembly
+                        .GetExecutingAssembly()
+                        .GetName()
+                        .FullName.Replace(".Domain.Services", "")
+            )
             .AddPokeGamePersistence(configuration, healthCheckBuilder, environment.IsDevelopment())
             .ConfigureSingletonOptions<ServiceInfo>(serviceInfoSection);
 

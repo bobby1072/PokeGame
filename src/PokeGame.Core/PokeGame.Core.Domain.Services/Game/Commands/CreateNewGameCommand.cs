@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using BT.Common.Persistence.Shared.Utils;
+using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
@@ -40,6 +41,10 @@ internal sealed class CreateNewGameCommand
         CancellationToken cancellationToken = default
     )
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity(CommandName);
+        activity?.SetTag("characterName", input.CharacterName);
+        activity?.SetTag("userId", input.CurrentUser.Id?.ToString());
+
         var newGameSave = new GameSave
         {
             Id = Guid.NewGuid(),
@@ -47,16 +52,20 @@ internal sealed class CreateNewGameCommand
             UserId = (Guid)input.CurrentUser.Id!,
         };
         var newGameSaveData = CreateNewGameSaveData((Guid)newGameSave.Id!);
-        
+
         await _gameSaveValidator.ValidateAndThrowAsync(newGameSave, cancellationToken);
 
-        var gameSaveCount = await EntityFrameworkUtils
-            .TryDbOperation(() => _gameSaveRepository.GetCount(x => x.UserId == input.CurrentUser.Id)) 
-                ?? throw new PokeGameApiServerException("Failed to get game save count");
+        var gameSaveCount =
+            await EntityFrameworkUtils.TryDbOperation(
+                () => _gameSaveRepository.GetCount(x => x.UserId == input.CurrentUser.Id)
+            ) ?? throw new PokeGameApiServerException("Failed to get game save count");
 
         if (gameSaveCount.Data >= 5)
         {
-            throw new PokeGameApiUserException(HttpStatusCode.BadRequest, "You can only have 5 game saves");
+            throw new PokeGameApiUserException(
+                HttpStatusCode.BadRequest,
+                "You can only have 5 game saves"
+            );
         }
 
         var createdSave =
@@ -64,7 +73,7 @@ internal sealed class CreateNewGameCommand
                 () => _gameSaveRepository.CreateGameSaveWithData(newGameSave, newGameSaveData),
                 _logger
             ) ?? throw new PokeGameApiServerException("Failed to save game save");
-        
+
         if (!createdSave.IsSuccessful)
         {
             throw new PokeGameApiServerException("Failed to save game save");
@@ -75,6 +84,7 @@ internal sealed class CreateNewGameCommand
 
         return new DomainCommandResult<GameSave> { CommandResult = newGameSave };
     }
+
     private GameSaveData CreateNewGameSaveData(Guid gameSaveId)
     {
         return new GameSaveData
@@ -83,9 +93,15 @@ internal sealed class CreateNewGameCommand
             GameData = new GameSaveDataActual
             {
                 LastPlayedScene = _configurablePokeGameRules.DefaultStarterScene.SceneName,
-                LastPlayedLocationX = _configurablePokeGameRules.DefaultStarterScene.SceneLocation.X,
-                LastPlayedLocationY = _configurablePokeGameRules.DefaultStarterScene.SceneLocation.Y
-            }
+                LastPlayedLocationX = _configurablePokeGameRules
+                    .DefaultStarterScene
+                    .SceneLocation
+                    .X,
+                LastPlayedLocationY = _configurablePokeGameRules
+                    .DefaultStarterScene
+                    .SceneLocation
+                    .Y,
+            },
         };
     }
 }
