@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Persistence.Entities;
 using PokeGame.Core.Schemas;
 
@@ -16,8 +17,9 @@ internal abstract class BasePokeGameRepository<TEnt, TEntId, TModel, TDbContext>
 
     public BasePokeGameRepository(
         IDbContextFactory<TDbContext> dbContextFactory,
-        ILogger<BasePokeGameRepository<TEnt, TEntId, TModel, TDbContext>> logger)
-        : base(dbContextFactory, logger)
+        ILogger<BasePokeGameRepository<TEnt, TEntId, TModel, TDbContext>> logger,
+        DbOperationRetrySettings retrySettings)
+        : base(dbContextFactory, logger, retrySettings)
     {
         _logger = logger;
     }

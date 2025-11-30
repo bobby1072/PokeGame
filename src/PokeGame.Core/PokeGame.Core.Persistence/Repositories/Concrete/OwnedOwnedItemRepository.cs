@@ -1,6 +1,7 @@
 using BT.Common.Persistence.Shared.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Persistence.Contexts;
 using PokeGame.Core.Persistence.Entities;
 using PokeGame.Core.Persistence.Entities.Extensions;
@@ -13,8 +14,9 @@ internal sealed class OwnedOwnedItemRepository : BaseRepository<OwnedItemEntity,
 {
     public OwnedOwnedItemRepository(
         IDbContextFactory<PokeGameContext> dbContextFactory,
-        ILogger<OwnedOwnedItemRepository> logger
-    ) : base(dbContextFactory, logger) { }
+        ILogger<OwnedOwnedItemRepository> logger,
+        DbOperationRetrySettings retrySettings
+    ) : base(dbContextFactory, logger, retrySettings) { }
 
     protected override OwnedItemEntity RuntimeToEntity(OwnedItem ownedItem)
     {

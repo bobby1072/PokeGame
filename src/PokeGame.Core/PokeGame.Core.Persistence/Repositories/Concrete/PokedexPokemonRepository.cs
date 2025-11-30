@@ -1,6 +1,7 @@
 ﻿using BT.Common.Persistence.Shared.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Persistence.Contexts;
 using PokeGame.Core.Persistence.Entities;
 using PokeGame.Core.Persistence.Entities.Extensions;
@@ -14,8 +15,9 @@ internal sealed class PokedexPokemonRepository: BaseRepository<PokedexPokemonEnt
 {
     public PokedexPokemonRepository(
         IDbContextFactory<PokeGameContext> dbContextFactory,
-        ILogger<PokedexPokemonRepository> logger
-    ): base(dbContextFactory, logger) {}
+        ILogger<PokedexPokemonRepository> logger,
+        DbOperationRetrySettings retrySettings
+    ): base(dbContextFactory, logger, retrySettings) {}
 
     protected override PokedexPokemonEntity RuntimeToEntity(PokedexPokemon runtimeObj)
     {
