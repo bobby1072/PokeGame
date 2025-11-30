@@ -69,9 +69,7 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         CancellationToken cancellationToken = default
     )
     {
-        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
-            nameof(GetFullOwnedPokemon)
-        );
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
         activity?.SetTag("ownedPokemonId.count", ownedPokemonId.Count);
 
         try
