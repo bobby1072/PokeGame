@@ -2,6 +2,7 @@
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
@@ -15,14 +16,17 @@ internal sealed class EndGameSessionCommand : IDomainCommand<string, DomainComma
     public string CommandName => nameof(EndGameSessionCommand);
 
     private readonly IGameSessionRepository _gameSessionRepository;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<EndGameSessionCommand> _logger;
 
     public EndGameSessionCommand(
         IGameSessionRepository gameSessionRepository,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<EndGameSessionCommand> logger
     )
     {
         _gameSessionRepository = gameSessionRepository;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -46,7 +50,8 @@ internal sealed class EndGameSessionCommand : IDomainCommand<string, DomainComma
                         connectionId,
                         nameof(GameSessionEntity.ConnectionId)
                     ),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to fetch game session");
 
         if (foundGameSession.Data is null)
@@ -59,7 +64,8 @@ internal sealed class EndGameSessionCommand : IDomainCommand<string, DomainComma
         var endedResult =
             await EntityFrameworkUtils.TryDbOperation(
                 () => _gameSessionRepository.EndGameSession(foundGameSession.Data),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to end game session");
 
         if (!endedResult.IsSuccessful)

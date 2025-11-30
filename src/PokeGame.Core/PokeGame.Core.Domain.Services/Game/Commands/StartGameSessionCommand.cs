@@ -2,6 +2,7 @@
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
@@ -20,16 +21,19 @@ internal sealed class StartGameSessionCommand
     public string CommandName => nameof(StartGameSessionCommand);
     private readonly IGameSessionRepository _gameSessionRepository;
     private readonly IGameSaveRepository _gameSaveRepository;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<StartGameSessionCommand> _logger;
 
     public StartGameSessionCommand(
         IGameSessionRepository gameSessionRepository,
         IGameSaveRepository gameSaveRepository,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<StartGameSessionCommand> logger
     )
     {
         _gameSessionRepository = gameSessionRepository;
         _gameSaveRepository = gameSaveRepository;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -51,7 +55,8 @@ internal sealed class StartGameSessionCommand
         var foundExistingGameSave =
             await EntityFrameworkUtils.TryDbOperation(
                 () => _gameSaveRepository.GetOne(input.GameSaveId),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to fetch game save");
 
         if (!foundExistingGameSave.IsSuccessful || foundExistingGameSave.Data is null)
@@ -81,7 +86,8 @@ internal sealed class StartGameSessionCommand
             (
                 await EntityFrameworkUtils.TryDbOperation(
                     () => _gameSessionRepository.Create(newSession),
-                    _logger
+                    _logger,
+                    _dbRetryOperation
                 )
             )?.FirstResult
             ?? throw new PokeGameApiServerException("Failed to add new game session");

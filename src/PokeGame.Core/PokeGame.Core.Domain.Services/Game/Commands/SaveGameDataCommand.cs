@@ -3,6 +3,7 @@ using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
@@ -24,6 +25,7 @@ internal sealed class SaveGameDataCommand
     private readonly IGameSaveDataRepository _gameSaveDataRepository;
     private readonly IOwnedPokemonRepository _ownedPokemonRepository;
     private readonly IValidatorService _validatorService;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<SaveGameDataCommand> _logger;
 
     public SaveGameDataCommand(
@@ -31,6 +33,7 @@ internal sealed class SaveGameDataCommand
         IGameSaveDataRepository gameSaveDataRepository,
         IOwnedPokemonRepository ownedPokemonRepository,
         IValidatorService validatorService,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<SaveGameDataCommand> logger
     )
     {
@@ -38,6 +41,7 @@ internal sealed class SaveGameDataCommand
         _gameSaveDataRepository = gameSaveDataRepository;
         _ownedPokemonRepository = ownedPokemonRepository;
         _validatorService = validatorService;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -99,7 +103,9 @@ internal sealed class SaveGameDataCommand
                                 )
                                 .ToArray(),
                             relations: nameof(OwnedPokemonEntity.GameSave)
-                        )
+                        ),
+                    _logger,
+                    _dbRetryOperation
                 ) ?? throw new PokeGameApiServerException("Failed to fetch owned pokemon");
 
             if (foundOwnedPokemon.Data.Count < 1 || !foundOwnedPokemon.IsSuccessful)
@@ -129,7 +135,8 @@ internal sealed class SaveGameDataCommand
                         foundGameSession.GameSaveId,
                         nameof(GameSaveDataEntity.GameSaveId)
                     ),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to fetch game save data");
 
         if (!foundExistingGameData.IsSuccessful || foundExistingGameData.Data is null)
@@ -152,7 +159,8 @@ internal sealed class SaveGameDataCommand
                         connectionId,
                         nameof(GameSessionEntity.ConnectionId)
                     ),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to fetch game session results");
 
         if (!foundGameSession.IsSuccessful || foundGameSession.Data is null)
@@ -179,7 +187,8 @@ internal sealed class SaveGameDataCommand
         var updatedGameSave =
             await EntityFrameworkUtils.TryDbOperation(
                 () => _gameSaveDataRepository.Update(newGameData),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to save game data");
 
         if (!updatedGameSave.IsSuccessful || updatedGameSave.Data is null)

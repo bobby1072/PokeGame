@@ -21,18 +21,21 @@ internal sealed class CreateNewGameCommand
     private readonly IGameSaveRepository _gameSaveRepository;
     private readonly IValidatorService _gameSaveValidator;
     private readonly ConfigurablePokeGameRules _configurablePokeGameRules;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<CreateNewGameCommand> _logger;
 
     public CreateNewGameCommand(
         IGameSaveRepository gameSaveRepository,
         IValidatorService gameSaveValidator,
         ConfigurablePokeGameRules configurablePokeGameRules,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<CreateNewGameCommand> logger
     )
     {
         _gameSaveRepository = gameSaveRepository;
         _gameSaveValidator = gameSaveValidator;
         _configurablePokeGameRules = configurablePokeGameRules;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -57,7 +60,9 @@ internal sealed class CreateNewGameCommand
 
         var gameSaveCount =
             await EntityFrameworkUtils.TryDbOperation(
-                () => _gameSaveRepository.GetCount(x => x.UserId == input.CurrentUser.Id)
+                () => _gameSaveRepository.GetCount(x => x.UserId == input.CurrentUser.Id),
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to get game save count");
 
         if (gameSaveCount.Data >= 5)
@@ -71,7 +76,8 @@ internal sealed class CreateNewGameCommand
         var createdSave =
             await EntityFrameworkUtils.TryDbOperation(
                 () => _gameSaveRepository.CreateGameSaveWithData(newGameSave, newGameSaveData),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to save game save");
 
         if (!createdSave.IsSuccessful)

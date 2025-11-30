@@ -2,6 +2,7 @@
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Persistence.Repositories.Abstract;
@@ -14,16 +15,19 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
 {
     private readonly IOwnedPokemonRepository _ownedPokemonRepository;
     private readonly IPokeApiClient _pokeApiClient;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<GameAndPokeApiResourceManagerService> _logger;
 
     public GameAndPokeApiResourceManagerService(
         IOwnedPokemonRepository ownedPokemonRepository,
         IPokeApiClient pokeApiClient,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<GameAndPokeApiResourceManagerService> logger
     )
     {
         _ownedPokemonRepository = ownedPokemonRepository;
         _pokeApiClient = pokeApiClient;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -80,7 +84,8 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
                         _ownedPokemonRepository.GetMany(
                             ownedPokemonId.FastArraySelect(x => (Guid?)x).ToArray()
                         ),
-                    _logger
+                    _logger,
+                    _dbRetryOperation
                 )
                 ?? throw new PokeGameApiServerException(
                     "Failed to fetch owned pokemon from database"

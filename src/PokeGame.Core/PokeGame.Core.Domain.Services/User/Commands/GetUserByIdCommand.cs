@@ -2,6 +2,7 @@
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
@@ -15,11 +16,17 @@ internal sealed class GetUserByIdCommand
 {
     public string CommandName => nameof(GetUserByIdCommand);
     private readonly IUserRepository _userRepository;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<GetUserByIdCommand> _logger;
 
-    public GetUserByIdCommand(IUserRepository userRepository, ILogger<GetUserByIdCommand> logger)
+    public GetUserByIdCommand(
+        IUserRepository userRepository,
+        DbOperationRetrySettings dbOperationRetrySettings,
+        ILogger<GetUserByIdCommand> logger
+    )
     {
         _userRepository = userRepository;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -34,8 +41,11 @@ internal sealed class GetUserByIdCommand
         _logger.LogInformation("About to attempt to get user with id: {Email}", input);
 
         var foundUser =
-            await EntityFrameworkUtils.TryDbOperation(() => _userRepository.GetOne(input), _logger)
-            ?? throw new PokeGameApiServerException("Failed to retrieve user");
+            await EntityFrameworkUtils.TryDbOperation(
+                () => _userRepository.GetOne(input),
+                _logger,
+                _dbRetryOperation
+            ) ?? throw new PokeGameApiServerException("Failed to retrieve user");
 
         if (foundUser.Data is null)
         {

@@ -3,6 +3,7 @@ using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Pokedex.Abstract;
 using PokeGame.Core.Persistence.Repositories.Abstract;
@@ -15,14 +16,17 @@ namespace PokeGame.Core.Domain.Services.Pokedex.Concrete;
 internal sealed class PokedexService : IPokedexService
 {
     private readonly IPokedexPokemonRepository _pokedexPokemonRepository;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<PokedexService> _logger;
 
     public PokedexService(
         IPokedexPokemonRepository pokedexPokemonRepository,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<PokedexService> logger
     )
     {
         _pokedexPokemonRepository = pokedexPokemonRepository;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -44,7 +48,8 @@ internal sealed class PokedexService : IPokedexService
         var existingPokedex =
             await EntityFrameworkUtils.TryDbOperation(
                 () => _pokedexPokemonRepository.GetAll(),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to get existing pokedex count");
 
         var pokemonToCreateFiltered = pokemonToCreate
@@ -62,7 +67,8 @@ internal sealed class PokedexService : IPokedexService
         var saveResult =
             await EntityFrameworkUtils.TryDbOperation(
                 () => _pokedexPokemonRepository.Create(pokemonToCreateFiltered),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to create pokedex pokemon");
 
         if (saveResult.IsSuccessful != true || saveResult.Data.Count == 0)
@@ -93,7 +99,8 @@ internal sealed class PokedexService : IPokedexService
             var result =
                 await EntityFrameworkUtils.TryDbOperation(
                     () => _pokedexPokemonRepository.GetAll(),
-                    _logger
+                    _logger,
+                    _dbRetryOperation
                 )
                 ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 
@@ -111,7 +118,9 @@ internal sealed class PokedexService : IPokedexService
         {
             var dbRes =
                 await EntityFrameworkUtils.TryDbOperation(
-                    () => _pokedexPokemonRepository.GetMany(input.ToLangNameDictionary())
+                    () => _pokedexPokemonRepository.GetMany(input.ToLangNameDictionary()),
+                    _logger,
+                    _dbRetryOperation
                 )
                 ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 
@@ -129,7 +138,9 @@ internal sealed class PokedexService : IPokedexService
         {
             var dbRes =
                 await EntityFrameworkUtils.TryDbOperation(
-                    () => _pokedexPokemonRepository.GetOne(input.ToLangNameDictionary())
+                    () => _pokedexPokemonRepository.GetOne(input.ToLangNameDictionary()),
+                    _logger,
+                    _dbRetryOperation
                 )
                 ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 

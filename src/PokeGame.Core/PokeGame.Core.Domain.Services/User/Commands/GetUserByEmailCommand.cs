@@ -3,6 +3,7 @@ using BT.Common.Helpers.Extensions;
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
@@ -16,14 +17,17 @@ internal sealed class GetUserByEmailCommand
 {
     public string CommandName => nameof(GetUserByEmailCommand);
     private readonly IUserRepository _userRepository;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<GetUserByEmailCommand> _logger;
 
     public GetUserByEmailCommand(
         IUserRepository userRepository,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<GetUserByEmailCommand> logger
     )
     {
         _userRepository = userRepository;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -45,7 +49,8 @@ internal sealed class GetUserByEmailCommand
         var foundUser =
             await EntityFrameworkUtils.TryDbOperation(
                 () => _userRepository.GetOne(input, nameof(UserEntity.Email)),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to retrieve user");
 
         if (foundUser.Data is null)

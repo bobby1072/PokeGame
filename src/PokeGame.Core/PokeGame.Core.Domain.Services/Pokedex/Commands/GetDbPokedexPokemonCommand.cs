@@ -2,6 +2,7 @@
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
@@ -21,14 +22,17 @@ internal sealed class GetDbPokedexPokemonCommand
 {
     public string CommandName => nameof(GetDbPokedexPokemonCommand);
     private readonly IPokedexPokemonRepository _pokedexPokemonRepository;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<GetDbPokedexPokemonCommand> _logger;
 
     public GetDbPokedexPokemonCommand(
         IPokedexPokemonRepository pokedexPokemonRepository,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<GetDbPokedexPokemonCommand> logger
     )
     {
         _pokedexPokemonRepository = pokedexPokemonRepository;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -50,7 +54,8 @@ internal sealed class GetDbPokedexPokemonCommand
             var result =
                 await EntityFrameworkUtils.TryDbOperation(
                     () => _pokedexPokemonRepository.GetAll(),
-                    _logger
+                    _logger,
+                    _dbRetryOperation
                 )
                 ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 
@@ -71,7 +76,9 @@ internal sealed class GetDbPokedexPokemonCommand
         {
             var dbRes =
                 await EntityFrameworkUtils.TryDbOperation(
-                    () => _pokedexPokemonRepository.GetMany(input.ToLangNameDictionary())
+                    () => _pokedexPokemonRepository.GetMany(input.ToLangNameDictionary()),
+                    _logger,
+                    _dbRetryOperation
                 )
                 ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 
@@ -89,7 +96,9 @@ internal sealed class GetDbPokedexPokemonCommand
         {
             var dbRes =
                 await EntityFrameworkUtils.TryDbOperation(
-                    () => _pokedexPokemonRepository.GetOne(input.ToLangNameDictionary())
+                    () => _pokedexPokemonRepository.GetOne(input.ToLangNameDictionary()),
+                    _logger,
+                    _dbRetryOperation
                 )
                 ?? throw new PokeGameApiServerException("Failed to fetch pokedex pokemon records");
 

@@ -3,6 +3,7 @@ using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
@@ -17,16 +18,19 @@ internal sealed class SaveUserCommand
     public string CommandName => nameof(SaveUserCommand);
     private readonly IUserRepository _userRepository;
     private readonly IValidatorService _validator;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<SaveUserCommand> _logger;
 
     public SaveUserCommand(
         IUserRepository userRepository,
         IValidatorService validator,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<SaveUserCommand> logger
     )
     {
         _userRepository = userRepository;
         _validator = validator;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -52,7 +56,9 @@ internal sealed class SaveUserCommand
 
             var foundExistingUser =
                 await EntityFrameworkUtils.TryDbOperation(
-                    () => _userRepository.GetOne(parsedUser.Id)
+                    () => _userRepository.GetOne(parsedUser.Id),
+                    _logger,
+                    _dbRetryOperation
                 ) ?? throw new PokeGameApiServerException("Failed to retrieve existing user");
 
             if (!foundExistingUser.IsSuccessful || foundExistingUser.Data is null)
@@ -70,7 +76,8 @@ internal sealed class SaveUserCommand
                     parsedUser.Id is null
                         ? _userRepository.Create(parsedUser)
                         : _userRepository.Update(parsedUser),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to save user");
 
         _logger.LogDebug("User saved: {@FullUser}", createdUser);

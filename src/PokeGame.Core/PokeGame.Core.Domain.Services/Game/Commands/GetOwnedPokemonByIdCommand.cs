@@ -2,6 +2,7 @@ using System.Net;
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Game.Abstract;
@@ -20,16 +21,19 @@ internal sealed class GetOwnedPokemonByIdCommand
     public string CommandName => nameof(GetOwnedPokemonByIdCommand);
     private readonly IGameAndPokeApiResourceManagerService _gameAndPokeApiResourceManagerService;
     private readonly IOwnedPokemonRepository _ownedPokemonRepository;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<GetOwnedPokemonByIdCommand> _logger;
 
     public GetOwnedPokemonByIdCommand(
         IGameAndPokeApiResourceManagerService gameAndPokeApiResourceManagerService,
         IOwnedPokemonRepository ownedPokemonRepository,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<GetOwnedPokemonByIdCommand> logger
     )
     {
         _gameAndPokeApiResourceManagerService = gameAndPokeApiResourceManagerService;
         _ownedPokemonRepository = ownedPokemonRepository;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -55,7 +59,8 @@ internal sealed class GetOwnedPokemonByIdCommand
                         input.OwnedPokemonId,
                         relations: nameof(OwnedPokemon.GameSave)
                     ),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to fetch owned pokemon");
 
         if (foundOwnedPokemon.Data is null || !foundOwnedPokemon.IsSuccessful)

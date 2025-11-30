@@ -3,6 +3,7 @@ using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Game.Abstract;
@@ -18,16 +19,19 @@ internal abstract class GetOwnedPokemonInDeckCommandBase<TInput>
     public abstract string CommandName { get; }
     private readonly IGameAndPokeApiResourceManagerService _gameAndPokeApiResourceManagerService;
     private readonly IOwnedPokemonRepository _ownedPokemonRepository;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<GetOwnedPokemonInDeckCommandBase<TInput>> _logger;
 
     public GetOwnedPokemonInDeckCommandBase(
         IGameAndPokeApiResourceManagerService gameAndPokeApiResourceManagerService,
         IOwnedPokemonRepository ownedPokemonRepository,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<GetOwnedPokemonInDeckCommandBase<TInput>> logger
     )
     {
         _gameAndPokeApiResourceManagerService = gameAndPokeApiResourceManagerService;
         _ownedPokemonRepository = ownedPokemonRepository;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -120,7 +124,8 @@ internal abstract class GetOwnedPokemonInDeckCommandBase<TInput>
         var foundPokemon =
             await EntityFrameworkUtils.TryDbOperation(
                 () => _ownedPokemonRepository.GetMany(entityIds: deckPokemonIds),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to fetch own pokemon in deck");
 
         if (foundPokemon.Data.Count < 1 || !foundPokemon.IsSuccessful)

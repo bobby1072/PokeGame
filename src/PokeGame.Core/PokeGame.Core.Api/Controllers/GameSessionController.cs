@@ -18,7 +18,7 @@ public sealed class GameSessionController : BaseController
         _gameSessionProcessingManager = gameSessionProcessingManager;
     }
 
-    [HttpGet(nameof(GetShallowOwnedPokemonInDeck))]
+    [HttpGet("GetShallowOwnedPokemonInDeck")]
     public async Task<
         ActionResult<WebOutcome<IReadOnlyCollection<OwnedPokemon>>>
     > GetShallowOwnedPokemonInDeck(

@@ -1,6 +1,7 @@
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
+using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Domain.Services.Models;
@@ -18,17 +19,25 @@ internal sealed class GetOwnedPokemonInDeckByConnectionIdCommand
 {
     public override string CommandName => nameof(GetOwnedPokemonInDeckByConnectionIdCommand);
     private readonly IGameSessionRepository _gameSessionRepository;
+    private readonly DbOperationRetrySettings _dbRetryOperation;
     private readonly ILogger<GetOwnedPokemonInDeckByConnectionIdCommand> _logger;
 
     public GetOwnedPokemonInDeckByConnectionIdCommand(
         IGameAndPokeApiResourceManagerService gameAndPokeApiResourceManagerService,
         IGameSessionRepository gameSessionRepository,
         IOwnedPokemonRepository ownedPokemonRepository,
+        DbOperationRetrySettings dbOperationRetrySettings,
         ILogger<GetOwnedPokemonInDeckByConnectionIdCommand> logger
     )
-        : base(gameAndPokeApiResourceManagerService, ownedPokemonRepository, logger)
+        : base(
+            gameAndPokeApiResourceManagerService,
+            ownedPokemonRepository,
+            dbOperationRetrySettings,
+            logger
+        )
     {
         _gameSessionRepository = gameSessionRepository;
+        _dbRetryOperation = dbOperationRetrySettings;
         _logger = logger;
     }
 
@@ -53,7 +62,8 @@ internal sealed class GetOwnedPokemonInDeckByConnectionIdCommand
                     _gameSessionRepository.GetOneWithGameSaveAndDataByConnectionIdAsync(
                         input.ConnectionId
                     ),
-                _logger
+                _logger,
+                _dbRetryOperation
             ) ?? throw new PokeGameApiServerException("Failed to fetch game save data");
 
         var result = await FetchPokemon(
