@@ -23,7 +23,7 @@
         "@tanstack/react-query": "5.90.11",
         "axios": "1.13.2",
         "phaser": "3.90.0",
-        "react": "19.2.0",
+        "react": "19.2.1",
         "react-dom": "19.2.0",
         "react-hook-form": "7.67.0",
         "react-router-dom": "7.10.0",
