@@ -6,12 +6,14 @@ public sealed class GameSaveDataActual: DomainModel<GameSaveDataActual>
     public required int LastPlayedLocationX { get; set; }
     public required int LastPlayedLocationY { get; set; }
     public List<GameSaveDataActualDeckPokemon> DeckPokemon { get; set; } = [];
+    public List<GameDataActualUnlockedGameResource> UnlockedGameResource { get; set; } = [];
+    
     public override bool Equals(GameSaveDataActual? other)
     {
-        return other is GameSaveDataActual gameSaveDataActual &&
-               LastPlayedScene == gameSaveDataActual.LastPlayedScene &&
-               LastPlayedLocationX == gameSaveDataActual.LastPlayedLocationX &&
-               LastPlayedLocationY == gameSaveDataActual.LastPlayedLocationY &&
-               DeckPokemon.SequenceEqual(gameSaveDataActual.DeckPokemon);
+        return LastPlayedScene == other?.LastPlayedScene &&
+               LastPlayedLocationX == other.LastPlayedLocationX &&
+               LastPlayedLocationY == other.LastPlayedLocationY &&
+               DeckPokemon.SequenceEqual(other.DeckPokemon) &&
+               UnlockedGameResource.SequenceEqual(other.UnlockedGameResource);;
     }
 }
