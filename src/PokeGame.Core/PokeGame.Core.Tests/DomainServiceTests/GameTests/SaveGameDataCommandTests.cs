@@ -58,6 +58,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
+                UnlockedGameResources =  [new GameDataActualUnlockedGameResource{ResourceName = "NewScene", Type = GameDataActualUnlockedGameResourceType.Scene}]
             },
         };
 
@@ -70,6 +71,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 30,
                 LastPlayedLocationY = 40,
                 DeckPokemon = [],
+                UnlockedGameResources =  []
             },
         };
 
@@ -79,12 +81,14 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
         var updatedGameData = new GameSaveData
         {
             Id = 1,
@@ -100,13 +104,9 @@ public sealed class SaveGameDataCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSessionRepository
-            .Setup(x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()))
+            .Setup(x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId))
             .ReturnsAsync(gameSessionResult);
-
-        _mockGameSaveDataRepository
-            .Setup(x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()))
-            .ReturnsAsync(existingGameDataResult);
-
+        
         _mockGameSaveDataRepository
             .Setup(x => x.Update(It.IsAny<GameSaveData>()))
             .ReturnsAsync(updateResult);
@@ -128,11 +128,7 @@ public sealed class SaveGameDataCommandTests
             Times.Once
         );
         _mockGameSessionRepository.Verify(
-            x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()),
-            Times.Once
-        );
-        _mockGameSaveDataRepository.Verify(
-            x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()),
+            x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId),
             Times.Once
         );
         _mockGameSaveDataRepository.Verify(x => x.Update(It.IsAny<GameSaveData>()), Times.Once);
@@ -165,6 +161,13 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [new GameSaveDataActualDeckPokemon { OwnedPokemonId = oldPokemonId }],
+                UnlockedGameResources = [
+                    new GameDataActualUnlockedGameResource
+                    {
+                        ResourceName = "Scene",
+                        Type = GameDataActualUnlockedGameResourceType.Scene
+                    }
+                ]
             },
         };
 
@@ -190,6 +193,9 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var ownedPokemon = new OwnedPokemon
@@ -211,7 +217,6 @@ public sealed class SaveGameDataCommandTests
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
         var ownedPokemonResult = new DbGetManyResult<OwnedPokemon>(new[] { ownedPokemon });
         var updatedGameData = new GameSaveData
         {
@@ -228,13 +233,9 @@ public sealed class SaveGameDataCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSessionRepository
-            .Setup(x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()))
+            .Setup(x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId))
             .ReturnsAsync(gameSessionResult);
-
-        _mockGameSaveDataRepository
-            .Setup(x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()))
-            .ReturnsAsync(existingGameDataResult);
-
+        
         _mockOwnedPokemonRepository
             .Setup(x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()))
             .ReturnsAsync(ownedPokemonResult);
@@ -279,6 +280,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
+                UnlockedGameResources =  []
             },
         };
 
@@ -303,7 +305,7 @@ public sealed class SaveGameDataCommandTests
             Times.Once
         );
         _mockGameSessionRepository.Verify(
-            x => x.GetOne(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string[]>()),
+            x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(It.IsAny<string>()),
             Times.Never
         );
     }
@@ -330,6 +332,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
+                UnlockedGameResources =  []
             },
         };
 
@@ -342,7 +345,7 @@ public sealed class SaveGameDataCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSessionRepository
-            .Setup(x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()))
+            .Setup(x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId))
             .ReturnsAsync((DbGetOneResult<GameSession>)null!);
 
         // Act & Assert
@@ -352,12 +355,8 @@ public sealed class SaveGameDataCommandTests
 
         Assert.Equal("Failed to fetch game session results", exception.Message);
         _mockGameSessionRepository.Verify(
-            x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()),
+            x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId),
             Times.Once
-        );
-        _mockGameSaveDataRepository.Verify(
-            x => x.GetOne(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string[]>()),
-            Times.Never
         );
     }
 
@@ -383,6 +382,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
+                UnlockedGameResources =  []
             },
         };
 
@@ -397,7 +397,7 @@ public sealed class SaveGameDataCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSessionRepository
-            .Setup(x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()))
+            .Setup(x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId))
             .ReturnsAsync(gameSessionResult);
 
         // Act & Assert
@@ -408,7 +408,7 @@ public sealed class SaveGameDataCommandTests
         Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
         Assert.Equal("Failed to find game session for that connection id", exception.Message);
         _mockGameSessionRepository.Verify(
-            x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()),
+            x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId),
             Times.Once
         );
     }
@@ -438,6 +438,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
+                UnlockedGameResources =  []
             },
         };
 
@@ -446,9 +447,10 @@ public sealed class SaveGameDataCommandTests
             Id = Guid.NewGuid(),
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
-            UserId =
-                differentUserId // Different user
-            ,
+            UserId = differentUserId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, _fixture.Create<GameSaveData>())
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
@@ -462,7 +464,7 @@ public sealed class SaveGameDataCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSessionRepository
-            .Setup(x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()))
+            .Setup(x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId))
             .ReturnsAsync(gameSessionResult);
 
         // Act & Assert
@@ -473,76 +475,7 @@ public sealed class SaveGameDataCommandTests
         Assert.Equal(HttpStatusCode.Unauthorized, exception.StatusCode);
         Assert.Equal("The current user is not the owner of the game session", exception.Message);
         _mockGameSessionRepository.Verify(
-            x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()),
-            Times.Once
-        );
-        _mockGameSaveDataRepository.Verify(
-            x => x.GetOne(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string[]>()),
-            Times.Never
-        );
-    }
-
-    [Fact]
-    public async Task ExecuteAsync_Should_Throw_PokeGameApiServerException_When_GameSaveData_Fetch_Fails()
-    {
-        // Arrange
-        var userId = Guid.NewGuid();
-        var gameSaveId = Guid.NewGuid();
-        var connectionId = "test-connection-id";
-
-        var user = new User
-        {
-            Id = userId,
-            Email = _fixture.Create<string>(),
-            Name = _fixture.Create<string>(),
-        };
-
-        var newGameData = new GameSaveData
-        {
-            GameSaveId = Guid.Empty,
-            GameData = new GameSaveDataActual
-            {
-                LastPlayedScene = "Scene",
-                LastPlayedLocationX = 10,
-                LastPlayedLocationY = 20,
-                DeckPokemon = [],
-            },
-        };
-
-        var gameSession = new GameSession
-        {
-            Id = Guid.NewGuid(),
-            ConnectionId = connectionId,
-            GameSaveId = gameSaveId,
-            UserId = userId,
-        };
-
-        var input = (newGameData, connectionId, user);
-
-        var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-
-        _mockValidatorService
-            .Setup(x =>
-                x.ValidateAndThrowAsync(It.IsAny<GameSaveData>(), It.IsAny<CancellationToken>())
-            )
-            .Returns(Task.CompletedTask);
-
-        _mockGameSessionRepository
-            .Setup(x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()))
-            .ReturnsAsync(gameSessionResult);
-
-        _mockGameSaveDataRepository
-            .Setup(x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()))
-            .ReturnsAsync((DbGetOneResult<GameSaveData>)null!);
-
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
-            () => _command.ExecuteAsync(input)
-        );
-
-        Assert.Equal("Failed to fetch game save data", exception.Message);
-        _mockGameSaveDataRepository.Verify(
-            x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()),
+            x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId),
             Times.Once
         );
     }
@@ -573,6 +506,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
+                UnlockedGameResources =  []
             },
         };
 
@@ -594,12 +528,14 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
         var ownedPokemonResult = new DbGetManyResult<OwnedPokemon>(Array.Empty<OwnedPokemon>());
 
         _mockValidatorService
@@ -609,13 +545,9 @@ public sealed class SaveGameDataCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSessionRepository
-            .Setup(x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()))
+            .Setup(x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId))
             .ReturnsAsync(gameSessionResult);
-
-        _mockGameSaveDataRepository
-            .Setup(x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()))
-            .ReturnsAsync(existingGameDataResult);
-
+        
         _mockOwnedPokemonRepository
             .Setup(x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()))
             .ReturnsAsync(ownedPokemonResult);
@@ -660,6 +592,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
+                UnlockedGameResources =  []
             },
         };
 
@@ -681,6 +614,9 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var ownedPokemon = new OwnedPokemon
@@ -702,7 +638,6 @@ public sealed class SaveGameDataCommandTests
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
         var ownedPokemonResult = new DbGetManyResult<OwnedPokemon>(new[] { ownedPokemon });
 
         _mockValidatorService
@@ -712,13 +647,9 @@ public sealed class SaveGameDataCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSessionRepository
-            .Setup(x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()))
+            .Setup(x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId))
             .ReturnsAsync(gameSessionResult);
-
-        _mockGameSaveDataRepository
-            .Setup(x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()))
-            .ReturnsAsync(existingGameDataResult);
-
+        
         _mockOwnedPokemonRepository
             .Setup(x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()))
             .ReturnsAsync(ownedPokemonResult);
@@ -762,6 +693,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
+                UnlockedGameResources =  []
             },
         };
 
@@ -783,12 +715,14 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
 
         _mockValidatorService
             .Setup(x =>
@@ -797,13 +731,9 @@ public sealed class SaveGameDataCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSessionRepository
-            .Setup(x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()))
+            .Setup(x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId))
             .ReturnsAsync(gameSessionResult);
-
-        _mockGameSaveDataRepository
-            .Setup(x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()))
-            .ReturnsAsync(existingGameDataResult);
-
+        
         _mockOwnedPokemonRepository
             .Setup(x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()))
             .ReturnsAsync((DbGetManyResult<OwnedPokemon>)null!);
@@ -845,6 +775,14 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
+                UnlockedGameResources =  
+                [
+                    new GameDataActualUnlockedGameResource
+                    {
+                        ResourceName = "NewScene",
+                        Type = GameDataActualUnlockedGameResourceType.Scene
+                    }
+                ]
             },
         };
 
@@ -857,6 +795,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 30,
                 LastPlayedLocationY = 40,
                 DeckPokemon = [],
+                UnlockedGameResources =  []
             },
         };
 
@@ -866,12 +805,14 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
 
         _mockValidatorService
             .Setup(x =>
@@ -880,13 +821,9 @@ public sealed class SaveGameDataCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSessionRepository
-            .Setup(x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()))
+            .Setup(x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId))
             .ReturnsAsync(gameSessionResult);
-
-        _mockGameSaveDataRepository
-            .Setup(x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()))
-            .ReturnsAsync(existingGameDataResult);
-
+        
         _mockGameSaveDataRepository
             .Setup(x => x.Update(It.IsAny<GameSaveData>()))
             .ReturnsAsync((DbSaveResult<GameSaveData>)null!);
@@ -925,6 +862,14 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
+                UnlockedGameResources =  
+                [
+                    new  GameDataActualUnlockedGameResource
+                    {
+                        ResourceName = "NewScene",
+                        Type = GameDataActualUnlockedGameResourceType.Scene
+                    }
+                ]
             },
         };
 
@@ -937,6 +882,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 30,
                 LastPlayedLocationY = 40,
                 DeckPokemon = [],
+                UnlockedGameResources =  []
             },
         };
 
@@ -946,12 +892,14 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
         var updateResult = new DbSaveResult<GameSaveData>(Array.Empty<GameSaveData>())
         {
             IsSuccessful = false,
@@ -964,13 +912,9 @@ public sealed class SaveGameDataCommandTests
             .Returns(Task.CompletedTask);
 
         _mockGameSessionRepository
-            .Setup(x => x.GetOne(connectionId, "ConnectionId", It.IsAny<string[]>()))
+            .Setup(x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId))
             .ReturnsAsync(gameSessionResult);
-
-        _mockGameSaveDataRepository
-            .Setup(x => x.GetOne(gameSaveId, "GameSaveId", It.IsAny<string[]>()))
-            .ReturnsAsync(existingGameDataResult);
-
+        
         _mockGameSaveDataRepository
             .Setup(x => x.Update(It.IsAny<GameSaveData>()))
             .ReturnsAsync(updateResult);
