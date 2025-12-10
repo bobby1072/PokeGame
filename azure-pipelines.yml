@@ -9,7 +9,7 @@ variables:
     value: bobby1072/poke_game_signal_r_api    
   - name: ReleaseVersion
     value: $(Build.BuildNumber)     
-  - name: ServiceInfo__ReleaseVersion
+  - name: ServiceInfo.ReleaseVersion
     value: $(Build.BuildNumber)     
   - name: releaseVersion
     value: $(Build.BuildNumber)
