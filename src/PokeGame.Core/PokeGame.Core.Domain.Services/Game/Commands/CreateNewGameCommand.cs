@@ -4,6 +4,7 @@ using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
+using PokeGame.Core.Common.GameInformationData;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Persistence.Repositories.Abstract;
@@ -20,19 +21,16 @@ internal sealed class CreateNewGameCommand
     public string CommandName => nameof(CreateNewGameCommand);
     private readonly IGameSaveRepository _gameSaveRepository;
     private readonly IValidatorService _gameSaveValidator;
-    private readonly ConfigurablePokeGameRules _configurablePokeGameRules;
     private readonly ILogger<CreateNewGameCommand> _logger;
 
     public CreateNewGameCommand(
         IGameSaveRepository gameSaveRepository,
         IValidatorService gameSaveValidator,
-        ConfigurablePokeGameRules configurablePokeGameRules,
         ILogger<CreateNewGameCommand> logger
     )
     {
         _gameSaveRepository = gameSaveRepository;
         _gameSaveValidator = gameSaveValidator;
-        _configurablePokeGameRules = configurablePokeGameRules;
         _logger = logger;
     }
 
@@ -85,22 +83,34 @@ internal sealed class CreateNewGameCommand
         return new DomainCommandResult<GameSave> { CommandResult = newGameSave };
     }
 
-    private GameSaveData CreateNewGameSaveData(Guid gameSaveId)
+    private static GameSaveData CreateNewGameSaveData(Guid gameSaveId)
     {
         return new GameSaveData
         {
             GameSaveId = gameSaveId,
             GameData = new GameSaveDataActual
             {
-                LastPlayedScene = _configurablePokeGameRules.DefaultStarterScene.SceneName,
-                LastPlayedLocationX = _configurablePokeGameRules
-                    .DefaultStarterScene
-                    .SceneLocation
-                    .X,
-                LastPlayedLocationY = _configurablePokeGameRules
-                    .DefaultStarterScene
-                    .SceneLocation
-                    .Y,
+                LastPlayedScene = GameConstants.SceneNames.BasiliaTownStarterHome,
+                LastPlayedLocationX = 15,
+                LastPlayedLocationY = 17,
+                UnlockedGameResources =
+                [
+                    new GameDataActualUnlockedGameResource
+                    {
+                        ResourceName = GameConstants.SceneNames.BasiliaTown,
+                        Type = GameDataActualUnlockedGameResourceType.Scene
+                    },
+                    new GameDataActualUnlockedGameResource
+                    {
+                        ResourceName = GameConstants.SceneNames.BasiliaTownStarterLab,
+                        Type = GameDataActualUnlockedGameResourceType.Scene
+                    },
+                    new GameDataActualUnlockedGameResource
+                    {
+                        ResourceName = GameConstants.SceneNames.BasiliaTownStarterHome,
+                        Type = GameDataActualUnlockedGameResourceType.Scene
+                    }
+                ]
             },
         };
     }

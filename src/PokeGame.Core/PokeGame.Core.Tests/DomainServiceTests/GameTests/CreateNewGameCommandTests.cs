@@ -30,17 +30,11 @@ public sealed class CreateNewGameCommandTests
             HpCalculationStats = new HpCalculationStats { DefaultIV = 31, DefaultEV = 0 },
             StandardPokemonPokedexRange = new PokedexRange { Min = 1, Max = 143 },
             LegendaryPokemonPokedexRange = new PokedexRange { Min = 144, Max = 151 },
-            DefaultStarterScene = new DefaultStarterScene
-            {
-                SceneName = "BasiliaTownStarterHomeScene",
-                SceneLocation = new DefaultStarterSceneLocation { X = 15, Y = 17 }
-            }
         };
         
         _command = new CreateNewGameCommand(
             _mockGameSaveRepository.Object,
             _mockValidatorService.Object,
-            pokeGameRules,
             new NullLogger<CreateNewGameCommand>()
         );
     }

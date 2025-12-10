@@ -55,8 +55,7 @@ internal sealed class SaveGameDataCommand
 
         await _validatorService.ValidateAndThrowAsync(input.GameData, cancellationToken);
 
-        var foundGameSession = await GetGameSession(input.ConnectionId, input.CurrentUser);
-        var foundExistingGameData = await GetExistingGameSaveData(foundGameSession);
+        var (foundGameSession, foundExistingGameData) = await GetGameSession(input.ConnectionId, input.CurrentUser);
 
         input.GameData.GameSaveId = foundGameSession.GameSaveId;
         input.GameData.Id = foundExistingGameData.Id;
@@ -118,29 +117,18 @@ internal sealed class SaveGameDataCommand
                 );
             }
         }
-    }
 
-    private async Task<GameSaveData> GetExistingGameSaveData(GameSession foundGameSession)
-    {
-        var foundExistingGameData =
-            await EntityFrameworkUtils.TryDbOperation(
-                () =>
-                    _gameSaveDataRepository.GetOne(
-                        foundGameSession.GameSaveId,
-                        nameof(GameSaveDataEntity.GameSaveId)
-                    ),
-                _logger
-            ) ?? throw new PokeGameApiServerException("Failed to fetch game save data");
 
-        if (!foundExistingGameData.IsSuccessful || foundExistingGameData.Data is null)
+        if (!newGameSaveData.GameData.UnlockedGameResources
+                .All(x =>
+                    oldGameSaveData.GameData.UnlockedGameResources
+                        .FastArrayFirstOrDefault(y => y.Equals(x)) is not null))
         {
-            throw new PokeGameApiServerException("Failed to fetch game save data");
+            throw new PokeGameApiUserException(HttpStatusCode.BadRequest,
+                "You cannot update unlocked resources manually");
         }
-
-        return foundExistingGameData.Data;
     }
-
-    private async Task<GameSession> GetGameSession(
+    private async Task<(GameSession, GameSaveData)> GetGameSession(
         string connectionId,
         Schemas.Game.User currentUser
     )
@@ -148,18 +136,25 @@ internal sealed class SaveGameDataCommand
         var foundGameSession =
             await EntityFrameworkUtils.TryDbOperation(
                 () =>
-                    _gameSessionRepository.GetOne(
-                        connectionId,
-                        nameof(GameSessionEntity.ConnectionId)
+                    _gameSessionRepository.GetOneWithGameSaveAndDataByConnectionIdAsync(
+                        connectionId
                     ),
                 _logger
             ) ?? throw new PokeGameApiServerException("Failed to fetch game session results");
 
+        
         if (!foundGameSession.IsSuccessful || foundGameSession.Data is null)
         {
             throw new PokeGameApiUserException(
                 HttpStatusCode.BadRequest,
                 "Failed to find game session for that connection id"
+            );
+        }
+
+        if (foundGameSession.Data.GameSave?.GameSaveData is null)
+        {
+            throw new PokeGameApiServerException(
+                "Failed to properly fetch game session with game save data"
             );
         }
 
@@ -171,7 +166,7 @@ internal sealed class SaveGameDataCommand
             );
         }
 
-        return foundGameSession.Data;
+        return (foundGameSession.Data, foundGameSession.Data.GameSave.GameSaveData);
     }
 
     private async Task<GameSaveData> UpdateGameSave(GameSaveData newGameData)
