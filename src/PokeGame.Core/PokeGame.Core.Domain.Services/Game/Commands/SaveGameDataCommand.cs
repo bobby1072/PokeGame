@@ -55,7 +55,7 @@ internal sealed class SaveGameDataCommand
 
         await _validatorService.ValidateAndThrowAsync(input.GameData, cancellationToken);
 
-        var (foundGameSession, foundExistingGameData) = await GetGameSession(input.ConnectionId, input.CurrentUser);
+        var (foundGameSession, foundExistingGameData) = await GetGameSessionAndGameData(input.ConnectionId, input.CurrentUser);
 
         input.GameData.GameSaveId = foundGameSession.GameSaveId;
         input.GameData.Id = foundExistingGameData.Id;
@@ -128,7 +128,7 @@ internal sealed class SaveGameDataCommand
                 "You cannot update unlocked resources manually");
         }
     }
-    private async Task<(GameSession, GameSaveData)> GetGameSession(
+    private async Task<(GameSession, GameSaveData)> GetGameSessionAndGameData(
         string connectionId,
         Schemas.Game.User currentUser
     )

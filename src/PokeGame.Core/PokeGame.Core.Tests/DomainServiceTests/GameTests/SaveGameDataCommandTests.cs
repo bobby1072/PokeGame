@@ -81,12 +81,14 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
         var updatedGameData = new GameSaveData
         {
             Id = 1,
@@ -184,6 +186,9 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var ownedPokemon = new OwnedPokemon
@@ -205,7 +210,6 @@ public sealed class SaveGameDataCommandTests
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
         var ownedPokemonResult = new DbGetManyResult<OwnedPokemon>(new[] { ownedPokemon });
         var updatedGameData = new GameSaveData
         {
@@ -436,9 +440,10 @@ public sealed class SaveGameDataCommandTests
             Id = Guid.NewGuid(),
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
-            UserId =
-                differentUserId // Different user
-            ,
+            UserId = differentUserId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, _fixture.Create<GameSaveData>())
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
@@ -516,12 +521,14 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
         var ownedPokemonResult = new DbGetManyResult<OwnedPokemon>(Array.Empty<OwnedPokemon>());
 
         _mockValidatorService
@@ -600,6 +607,9 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var ownedPokemon = new OwnedPokemon
@@ -621,7 +631,6 @@ public sealed class SaveGameDataCommandTests
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
         var ownedPokemonResult = new DbGetManyResult<OwnedPokemon>(new[] { ownedPokemon });
 
         _mockValidatorService
@@ -699,12 +708,14 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
 
         _mockValidatorService
             .Setup(x =>
@@ -780,12 +791,14 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
 
         _mockValidatorService
             .Setup(x =>
@@ -858,12 +871,14 @@ public sealed class SaveGameDataCommandTests
             ConnectionId = connectionId,
             GameSaveId = gameSaveId,
             UserId = userId,
+            GameSave = _fixture.Build<GameSave>()
+                .With(x => x.GameSaveData, existingGameData)
+                .Create()
         };
 
         var input = (newGameData, connectionId, user);
 
         var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var existingGameDataResult = new DbGetOneResult<GameSaveData>(existingGameData);
         var updateResult = new DbSaveResult<GameSaveData>(Array.Empty<GameSaveData>())
         {
             IsSuccessful = false,
