@@ -25,6 +25,7 @@ COPY src/Submodules/BT/src/BT.Common/BT.Common.Polly/*.csproj ./Submodules/BT/sr
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Persistence.Shared/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Persistence.Shared/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Http/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Http/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Services/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Services/
 
 RUN dotnet restore PokeGame.Core/PokeGame.Core.SignalR/PokeGame.Core.SignalR.csproj 
 
@@ -40,6 +41,7 @@ COPY src/Submodules/BT/src/BT.Common/BT.Common.Polly/ ./Submodules/BT/src/BT.Com
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/ ./Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Persistence.Shared/ ./Submodules/BT/src/BT.Common/BT.Common.Persistence.Shared/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Http/ ./Submodules/BT/src/BT.Common/BT.Common.Http/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Services/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Services/
 
 
 WORKDIR /src/PokeGame.Core/PokeGame.Core.SignalR 
