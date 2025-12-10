@@ -2,7 +2,7 @@ import axios from "axios";
 
 enum AppSettingsKeys {
     serviceName = "serviceName",
-    releaseVersion = "releaseVersion",
+    releaseVersion = "appReleaseVersion",
     pokeGameCoreApiUrl = "pokeGameCoreApiUrl",
     pokeGameCoreSignalRUrl = "pokeGameCoreSignalRUrl",
     autoSaveIntervalSeconds = "autoSaveIntervalSeconds",
@@ -32,14 +32,16 @@ export default abstract class AppSettingsProvider {
         }
 
         try {
-            const response = await axios.get('/reactappsettings.json');
+            const response = await axios.get("/reactappsettings.json");
             if (!response.data) {
-                throw new Error(`Failed to load app settings: ${response.status}`);
+                throw new Error(
+                    `Failed to load app settings: ${response.status}`
+                );
             }
             AppSettingsProvider.appSettingsCache = response.data;
             return response.data;
         } catch (error) {
-            console.error('Error loading app settings:', error);
+            console.error("Error loading app settings:", error);
             throw error;
         }
     }

@@ -11,7 +11,7 @@ variables:
     value: $(Build.BuildNumber)     
   - name: ServiceInfo.ReleaseVersion
     value: $(Build.BuildNumber)     
-  - name: releaseVersion
+  - name: appReleaseVersion
     value: $(Build.BuildNumber)
 
 trigger:
