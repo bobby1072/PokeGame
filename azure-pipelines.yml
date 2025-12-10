@@ -83,6 +83,15 @@ stages:
               customCommand: "run build"
               workingDir: $(Build.SourcesDirectory)/src/phaser-client
 
+          - task: FileTransform@2
+            displayName: "Transform frontend configuration file"
+            condition: eq(variables.isMain, true)
+            inputs:
+              folderPath: "$(Build.SourcesDirectory)/src/phaser-client/dist"
+              enableXmlTransform: false
+              fileType: "json"
+              jsonTargetFiles: "reactappsettings.json"
+
           - publish: "$(Build.SourcesDirectory)/src/phaser-client/dist"
             condition: eq(variables.isMain, true)
             displayName: "Publish client files"
@@ -113,7 +122,6 @@ stages:
                 PokeGame.Core/PokeGame.Core.Api/appsettings.json
                 PokeGame.Core/PokeGame.Core.SignalR/appsettings.json
                 PokeGame.Core/PokeGame.Core.React.Server/appsettings.json
-                phaser-client/dist/reactappsettings.json
 
           - task: Docker@2
             displayName: Login to Docker Hub
