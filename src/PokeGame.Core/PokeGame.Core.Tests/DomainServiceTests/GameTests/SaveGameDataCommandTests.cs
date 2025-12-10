@@ -58,7 +58,7 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
-                UnlockedGameResources =  []
+                UnlockedGameResources =  [new GameDataActualUnlockedGameResource{ResourceName = "NewScene", Type = GameDataActualUnlockedGameResourceType.Scene}]
             },
         };
 
@@ -161,6 +161,13 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [new GameSaveDataActualDeckPokemon { OwnedPokemonId = oldPokemonId }],
+                UnlockedGameResources = [
+                    new GameDataActualUnlockedGameResource
+                    {
+                        ResourceName = "Scene",
+                        Type = GameDataActualUnlockedGameResourceType.Scene
+                    }
+                ]
             },
         };
 
@@ -768,7 +775,14 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
-                UnlockedGameResources =  []
+                UnlockedGameResources =  
+                [
+                    new GameDataActualUnlockedGameResource
+                    {
+                        ResourceName = "NewScene",
+                        Type = GameDataActualUnlockedGameResourceType.Scene
+                    }
+                ]
             },
         };
 
@@ -848,7 +862,14 @@ public sealed class SaveGameDataCommandTests
                 LastPlayedLocationX = 10,
                 LastPlayedLocationY = 20,
                 DeckPokemon = [],
-                UnlockedGameResources =  []
+                UnlockedGameResources =  
+                [
+                    new  GameDataActualUnlockedGameResource
+                    {
+                        ResourceName = "NewScene",
+                        Type = GameDataActualUnlockedGameResourceType.Scene
+                    }
+                ]
             },
         };
 

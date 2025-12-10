@@ -4,6 +4,8 @@ using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Exceptions;
+using PokeGame.Core.Common.Extensions;
+using PokeGame.Core.Common.Permissions;
 using PokeGame.Core.Domain.Services.Abstract;
 using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Persistence.Entities;
@@ -68,6 +70,8 @@ internal sealed class SaveGameDataCommand
 
         var updatedGameSave = await UpdateGameSave(input.GameData);
 
+        _logger.LogInformation("Game save data has been successfully updated");
+        
         return new DomainCommandResult<GameSaveData> { CommandResult = updatedGameSave };
     }
 
@@ -127,6 +131,14 @@ internal sealed class SaveGameDataCommand
             throw new PokeGameApiUserException(HttpStatusCode.BadRequest,
                 "You cannot update unlocked resources manually");
         }
+
+        if (!oldGameSaveData.GameData.Abilities.Can(newGameSaveData.GameData.LastPlayedScene,
+                PermissionAbilityPermissionType.Read))
+        {
+            throw new PokeGameApiUserException(HttpStatusCode.BadRequest,"You do not have access to this location");
+        }
+        
+        _logger.LogInformation("New game save data has successfully passed validation against the old one");
     }
     private async Task<(GameSession, GameSaveData)> GetGameSessionAndGameData(
         string connectionId,
@@ -166,6 +178,8 @@ internal sealed class SaveGameDataCommand
             );
         }
 
+        _logger.LogInformation("Successfully fetched existing game session and game data");
+        
         return (foundGameSession.Data, foundGameSession.Data.GameSave.GameSaveData);
     }
 
