@@ -43,7 +43,7 @@
         "globals": "16.5.0",
         "jsdom": "27.3.0",
         "msw": "2.12.4",
-        "phaser3spectorjs": "^0.0.8",
+        "phaser3spectorjs": "0.0.8",
         "terser": "5.44.1",
         "typescript": "5.9.3",
         "vite": "7.2.7",

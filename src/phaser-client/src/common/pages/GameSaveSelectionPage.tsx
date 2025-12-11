@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-    Typography,
-    Button,
-    Box,
-    Alert,
-    Container,
-} from "@mui/material";
+import { Typography, Button, Box, Alert, Container } from "@mui/material";
 import { useGetAllGameSavesQuery } from "../hooks/useGetAllGameSavesQuery";
 import { useGameSaveContext } from "../contexts/GameSaveContext";
 import { GameSaveCard } from "../components/GameSaveCard";
@@ -18,11 +12,16 @@ interface GameSaveSelectionPageProps {
     onGameSaveSelected?: (gameSave: GameSave) => void;
 }
 
-export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({ 
-    onGameSaveSelected 
+export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({
+    onGameSaveSelected,
 }) => {
     const [showNewGameForm, setShowNewGameForm] = useState(false);
-    const { data: gameSaves, isLoading, error, refetch } = useGetAllGameSavesQuery();
+    const {
+        data: gameSaves,
+        isLoading,
+        error,
+        refetch,
+    } = useGetAllGameSavesQuery();
     const { setCurrentGameSave } = useGameSaveContext();
 
     const handleSelectGameSave = (gameSave: GameSave) => {
@@ -43,9 +42,10 @@ export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({
     if (isLoading) {
         return (
             <PageBase>
-                <LoadingComponent 
-                    variant="page-section" 
-                    message="Loading game saves..." 
+                <LoadingComponent
+                    variant="page-section"
+                    message="Loading game saves..."
+                    data-testid="game-saves-loading"
                 />
             </PageBase>
         );
@@ -61,8 +61,9 @@ export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({
                         alignItems: "center",
                         minHeight: "400px",
                         gap: 2,
-                        pt: 4
+                        pt: 4,
                     }}
+                    data-testid="game-saves-error"
                 >
                     <Alert severity="error" sx={{ mb: 2 }}>
                         Error loading game saves: {error.message}
@@ -71,6 +72,7 @@ export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({
                         variant="contained"
                         onClick={() => refetch()}
                         size="large"
+                        data-testid="retry-button"
                     >
                         Try Again
                     </Button>
@@ -88,7 +90,8 @@ export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({
                         Select Game Save
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
-                        Choose an existing game save or create a new one to continue playing
+                        Choose an existing game save or create a new one to
+                        continue playing
                     </Typography>
                 </Box>
 
@@ -107,6 +110,7 @@ export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({
                             variant="contained"
                             size="large"
                             onClick={() => setShowNewGameForm(true)}
+                            data-testid="create-new-game-button"
                             sx={{
                                 py: 2,
                                 px: 4,
@@ -122,9 +126,9 @@ export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({
                 {/* Existing Game Saves */}
                 {gameSaves && gameSaves.length > 0 && (
                     <Box>
-                        <Typography 
-                            variant="h4" 
-                            component="h2" 
+                        <Typography
+                            variant="h4"
+                            component="h2"
                             sx={{ mb: 3, textAlign: "center" }}
                         >
                             Existing Game Saves ({gameSaves.length})
@@ -139,6 +143,7 @@ export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({
                                 },
                                 gap: 3,
                             }}
+                            data-testid="game-saves-grid"
                         >
                             {gameSaves.map((gameSave) => (
                                 <GameSaveCard
@@ -159,16 +164,17 @@ export const GameSaveSelectionPage: React.FC<GameSaveSelectionPageProps> = ({
                             py: 6,
                             px: 3,
                         }}
+                        data-testid="no-game-saves-message"
                     >
                         <Typography variant="h5" gutterBottom>
                             No game saves found
                         </Typography>
                         <Typography variant="body1" color="text.secondary">
-                            Create your first game save to start your Pokémon adventure!
+                            Create your first game save to start your Pokémon
+                            adventure!
                         </Typography>
                     </Box>
                 )}
-
             </Container>
         </PageBase>
     );
