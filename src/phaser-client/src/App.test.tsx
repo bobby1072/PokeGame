@@ -8,7 +8,7 @@ describe(App.name, () => {
         render(<App />);
 
         await waitFor(() => {
-            expect(screen.getByTitle("PokeGame")).toBeInTheDocument();
+            expect(screen.getByText("PokeGame")).toBeInTheDocument();
         });
     });
 });
