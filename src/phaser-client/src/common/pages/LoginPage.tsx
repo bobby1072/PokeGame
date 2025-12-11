@@ -40,7 +40,7 @@ const TabPanel: React.FC<TabPanelProps> = (props) => {
             {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
         </div>
     );
-}
+};
 
 // Zod schemas
 const loginSchema = z.object({
@@ -179,6 +179,7 @@ export const LoginPage: React.FC<{
                             component="form"
                             onSubmit={handleLoginSubmit(onLoginSubmit)}
                             sx={{ mt: 2 }}
+                            data-testid="login-form"
                         >
                             <TextField
                                 fullWidth
@@ -207,9 +208,13 @@ export const LoginPage: React.FC<{
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
                                 disabled={!loginIsDirty || isLoginLoading}
+                                data-testid="login-submit-button"
                             >
                                 {isLoginLoading ? (
-                                    <LoadingComponent variant="inline" size={24} />
+                                    <LoadingComponent
+                                        variant="inline"
+                                        size={24}
+                                    />
                                 ) : (
                                     "Login"
                                 )}
@@ -222,6 +227,7 @@ export const LoginPage: React.FC<{
                             component="form"
                             onSubmit={handleRegisterSubmit(onRegisterSubmit)}
                             sx={{ mt: 2 }}
+                            data-testid="register-form"
                         >
                             <TextField
                                 fullWidth
@@ -262,9 +268,13 @@ export const LoginPage: React.FC<{
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
                                 disabled={!registerIsDirty || isRegisterLoading}
+                                data-testid="register-submit-button"
                             >
                                 {isRegisterLoading ? (
-                                    <LoadingComponent variant="inline" size={24} />
+                                    <LoadingComponent
+                                        variant="inline"
+                                        size={24}
+                                    />
                                 ) : (
                                     "Register"
                                 )}

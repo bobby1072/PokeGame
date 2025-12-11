@@ -10,6 +10,7 @@
         "poke"
     ],
     "scripts": {
+        "test": "vitest",
         "dev": "node log.js dev & vite --config vite/config.dev.mjs",
         "build": "node log.js build & vite build --config vite/config.prod.mjs",
         "check-types": "tsc --noemit --p tsconfig.json"
@@ -30,13 +31,22 @@
         "zod": "4.1.13"
     },
     "devDependencies": {
+        "@testing-library/dom": "10.4.1",
+        "@testing-library/jest-dom": "6.9.1",
+        "@testing-library/react": "16.3.0",
+        "@testing-library/user-event": "14.6.1",
         "@types/node": "24.10.2",
         "@types/react": "19.2.7",
         "@types/react-dom": "19.2.3",
         "@vitejs/plugin-react": "5.1.2",
+        "cross-fetch": "4.1.0",
         "globals": "16.5.0",
+        "jsdom": "27.3.0",
+        "msw": "2.12.4",
+        "phaser3spectorjs": "0.0.8",
         "terser": "5.44.1",
         "typescript": "5.9.3",
-        "vite": "7.2.7"
+        "vite": "7.2.7",
+        "vitest": "4.0.15"
     }
 }

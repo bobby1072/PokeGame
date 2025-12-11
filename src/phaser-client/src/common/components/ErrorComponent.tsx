@@ -69,8 +69,12 @@ export const ErrorComponent: React.FC<ErrorComponentProps> = ({
     // Handle Error objects
     if (error instanceof AxiosError) {
         return (
-            <Box sx={combinedSx}>
-                <Alert severity="error" sx={alertStyles}>
+            <Box sx={combinedSx} data-testid="error-container">
+                <Alert
+                    severity="error"
+                    sx={alertStyles}
+                    data-testid="error-alert"
+                >
                     {error.response?.data.exceptionMessage ||
                         "An unexpected error occurred"}
                 </Alert>
@@ -80,8 +84,12 @@ export const ErrorComponent: React.FC<ErrorComponentProps> = ({
 
     if (error instanceof Error) {
         return (
-            <Box sx={combinedSx}>
-                <Alert severity="error" sx={alertStyles}>
+            <Box sx={combinedSx} data-testid="error-container">
+                <Alert
+                    severity="error"
+                    sx={alertStyles}
+                    data-testid="error-alert"
+                >
                     {error.message}
                 </Alert>
             </Box>
@@ -91,8 +99,12 @@ export const ErrorComponent: React.FC<ErrorComponentProps> = ({
     // Handle string errors
     if (typeof error === "string") {
         return (
-            <Box sx={combinedSx}>
-                <Alert severity="error" sx={alertStyles}>
+            <Box sx={combinedSx} data-testid="error-container">
+                <Alert
+                    severity="error"
+                    sx={alertStyles}
+                    data-testid="error-alert"
+                >
                     {error}
                 </Alert>
             </Box>
@@ -109,11 +121,12 @@ export const ErrorComponent: React.FC<ErrorComponentProps> = ({
         if (errorMessages.length === 0) return null;
 
         return (
-            <Box sx={combinedSx}>
+            <Box sx={combinedSx} data-testid="error-container">
                 {errorMessages.map((message, index) => (
                     <Alert
                         key={index}
                         severity="error"
+                        data-testid="error-alert"
                         sx={{
                             ...alertStyles,
                             mb: index < errorMessages.length - 1 ? 1 : 0,
