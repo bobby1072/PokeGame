@@ -85,7 +85,12 @@ export const NewGameForm: React.FC<NewGameFormProps> = ({
                         disabled={!characterName.trim() || isPending}
                         size="large"
                         startIcon={
-                            isPending ? <CircularProgress size={20} /> : null
+                            isPending ? (
+                                <CircularProgress
+                                    size={20}
+                                    data-testid="loading-spinner"
+                                />
+                            ) : null
                         }
                     >
                         {isPending ? "Creating..." : "Create Game"}

@@ -5,68 +5,44 @@ import { LoadingComponent } from "./LoadingComponent";
 describe("LoadingComponent", () => {
     describe("variant prop", () => {
         it("should render with page-section variant by default", () => {
-            const { container } = render(<LoadingComponent />);
-            const spinner = container.querySelector(
-                ".MuiCircularProgress-root"
-            );
-            expect(spinner).toBeInTheDocument();
+            render(<LoadingComponent />);
+            expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+            expect(screen.getByTestId("loading-container")).toBeInTheDocument();
         });
 
         it("should render with fullscreen variant", () => {
-            const { container } = render(
-                <LoadingComponent variant="fullscreen" />
-            );
-            const spinner = container.querySelector(
-                ".MuiCircularProgress-root"
-            );
-            expect(spinner).toBeInTheDocument();
+            render(<LoadingComponent variant="fullscreen" />);
+            expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
         });
 
         it("should render with inline variant", () => {
-            const { container } = render(<LoadingComponent variant="inline" />);
-            const spinner = container.querySelector(
-                ".MuiCircularProgress-root"
-            );
-            expect(spinner).toBeInTheDocument();
+            render(<LoadingComponent variant="inline" />);
+            expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
         });
     });
 
     describe("spinner size", () => {
         it("should use default size for fullscreen variant (40)", () => {
-            const { container } = render(
-                <LoadingComponent variant="fullscreen" />
-            );
-            const spinner = container.querySelector(
-                ".MuiCircularProgress-root"
-            );
+            render(<LoadingComponent variant="fullscreen" />);
+            const spinner = screen.getByTestId("loading-spinner");
             expect(spinner).toHaveStyle({ width: "40px", height: "40px" });
         });
 
         it("should use default size for page-section variant (60)", () => {
-            const { container } = render(
-                <LoadingComponent variant="page-section" />
-            );
-            const spinner = container.querySelector(
-                ".MuiCircularProgress-root"
-            );
+            render(<LoadingComponent variant="page-section" />);
+            const spinner = screen.getByTestId("loading-spinner");
             expect(spinner).toHaveStyle({ width: "60px", height: "60px" });
         });
 
         it("should use default size for inline variant (24)", () => {
-            const { container } = render(<LoadingComponent variant="inline" />);
-            const spinner = container.querySelector(
-                ".MuiCircularProgress-root"
-            );
+            render(<LoadingComponent variant="inline" />);
+            const spinner = screen.getByTestId("loading-spinner");
             expect(spinner).toHaveStyle({ width: "24px", height: "24px" });
         });
 
         it("should override default size with custom size prop", () => {
-            const { container } = render(
-                <LoadingComponent variant="fullscreen" size={100} />
-            );
-            const spinner = container.querySelector(
-                ".MuiCircularProgress-root"
-            );
+            render(<LoadingComponent variant="fullscreen" size={100} />);
+            const spinner = screen.getByTestId("loading-spinner");
             expect(spinner).toHaveStyle({ width: "100px", height: "100px" });
         });
     });
@@ -163,25 +139,22 @@ describe("LoadingComponent", () => {
 
     describe("styling", () => {
         it("should have proper container structure", () => {
-            const { container } = render(<LoadingComponent />);
-            const box = container.querySelector(".MuiBox-root");
-            expect(box).toBeInTheDocument();
+            render(<LoadingComponent />);
+            expect(screen.getByTestId("loading-container")).toBeInTheDocument();
         });
 
         it("should center content for fullscreen variant", () => {
-            const { container } = render(
-                <LoadingComponent variant="fullscreen" />
-            );
-            const box = container.querySelector(".MuiBox-root");
-            expect(box).toBeInTheDocument();
+            render(<LoadingComponent variant="fullscreen" />);
+            expect(screen.getByTestId("loading-container")).toBeInTheDocument();
         });
 
-        it("should use text.secondary color for message", () => {
+        it("should display message with proper styling", () => {
             render(
                 <LoadingComponent variant="page-section" message="Loading..." />
             );
-            const message = screen.getByText("Loading...");
-            expect(message).toHaveClass("MuiTypography-root");
+            const message = screen.getByTestId("loading-message");
+            expect(message).toBeInTheDocument();
+            expect(message).toHaveTextContent("Loading...");
         });
     });
 
@@ -192,18 +165,14 @@ describe("LoadingComponent", () => {
         });
 
         it("should handle size of 0", () => {
-            const { container } = render(<LoadingComponent size={0} />);
-            const spinner = container.querySelector(
-                ".MuiCircularProgress-root"
-            );
+            render(<LoadingComponent size={0} />);
+            const spinner = screen.getByTestId("loading-spinner");
             expect(spinner).toHaveStyle({ width: "0px", height: "0px" });
         });
 
         it("should handle very large size", () => {
-            const { container } = render(<LoadingComponent size={500} />);
-            const spinner = container.querySelector(
-                ".MuiCircularProgress-root"
-            );
+            render(<LoadingComponent size={500} />);
+            const spinner = screen.getByTestId("loading-spinner");
             expect(spinner).toHaveStyle({ width: "500px", height: "500px" });
         });
 
@@ -229,9 +198,7 @@ describe("LoadingComponent", () => {
             expect(
                 screen.getByText("Custom loading message")
             ).toBeInTheDocument();
-            const spinner = container.querySelector(
-                ".MuiCircularProgress-root"
-            );
+            const spinner = screen.getByTestId("loading-spinner");
             expect(spinner).toHaveStyle({ width: "80px", height: "80px" });
         });
     });

@@ -34,6 +34,8 @@ export const PageBase: React.FC<PageBaseProps> = ({
             {showFooter && (
                 <Box
                     component="footer"
+                    data-testid="page-footer"
+                    aria-label="Page footer"
                     sx={{
                         mt: "auto",
                         py: 1,
@@ -56,6 +58,7 @@ export const PageBase: React.FC<PageBaseProps> = ({
                                 variant="caption"
                                 color="text.secondary"
                                 sx={{ fontSize: "0.75rem" }}
+                                data-testid="footer-service-name"
                             >
                                 {appSettings.serviceName || "PokeGame"}
                             </Typography>
@@ -63,6 +66,7 @@ export const PageBase: React.FC<PageBaseProps> = ({
                                 variant="caption"
                                 color="text.secondary"
                                 sx={{ fontSize: "0.75rem" }}
+                                data-testid="footer-version"
                             >
                                 v{appSettings.releaseVersion || "1.0"}
                             </Typography>

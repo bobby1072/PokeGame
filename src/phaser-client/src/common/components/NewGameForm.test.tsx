@@ -368,16 +368,14 @@ describe("NewGameForm", () => {
                 mutate: mockMutate,
             } as any);
 
-            const { container } = render(
+            render(
                 <NewGameForm
                     onGameCreated={mockOnGameCreated}
                     onCancel={mockOnCancel}
                 />
             );
 
-            const spinner = container.querySelector(
-                ".MuiCircularProgress-root"
-            );
+            const spinner = screen.getByTestId("loading-spinner");
             expect(spinner).toBeInTheDocument();
         });
     });

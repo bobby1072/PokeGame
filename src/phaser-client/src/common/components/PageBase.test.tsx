@@ -293,38 +293,43 @@ describe("PageBase", () => {
                 </PageBase>
             );
 
-            const serviceNameElement = screen.getByText("PokeGame Test");
-            const versionElement = screen.getByText("v1.2.3");
+            const serviceNameElement = screen.getByTestId(
+                "footer-service-name"
+            );
+            const versionElement = screen.getByTestId("footer-version");
 
-            expect(serviceNameElement).toHaveClass("MuiTypography-caption");
-            expect(versionElement).toHaveClass("MuiTypography-caption");
+            expect(serviceNameElement).toHaveTextContent("PokeGame Test");
+            expect(versionElement).toHaveTextContent("v1.2.3");
         });
 
-        it("should render footer with secondary text color", () => {
+        it("should render footer elements with proper test ids", () => {
             render(
                 <PageBase>
                     <div>Content</div>
                 </PageBase>
             );
 
-            const serviceNameElement = screen.getByText("PokeGame Test");
-            const versionElement = screen.getByText("v1.2.3");
+            const serviceNameElement = screen.getByTestId(
+                "footer-service-name"
+            );
+            const versionElement = screen.getByTestId("footer-version");
 
-            expect(serviceNameElement).toHaveClass("MuiTypography-caption");
-            expect(versionElement).toHaveClass("MuiTypography-caption");
+            expect(serviceNameElement).toBeInTheDocument();
+            expect(versionElement).toBeInTheDocument();
         });
     });
 
     describe("accessibility", () => {
-        it("should have semantic footer element", () => {
-            const { container } = render(
+        it("should have semantic footer element with proper aria-label", () => {
+            render(
                 <PageBase>
                     <div>Content</div>
                 </PageBase>
             );
 
-            const footer = container.querySelector("footer");
+            const footer = screen.getByTestId("page-footer");
             expect(footer).toBeInTheDocument();
+            expect(footer).toHaveAttribute("aria-label", "Page footer");
         });
 
         it("should maintain proper document structure", () => {
