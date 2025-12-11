@@ -1,5 +1,4 @@
 using PokeGame.Core.Schemas.PokeApi;
-using PokeGame.Core.Schemas.Pokedex;
 
 namespace PokeGame.Core.Schemas.Game;
 
@@ -26,6 +25,7 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
     public override bool Equals(OwnedPokemon? other)
     {
         return other is not null
+            && Id == other.Id
             && GameSaveId == other.GameSaveId
             && PokemonResourceName == other.PokemonResourceName
             && CaughtAt == other.CaughtAt

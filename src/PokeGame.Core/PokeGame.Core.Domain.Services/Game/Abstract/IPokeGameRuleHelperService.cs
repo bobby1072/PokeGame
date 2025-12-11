@@ -8,4 +8,5 @@ internal interface IPokeGameRuleHelperService
     OwnedPokemon AddXpToOwnedPokemon(OwnedPokemon ownedPokemon, int xpToAdd);
     OwnedPokemon RefillOwnedPokemonHp(OwnedPokemon ownedPokemon);
     int GetRandomPokemonNumberFromPokedexRange(IntRange intRange);
+    int CalculateStat(int level, int baseStat);
 }

@@ -29,7 +29,16 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
         return fullIndexList[randomArrayIndex];
     }
-
+    public int CalculateStat(int level, int baseStat)
+    {
+        int evTerm = _configurablePokeGameRules.StatCalculationStats.DefaultEV / 4;
+        double core =
+            (2 * baseStat + _configurablePokeGameRules.StatCalculationStats.DefaultIV + evTerm)
+            * level
+            / 100.0;
+        int stat = (int)Math.Floor(core) + 5;
+        return stat;
+    }
     public OwnedPokemon AddXpToOwnedPokemon(OwnedPokemon ownedPokemon, int xpToAdd)
     {
         _logger.LogInformation(
@@ -62,7 +71,7 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
         if (newLevel > originalLevel)
         {
-            _logger.LogDebug(
+            _logger.LogInformation(
                 "Owned pokemon with id: {OwnedPokemonId} has leveled up from: {OriginalLevel} --> {NewLevel}",
                 ownedPokemon.Id,
                 originalLevel,
@@ -131,19 +140,19 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
     private int GetPokemonMaxHp(OwnedPokemon ownedPokemon)
     {
-        int evTerm = _configurablePokeGameRules.HpCalculationStats.DefaultEV / 4;
+        int evTerm = _configurablePokeGameRules.StatCalculationStats.DefaultEV / 4;
         double core =
             (
                 2
                     * (
-                        ownedPokemon.Pokemon?.Stats
-                            .FastArrayFirst(x => x.Stat.Name == "hp")
+                        ownedPokemon
+                            .Pokemon?.Stats.FastArrayFirst(x => x.Stat.Name == "hp")
                             .BaseStat
                         ?? throw new PokeGameApiServerException(
                             "Pokedex pokemon not attached to owned pokemon"
                         )
                     )
-                + _configurablePokeGameRules.HpCalculationStats.DefaultIV
+                + _configurablePokeGameRules.StatCalculationStats.DefaultIV
                 + evTerm
             )
             * ownedPokemon.PokemonLevel
@@ -151,6 +160,7 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         int hp = (int)Math.Floor(core) + ownedPokemon.PokemonLevel + 10;
         return hp;
     }
+
 
     private static int[] GetFullPokedexIndexArray(IntRange intRange)
     {
