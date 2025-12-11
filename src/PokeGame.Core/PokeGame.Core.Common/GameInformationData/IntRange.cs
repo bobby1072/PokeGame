@@ -1,4 +1,4 @@
-﻿namespace PokeGame.Core.Common.Configurations;
+﻿namespace PokeGame.Core.Common.GameInformationData;
 
 public sealed record IntRange
 {

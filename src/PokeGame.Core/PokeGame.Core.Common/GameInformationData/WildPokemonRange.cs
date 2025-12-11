@@ -1,5 +1,3 @@
-using PokeGame.Core.Common.Configurations;
-
 namespace PokeGame.Core.Common.GameInformationData;
 
 public sealed record WildPokemonRange

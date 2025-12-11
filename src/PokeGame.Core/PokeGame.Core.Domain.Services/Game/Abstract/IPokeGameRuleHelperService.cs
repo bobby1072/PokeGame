@@ -1,4 +1,4 @@
-using PokeGame.Core.Common.Configurations;
+using PokeGame.Core.Common.GameInformationData;
 using PokeGame.Core.Schemas.Game;
 
 namespace PokeGame.Core.Domain.Services.Game.Abstract;

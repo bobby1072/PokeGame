@@ -1,6 +1,4 @@
-﻿using PokeGame.Core.Common.Configurations;
-
-namespace PokeGame.Core.Common.GameInformationData;
+﻿namespace PokeGame.Core.Common.GameInformationData;
 
 public static class GameConstants
 {

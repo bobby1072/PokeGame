@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
+using PokeGame.Core.Common.GameInformationData;
 using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Schemas.Game;
 
