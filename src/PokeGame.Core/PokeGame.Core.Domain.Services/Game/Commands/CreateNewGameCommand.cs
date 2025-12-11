@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using BT.Common.FastArray.Proto;
 using BT.Common.Persistence.Shared.Utils;
 using BT.Common.Services.Concrete;
 using Microsoft.Extensions.Logging;
@@ -90,27 +91,14 @@ internal sealed class CreateNewGameCommand
             GameSaveId = gameSaveId,
             GameData = new GameSaveDataActual
             {
-                LastPlayedScene = GameConstants.SceneNames.BasiliaTownStarterHome,
-                LastPlayedLocationX = 15,
-                LastPlayedLocationY = 17,
-                UnlockedGameResources =
-                [
-                    new GameDataActualUnlockedGameResource
-                    {
-                        ResourceName = GameConstants.SceneNames.BasiliaTown,
-                        Type = GameDataActualUnlockedGameResourceType.Scene
-                    },
-                    new GameDataActualUnlockedGameResource
-                    {
-                        ResourceName = GameConstants.SceneNames.BasiliaTownStarterLab,
-                        Type = GameDataActualUnlockedGameResourceType.Scene
-                    },
-                    new GameDataActualUnlockedGameResource
-                    {
-                        ResourceName = GameConstants.SceneNames.BasiliaTownStarterHome,
-                        Type = GameDataActualUnlockedGameResourceType.Scene
-                    }
-                ]
+                LastPlayedScene = GameConstants.NewGameInfo.StartingScene,
+                LastPlayedLocationX = GameConstants.NewGameInfo.StartingLocationX,
+                LastPlayedLocationY = GameConstants.NewGameInfo.StartingLocationY,
+                UnlockedGameResources = GameConstants.NewGameInfo.BaseUnlockedSceneNames.FastArraySelect(x => new GameDataActualUnlockedGameResource
+                { 
+                    Type = GameDataActualUnlockedGameResourceType.Scene,
+                    ResourceName = x
+                }).ToList()
             },
         };
     }

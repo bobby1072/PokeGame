@@ -28,8 +28,6 @@ public sealed class CreateNewGameCommandTests
             BaseXpCeiling = 100,
             LegendaryXpMultiplier = 1.055m,
             HpCalculationStats = new HpCalculationStats { DefaultIV = 31, DefaultEV = 0 },
-            StandardPokemonPokedexRange = new PokedexRange { Min = 1, Max = 143 },
-            LegendaryPokemonPokedexRange = new PokedexRange { Min = 144, Max = 151 },
         };
         
         _command = new CreateNewGameCommand(

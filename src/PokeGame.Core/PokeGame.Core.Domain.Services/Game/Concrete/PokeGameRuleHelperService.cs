@@ -11,22 +11,6 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 {
     private readonly ConfigurablePokeGameRules _configurablePokeGameRules;
     private readonly ILogger<PokeGameRuleHelperService> _logger;
-    private int[]? _fullStandardPokedexIndexArrayInstance;
-    private int[] _fullStandardPokedexIndexArray
-    {
-        get =>
-            _fullStandardPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(
-                _configurablePokeGameRules.StandardPokemonPokedexRange
-            );
-    }
-    private int[]? _fullLegendaryPokedexIndexArrayInstance;
-    private int[] _fullLegendaryPokedexIndexArray
-    {
-        get =>
-            _fullLegendaryPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(
-                _configurablePokeGameRules.LegendaryPokemonPokedexRange
-            );
-    }
 
     public PokeGameRuleHelperService(
         ConfigurablePokeGameRules configurablePokeGameRules,
@@ -37,18 +21,12 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         _logger = logger;
     }
 
-    public int GetRandomPokemonNumberFromStandardPokedexRange()
+    public int GetRandomPokemonNumberFromPokedexRange(IntRange intRange)
     {
-        var randomArrayIndex = Random.Shared.Next(0, _fullStandardPokedexIndexArray.Length);
+        var fullIndexList = GetFullPokedexIndexArray(intRange);
+        var randomArrayIndex = Random.Shared.Next(0, fullIndexList.Length);
 
-        return _fullStandardPokedexIndexArray[randomArrayIndex];
-    }
-
-    public int GetRandomPokemonNumberFromLegendaryPokedexRange()
-    {
-        var randomArrayIndex = Random.Shared.Next(0, _fullLegendaryPokedexIndexArray.Length);
-
-        return _fullStandardPokedexIndexArray[randomArrayIndex];
+        return fullIndexList[randomArrayIndex];
     }
 
     public OwnedPokemon AddXpToOwnedPokemon(OwnedPokemon ownedPokemon, int xpToAdd)
@@ -173,14 +151,14 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         return hp;
     }
 
-    private static int[] GetFullPokedexIndexArray(PokedexRange pokedexRange)
+    private static int[] GetFullPokedexIndexArray(IntRange intRange)
     {
         var fullPokeDexIndexArray = new List<int>();
-        for (int i = pokedexRange.Min; i <= pokedexRange.Max; i++)
+        for (int i = intRange.Min; i <= intRange.Max; i++)
         {
             fullPokeDexIndexArray.Add(i);
         }
 
-        return fullPokeDexIndexArray.Union(pokedexRange.Extras).ToArray();
+        return fullPokeDexIndexArray.Union(intRange.Extras).ToArray();
     }
 }
