@@ -26,32 +26,41 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         _pokeApiClient = pokeApiClient;
         _logger = logger;
     }
-
     public async Task<IReadOnlyCollection<OwnedPokemon>> GetDeepOwnedPokemon(
         IReadOnlyCollection<OwnedPokemon> ownedPokemons,
         CancellationToken cancellationToken = default
     )
     {
-        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
-            nameof(GetDeepOwnedPokemon)
-        );
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
         activity?.SetTag("ownedPokemons.count", ownedPokemons.Count);
 
         try
         {
-            var getResourcesJobList = ownedPokemons
-                .FastArraySelect(x => GetResourcesFromApiAsync(x, cancellationToken))
+            (OwnedPokemon OwnedPokemon, Task<(Pokemon Pokemon, PokemonSpecies PokemonSpecies, Move MoveOne, Move? MoveTwo, Move? MoveThree,
+                Move? MoveFour)> ResourceJob)[] getResourcesJobList = ownedPokemons
+                .FastArraySelect(x => (x, 
+                    GetResourcesFromApiAsync((x.PokemonResourceName, x.MoveOneResourceName, x.MoveTwoResourceName, x.MoveThreeResourceName, x.MoveFourResourceName),
+                        cancellationToken)))
                 .ToArray();
 
-            await Task.WhenAll(getResourcesJobList);
+            await Task.WhenAll(getResourcesJobList.FastArraySelect(x => x.ResourceJob));
 
             var finalOwnedPokemon = new List<OwnedPokemon>();
 
             foreach (var resource in getResourcesJobList)
             {
-                finalOwnedPokemon.Add(await resource);
+                var results = await resource.ResourceJob;
+                
+                resource.OwnedPokemon.Pokemon = results.Pokemon;
+                resource.OwnedPokemon.PokemonSpecies = results.PokemonSpecies;
+                resource.OwnedPokemon.MoveOne = results.MoveOne;
+                resource.OwnedPokemon.MoveTwo = results.MoveTwo;
+                resource.OwnedPokemon.MoveThree = results.MoveThree;
+                resource.OwnedPokemon.MoveFour = results.MoveFour;
+                
+                finalOwnedPokemon.Add(resource.OwnedPokemon);
             }
-
+            
             return finalOwnedPokemon;
         }
         catch (PokeGameApiException)
@@ -105,22 +114,22 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         }
     }
 
-    private async Task<OwnedPokemon> GetResourcesFromApiAsync(
-        OwnedPokemon ownedPokemon,
+    private async Task<(Pokemon Pokemon, PokemonSpecies PokemonSpecies, Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetResourcesFromApiAsync(
+        (string PokemonResourceName,
+            string MoveOneResourceName,
+            string? MoveTwoResourceName,
+            string? MoveThreeResourceName,
+            string? MoveFourResourceName) ownedPokemon,
         CancellationToken cancellationToken = default
     )
     {
-        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
-            nameof(GetResourcesFromApiAsync)
-        );
-        activity?.SetTag("ownedPokemon.id", ownedPokemon.Id.ToString());
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
         activity?.SetTag("ownedPokemon.pokemonResourceName", ownedPokemon.PokemonResourceName);
 
         _logger.LogInformation(
             "Fetching OwnedPokemon resources from PokeApi with params: {@Params}",
             new
             {
-                ownedPokemon.Id,
                 ownedPokemon.PokemonResourceName,
                 ownedPokemon.MoveOneResourceName,
                 ownedPokemon.MoveTwoResourceName,
@@ -173,7 +182,6 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
                 )
             );
         }
-
         var executionList = new List<Task> { pokemonJob, speciesJob }
             .Concat(moveJobList)
             .ToArray();
@@ -184,13 +192,13 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         var finalMoveThree = moveJobList.ElementAtOrDefault(2);
         var finalMoveFour = moveJobList.ElementAtOrDefault(3);
 
-        ownedPokemon.Pokemon = await pokemonJob;
-        ownedPokemon.PokemonSpecies = await speciesJob;
-        ownedPokemon.MoveOne = await moveJobList[0];
-        ownedPokemon.MoveTwo = finalMoveTwo is null ? null : await finalMoveTwo;
-        ownedPokemon.MoveThree = finalMoveThree is null ? null : await finalMoveThree;
-        ownedPokemon.MoveFour = finalMoveFour is null ? null : await finalMoveFour;
+        var pokemon = await pokemonJob;
+        var pokemonSpecies = await speciesJob;
+        var moveOne = await moveJobList[0];
+        var moveTwo = finalMoveTwo is null ? null : await finalMoveTwo;
+        var moveThree = finalMoveThree is null ? null : await finalMoveThree;
+        var moveFour = finalMoveFour is null ? null : await finalMoveFour;
 
-        return ownedPokemon;
+        return (pokemon, pokemonSpecies, moveOne, moveTwo, moveThree, moveFour);
     }
 }

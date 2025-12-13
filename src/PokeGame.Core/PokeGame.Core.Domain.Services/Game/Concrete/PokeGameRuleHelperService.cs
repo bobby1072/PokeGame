@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using PokeGame.Core.Common.Configurations;
 using PokeGame.Core.Common.Exceptions;
+using PokeGame.Core.Common.GameInformationData;
 using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Schemas.Game;
 
@@ -11,22 +12,6 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 {
     private readonly ConfigurablePokeGameRules _configurablePokeGameRules;
     private readonly ILogger<PokeGameRuleHelperService> _logger;
-    private int[]? _fullStandardPokedexIndexArrayInstance;
-    private int[] _fullStandardPokedexIndexArray
-    {
-        get =>
-            _fullStandardPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(
-                _configurablePokeGameRules.StandardPokemonPokedexRange
-            );
-    }
-    private int[]? _fullLegendaryPokedexIndexArrayInstance;
-    private int[] _fullLegendaryPokedexIndexArray
-    {
-        get =>
-            _fullLegendaryPokedexIndexArrayInstance ??= GetFullPokedexIndexArray(
-                _configurablePokeGameRules.LegendaryPokemonPokedexRange
-            );
-    }
 
     public PokeGameRuleHelperService(
         ConfigurablePokeGameRules configurablePokeGameRules,
@@ -36,21 +21,42 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         _configurablePokeGameRules = configurablePokeGameRules;
         _logger = logger;
     }
-
-    public int GetRandomPokemonNumberFromStandardPokedexRange()
+    public int? GetRandomPokemonNumberFromPokedexRangeWithRandomEncounterIncluded(IntRange intRange)
     {
-        var randomArrayIndex = Random.Shared.Next(0, _fullStandardPokedexIndexArray.Length);
+        var encounterActuallyHappen = Random.Shared.Next(1, 101);
 
-        return _fullStandardPokedexIndexArray[randomArrayIndex];
+        if (encounterActuallyHappen > _configurablePokeGameRules.RandomPokemonEncounterLikelyhoodPercentage)
+        {
+            _logger.LogInformation("No encounter happening based on random encounter probability percentage: {Likelihood}%",
+                _configurablePokeGameRules.RandomPokemonEncounterLikelyhoodPercentage);
+            return null;
+        }
+
+        return GetRandomPokemonNumberFromPokedexRange(intRange);
     }
-
-    public int GetRandomPokemonNumberFromLegendaryPokedexRange()
+    public int GetRandomPokemonNumberFromPokedexRange(IntRange intRange)
     {
-        var randomArrayIndex = Random.Shared.Next(0, _fullLegendaryPokedexIndexArray.Length);
+        _logger.LogDebug("GetRandomPokemonNumberFromPokedexRange querying for random pokemon id using Pokedex range: {@PokedexRange}",
+            intRange);
+        
+        var fullIndexList = GetFullPokedexIndexArray(intRange);
+        var randomArrayIndex = Random.Shared.Next(0, fullIndexList.Length);
 
-        return _fullStandardPokedexIndexArray[randomArrayIndex];
+        _logger.LogInformation("GetRandomPokemonNumberFromPokedexRange got random Pokedex id: {PokedexId}", 
+            randomArrayIndex);
+        
+        return fullIndexList[randomArrayIndex];
     }
-
+    public int CalculateStat(int level, int baseStat)
+    {
+        int evTerm = _configurablePokeGameRules.StatCalculationStats.DefaultEV / 4;
+        double core =
+            (2 * baseStat + _configurablePokeGameRules.StatCalculationStats.DefaultIV + evTerm)
+            * level
+            / 100.0;
+        int stat = (int)Math.Floor(core) + 5;
+        return stat;
+    }
     public OwnedPokemon AddXpToOwnedPokemon(OwnedPokemon ownedPokemon, int xpToAdd)
     {
         _logger.LogInformation(
@@ -83,7 +89,7 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
         if (newLevel > originalLevel)
         {
-            _logger.LogDebug(
+            _logger.LogInformation(
                 "Owned pokemon with id: {OwnedPokemonId} has leveled up from: {OriginalLevel} --> {NewLevel}",
                 ownedPokemon.Id,
                 originalLevel,
@@ -152,19 +158,19 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
     private int GetPokemonMaxHp(OwnedPokemon ownedPokemon)
     {
-        int evTerm = _configurablePokeGameRules.HpCalculationStats.DefaultEV / 4;
+        int evTerm = _configurablePokeGameRules.StatCalculationStats.DefaultEV / 4;
         double core =
             (
                 2
                     * (
-                        ownedPokemon.Pokemon?.Stats
-                            .FastArrayFirst(x => x.Stat.Name == "hp")
+                        ownedPokemon
+                            .Pokemon?.Stats.FastArrayFirst(x => x.Stat.Name == "hp")
                             .BaseStat
                         ?? throw new PokeGameApiServerException(
                             "Pokedex pokemon not attached to owned pokemon"
                         )
                     )
-                + _configurablePokeGameRules.HpCalculationStats.DefaultIV
+                + _configurablePokeGameRules.StatCalculationStats.DefaultIV
                 + evTerm
             )
             * ownedPokemon.PokemonLevel
@@ -173,14 +179,15 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         return hp;
     }
 
-    private static int[] GetFullPokedexIndexArray(PokedexRange pokedexRange)
+
+    private static int[] GetFullPokedexIndexArray(IntRange intRange)
     {
         var fullPokeDexIndexArray = new List<int>();
-        for (int i = pokedexRange.Min; i <= pokedexRange.Max; i++)
+        for (int i = intRange.Min; i <= intRange.Max; i++)
         {
             fullPokeDexIndexArray.Add(i);
         }
 
-        return fullPokeDexIndexArray.Union(pokedexRange.Extras).ToArray();
+        return fullPokeDexIndexArray.Union(intRange.Extras).ToArray();
     }
 }
