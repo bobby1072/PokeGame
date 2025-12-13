@@ -21,12 +21,30 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         _configurablePokeGameRules = configurablePokeGameRules;
         _logger = logger;
     }
+    public int? GetRandomPokemonNumberFromPokedexRangeWithRandomEncounterIncluded(IntRange intRange)
+    {
+        var encounterActuallyHappen = Random.Shared.Next(1, 101);
 
+        if (encounterActuallyHappen > _configurablePokeGameRules.RandomPokemonEncounterLikelyhoodPercentage)
+        {
+            _logger.LogInformation("No encounter happening based on random encounter probability percentage: {Likelihood}%",
+                _configurablePokeGameRules.RandomPokemonEncounterLikelyhoodPercentage);
+            return null;
+        }
+
+        return GetRandomPokemonNumberFromPokedexRange(intRange);
+    }
     public int GetRandomPokemonNumberFromPokedexRange(IntRange intRange)
     {
+        _logger.LogDebug("GetRandomPokemonNumberFromPokedexRange querying for random pokemon id using Pokedex range: {@PokedexRange}",
+            intRange);
+        
         var fullIndexList = GetFullPokedexIndexArray(intRange);
         var randomArrayIndex = Random.Shared.Next(0, fullIndexList.Length);
 
+        _logger.LogInformation("GetRandomPokemonNumberFromPokedexRange got random Pokedex id: {PokedexId}", 
+            randomArrayIndex);
+        
         return fullIndexList[randomArrayIndex];
     }
     public int CalculateStat(int level, int baseStat)
