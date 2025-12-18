@@ -115,74 +115,95 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
     }
 
     private async Task<(Pokemon Pokemon, PokemonSpecies PokemonSpecies, Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetResourcesFromApiAsync(
-        (string PokemonResourceName,
-            string MoveOneResourceName,
-            string? MoveTwoResourceName,
-            string? MoveThreeResourceName,
-            string? MoveFourResourceName) ownedPokemon,
+            (string PokemonResourceName,
+                string MoveOneResourceName,
+                string? MoveTwoResourceName,
+                string? MoveThreeResourceName,
+                string? MoveFourResourceName) pokemonInfo,
+            CancellationToken cancellationToken = default
+        )
+    {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
+        activity?.SetTag("pokemonResourceName", pokemonInfo.PokemonResourceName);
+        
+        _logger.LogInformation(
+            "Fetching Pokemon resources from PokeApi with params: {@Params}",
+            new
+            {
+                pokemonInfo.PokemonResourceName,
+                pokemonInfo.MoveOneResourceName,
+                pokemonInfo.MoveTwoResourceName,
+                pokemonInfo.MoveThreeResourceName,
+                pokemonInfo.MoveFourResourceName,
+            }
+        );
+
+        var pokemon = await _pokeApiClient.GetResourceAsync<Pokemon>(pokemonInfo.PokemonResourceName,
+            cancellationToken);
+
+        return await GetResourcesFromApiAsync((pokemon, pokemonInfo.MoveOneResourceName, pokemonInfo.MoveTwoResourceName,
+            pokemonInfo.MoveThreeResourceName, pokemonInfo.MoveFourResourceName), cancellationToken);
+    }
+    private async Task<(Pokemon Pokemon, PokemonSpecies PokemonSpecies, Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetResourcesFromApiAsync(
+        (Pokemon Pokemon, string MoveOneResourceName, string? MoveTwoResourceName, string? MoveThreeResourceName, string? MoveFourResourceName) pokemonInfo,
         CancellationToken cancellationToken = default
     )
     {
         using var activity = TelemetryHelperService.ActivitySource.StartActivity();
-        activity?.SetTag("ownedPokemon.pokemonResourceName", ownedPokemon.PokemonResourceName);
+        activity?.SetTag("pokemonResourceName", pokemonInfo.Pokemon.Name);
 
         _logger.LogInformation(
-            "Fetching OwnedPokemon resources from PokeApi with params: {@Params}",
+            "Fetching Pokemon resources from PokeApi with params: {@Params}",
             new
             {
-                ownedPokemon.PokemonResourceName,
-                ownedPokemon.MoveOneResourceName,
-                ownedPokemon.MoveTwoResourceName,
-                ownedPokemon.MoveThreeResourceName,
-                ownedPokemon.MoveFourResourceName,
+                pokemonInfo.Pokemon.Name,
+                pokemonInfo.MoveOneResourceName,
+                pokemonInfo.MoveTwoResourceName,
+                pokemonInfo.MoveThreeResourceName,
+                pokemonInfo.MoveFourResourceName,
             }
         );
-
-        var pokemonJob = _pokeApiClient.GetResourceAsync<Pokemon>(
-            ownedPokemon.PokemonResourceName,
-            cancellationToken
-        );
         var speciesJob = _pokeApiClient.GetResourceAsync<PokemonSpecies>(
-            ownedPokemon.PokemonResourceName,
+            pokemonInfo.Pokemon.Name,
             cancellationToken
         );
 
         var moveJobList = new List<Task<Move>>
         {
             _pokeApiClient.GetResourceAsync<Move>(
-                ownedPokemon.MoveOneResourceName,
+                pokemonInfo.MoveOneResourceName,
                 cancellationToken
             ),
         };
 
-        if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveTwoResourceName))
+        if (!string.IsNullOrWhiteSpace(pokemonInfo.MoveTwoResourceName))
         {
             moveJobList.Add(
                 _pokeApiClient.GetResourceAsync<Move>(
-                    ownedPokemon.MoveTwoResourceName,
+                    pokemonInfo.MoveTwoResourceName,
                     cancellationToken
                 )
             );
         }
-        if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveThreeResourceName))
+        if (!string.IsNullOrWhiteSpace(pokemonInfo.MoveThreeResourceName))
         {
             moveJobList.Add(
                 _pokeApiClient.GetResourceAsync<Move>(
-                    ownedPokemon.MoveThreeResourceName,
+                    pokemonInfo.MoveThreeResourceName,
                     cancellationToken
                 )
             );
         }
-        if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveFourResourceName))
+        if (!string.IsNullOrWhiteSpace(pokemonInfo.MoveFourResourceName))
         {
             moveJobList.Add(
                 _pokeApiClient.GetResourceAsync<Move>(
-                    ownedPokemon.MoveFourResourceName,
+                    pokemonInfo.MoveFourResourceName,
                     cancellationToken
                 )
             );
         }
-        var executionList = new List<Task> { pokemonJob, speciesJob }
+        var executionList = new List<Task> { speciesJob }
             .Concat(moveJobList)
             .ToArray();
 
@@ -192,13 +213,12 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         var finalMoveThree = moveJobList.ElementAtOrDefault(2);
         var finalMoveFour = moveJobList.ElementAtOrDefault(3);
 
-        var pokemon = await pokemonJob;
         var pokemonSpecies = await speciesJob;
         var moveOne = await moveJobList[0];
         var moveTwo = finalMoveTwo is null ? null : await finalMoveTwo;
         var moveThree = finalMoveThree is null ? null : await finalMoveThree;
         var moveFour = finalMoveFour is null ? null : await finalMoveFour;
 
-        return (pokemon, pokemonSpecies, moveOne, moveTwo, moveThree, moveFour);
+        return (pokemonInfo.Pokemon, pokemonSpecies, moveOne, moveTwo, moveThree, moveFour);
     }
 }

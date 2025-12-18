@@ -83,12 +83,12 @@ internal sealed class InGrassRandomPokemonEncounterCommand: IDomainCommand<(stri
      }
 
      private async Task<(Pokemon, PokemonSpecies)> GetPokemonFromApi(int pokedexId,
-         CancellationToken cancelationToken)
+         CancellationToken cancellationToken)
      {
          var pokemonApiJob = _pokeApiClient
-             .GetResourceAsync<Pokemon>(pokedexId, cancelationToken);
+             .GetResourceAsync<Pokemon>(pokedexId, cancellationToken);
          var pokemonSpeciesJob = _pokeApiClient
-             .GetResourceAsync<PokemonSpecies>(pokedexId, cancelationToken);
+             .GetResourceAsync<PokemonSpecies>(pokedexId, cancellationToken);
          
          await Task.WhenAll(pokemonApiJob, pokemonSpeciesJob);
          
