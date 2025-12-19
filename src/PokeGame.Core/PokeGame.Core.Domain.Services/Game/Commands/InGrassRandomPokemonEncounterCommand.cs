@@ -26,18 +26,21 @@ internal sealed class InGrassRandomPokemonEncounterCommand
     private readonly IGameSessionRepository _gameSessionRepository;
     private readonly IPokeApiClient _pokeApiClient;
     private readonly IPokeGameRuleHelperService _pokeGameRuleHelperService;
+    private readonly IGameAndPokeApiResourceManagerService _gameAndPokeApiResourceManagerService;
     private readonly ILogger<InGrassRandomPokemonEncounterCommand> _logger;
 
     public InGrassRandomPokemonEncounterCommand(
         IGameSessionRepository gameSessionRepository,
         IPokeApiClient pokeApiClient,
         IPokeGameRuleHelperService pokeGameRuleHelperService,
+        IGameAndPokeApiResourceManagerService gameAndPokeApiResourceManagerService,
         ILogger<InGrassRandomPokemonEncounterCommand> logger
     )
     {
         _gameSessionRepository = gameSessionRepository;
         _pokeApiClient = pokeApiClient;
         _pokeGameRuleHelperService = pokeGameRuleHelperService;
+        _gameAndPokeApiResourceManagerService = gameAndPokeApiResourceManagerService;
         _logger = logger;
     }
 
@@ -97,6 +100,16 @@ internal sealed class InGrassRandomPokemonEncounterCommand
 
         var wildPokemonMoveSetResourceNames =
             _pokeGameRuleHelperService.GetRandomMoveSetFromPokemon(pokemonApi, wildPokemonLevel);
+
+        (Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)? wildPokemonMoveSet =
+            string.IsNullOrEmpty(wildPokemonMoveSetResourceNames.MoveOneResourceName)
+                ? null
+                : await _gameAndPokeApiResourceManagerService.GetMoveSet(
+                    wildPokemonMoveSetResourceNames.MoveOneResourceName,
+                    wildPokemonMoveSetResourceNames.MoveTwoResourceName,
+                    wildPokemonMoveSetResourceNames.MoveThreeResourceName,
+                    wildPokemonMoveSetResourceNames.MoveFourResourceName
+                );
 
         throw new NotImplementedException();
     }
