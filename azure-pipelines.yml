@@ -60,7 +60,7 @@ stages:
         steps:
           - task: NodeTool@0
             inputs:
-              versionSpec: 22.x
+              versionSpec: 24.x
 
           - task: Npm@1
             displayName: "NPM install"
