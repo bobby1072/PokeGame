@@ -99,7 +99,10 @@ internal sealed class InGrassRandomPokemonEncounterCommand
         );
 
         var wildPokemonMoveSetResourceNames =
-            _pokeGameRuleHelperService.GetRandomMoveSetFromPokemon(pokemonFromApi, wildPokemonLevel);
+            _pokeGameRuleHelperService.GetRandomMoveSetFromPokemon(
+                pokemonFromApi,
+                wildPokemonLevel
+            );
 
         (Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)? wildPokemonMoveSet =
             string.IsNullOrEmpty(wildPokemonMoveSetResourceNames.MoveOneResourceName)
@@ -112,10 +115,35 @@ internal sealed class InGrassRandomPokemonEncounterCommand
                     cancelationToken
                 );
 
-        var newWildPokemon = new WildPokemon
+        var newWildPokemon = CreateNewWildPokemon(
+            pokemonFromApi,
+            wildPokemonLevel,
+            wildPokemonMoveSetResourceNames,
+            wildPokemonMoveSet
+        );
+
+        return new DomainCommandResult<WildPokemon?> { CommandResult = newWildPokemon };
+    }
+
+    private WildPokemon CreateNewWildPokemon(
+        Pokemon pokemonFromApi,
+        int wildPokemonLevel,
+        (
+            string? MoveOneResourceName,
+            string? MoveTwoResourceName,
+            string? MoveThreeResourceName,
+            string? MoveFourResourceName
+        ) wildPokemonMoveSetResourceNames,
+        (Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)? wildPokemonMoveSet
+    )
+    {
+        return new WildPokemon
         {
             Pokemon = pokemonFromApi,
-            CurrentHp = _pokeGameRuleHelperService.GetPokemonMaxHp(pokemonFromApi, wildPokemonLevel),
+            CurrentHp = _pokeGameRuleHelperService.GetPokemonMaxHp(
+                pokemonFromApi,
+                wildPokemonLevel
+            ),
             PokemonLevel = wildPokemonLevel,
             MoveOneResourceName = wildPokemonMoveSetResourceNames.MoveOneResourceName,
             MoveTwoResourceName = wildPokemonMoveSetResourceNames.MoveTwoResourceName,
@@ -126,11 +154,6 @@ internal sealed class InGrassRandomPokemonEncounterCommand
             MoveTwo = wildPokemonMoveSet?.MoveTwo,
             MoveThree = wildPokemonMoveSet?.MoveThree,
             MoveFour = wildPokemonMoveSet?.MoveFour,
-        };
-
-        return new DomainCommandResult<WildPokemon?>
-        {
-            CommandResult = newWildPokemon,
         };
     }
 

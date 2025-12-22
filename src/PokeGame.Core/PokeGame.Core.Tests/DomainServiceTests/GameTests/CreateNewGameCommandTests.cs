@@ -22,14 +22,6 @@ public sealed class CreateNewGameCommandTests
 
     public CreateNewGameCommandTests()
     {
-        var pokeGameRules = new ConfigurablePokeGameRules
-        {
-            XpMultiplier = 1.052m,
-            BaseXpCeiling = 100,
-            LegendaryXpMultiplier = 1.055m,
-            StatCalculationStats = new StatCalculationStats { DefaultIV = 31, DefaultEV = 0 },
-        };
-
         _command = new CreateNewGameCommand(
             _mockGameSaveRepository.Object,
             _mockValidatorService.Object,

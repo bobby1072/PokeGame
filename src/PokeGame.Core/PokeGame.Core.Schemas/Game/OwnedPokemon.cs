@@ -9,7 +9,7 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
     public required string PokemonResourceName { get; set; }
     public DateTime CaughtAt { get; set; } = DateTime.UtcNow;
     public required int PokemonLevel { get; set; }
-    public int CurrentExperience { get; set; } = 0;
+    public int CurrentExperience { get; set; }
     public required int CurrentHp { get; set; }
     public required string MoveOneResourceName { get; set; }
     [JsonIgnore]
