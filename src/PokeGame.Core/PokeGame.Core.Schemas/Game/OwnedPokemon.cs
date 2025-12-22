@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using PokeGame.Core.Schemas.PokeApi;
 
 namespace PokeGame.Core.Schemas.Game;
@@ -11,14 +12,20 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
     public int CurrentExperience { get; set; } = 0;
     public required int CurrentHp { get; set; }
     public required string MoveOneResourceName { get; set; }
+    [JsonIgnore]
     public Move? MoveOne { get; set; }
     public string? MoveTwoResourceName { get; set; }
+    [JsonIgnore]
     public Move? MoveTwo { get; set; }
     public string? MoveThreeResourceName { get; set; }
+    [JsonIgnore]
     public Move? MoveThree { get; set; }
     public string? MoveFourResourceName { get; set; }
+    [JsonIgnore]
     public Move? MoveFour { get; set; }
+    [JsonIgnore]
     public PokemonSpecies? PokemonSpecies { get; set; }
+    [JsonIgnore]
     public Pokemon? Pokemon { get; set; }
     public GameSave? GameSave { get; set; }
 

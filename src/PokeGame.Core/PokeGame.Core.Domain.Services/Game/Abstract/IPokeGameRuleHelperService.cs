@@ -17,4 +17,5 @@ internal interface IPokeGameRuleHelperService
     int GetRandomNumberFromIntRange(IntRange intRange);
     int? GetRandomPokedexNumberFromIntRangeWithRandomEncounterIncluded(IntRange intRange);
     int CalculateStat(int level, int baseStat);
+    int GetPokemonMaxHp(Pokemon poke, int pokemonLevel);
 }

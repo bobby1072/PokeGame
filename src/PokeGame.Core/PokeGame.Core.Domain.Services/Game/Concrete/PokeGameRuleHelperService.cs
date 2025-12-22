@@ -169,7 +169,10 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
             {
                 var tempPokemon = ownedPokemon;
                 tempPokemon.PokemonLevel = level;
-                return GetPokemonMaxHp(tempPokemon);
+                return GetPokemonMaxHp(tempPokemon.Pokemon
+                    ?? throw new PokeGameApiServerException(
+                        "Pokedex pokemon not attached to owned pokemon"
+                    ), tempPokemon.PokemonLevel);
             }
         );
 
@@ -204,7 +207,10 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
 
         var originalHp = ownedPokemon.CurrentHp;
 
-        ownedPokemon.CurrentHp = GetPokemonMaxHp(ownedPokemon);
+        ownedPokemon.CurrentHp = GetPokemonMaxHp(ownedPokemon.Pokemon
+            ?? throw new PokeGameApiServerException(
+                "Pokedex pokemon not attached to owned pokemon"
+            ), ownedPokemon.PokemonLevel);
 
         _logger.LogDebug(
             "Owned pokemon with id: {OwnedPokemonId} went from hp: {Originalhp} --> {NewHp}",
@@ -214,6 +220,25 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         );
 
         return ownedPokemon;
+    }
+    public int GetPokemonMaxHp(Pokemon poke, int pokemonLevel)
+    {
+        int evTerm = _configurablePokeGameRules.StatCalculationStats.DefaultEV / 4;
+        double core =
+            (
+                2
+                    *
+                        poke
+                            .Stats.FastArrayFirst(x => x.Stat.Name == "hp")
+                            .BaseStat
+                    
+                + _configurablePokeGameRules.StatCalculationStats.DefaultIV
+                + evTerm
+            )
+            * pokemonLevel
+            / 100.0;
+        int hp = (int)Math.Floor(core) + pokemonLevel + 10;
+        return hp;
     }
 
     private (int newLevel, int newCurrentExperience, int newCurrentHp) CalculateXpAndLevelUp(
@@ -249,28 +274,6 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
         return (newLevel, newExperience, newHp);
     }
 
-    private int GetPokemonMaxHp(OwnedPokemon ownedPokemon)
-    {
-        int evTerm = _configurablePokeGameRules.StatCalculationStats.DefaultEV / 4;
-        double core =
-            (
-                2
-                    * (
-                        ownedPokemon
-                            .Pokemon?.Stats.FastArrayFirst(x => x.Stat.Name == "hp")
-                            .BaseStat
-                        ?? throw new PokeGameApiServerException(
-                            "Pokedex pokemon not attached to owned pokemon"
-                        )
-                    )
-                + _configurablePokeGameRules.StatCalculationStats.DefaultIV
-                + evTerm
-            )
-            * ownedPokemon.PokemonLevel
-            / 100.0;
-        int hp = (int)Math.Floor(core) + ownedPokemon.PokemonLevel + 10;
-        return hp;
-    }
 
     private static int[] GetFullPokedexIndexArray(IntRange intRange)
     {

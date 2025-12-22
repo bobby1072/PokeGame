@@ -89,7 +89,7 @@ internal sealed class InGrassRandomPokemonEncounterCommand
             );
         }
 
-        var pokemonApi = await _pokeApiClient.GetResourceAsync<Pokemon>(
+        var pokemonFromApi = await _pokeApiClient.GetResourceAsync<Pokemon>(
             (int)randomPokemonId,
             cancelationToken
         );
@@ -99,7 +99,7 @@ internal sealed class InGrassRandomPokemonEncounterCommand
         );
 
         var wildPokemonMoveSetResourceNames =
-            _pokeGameRuleHelperService.GetRandomMoveSetFromPokemon(pokemonApi, wildPokemonLevel);
+            _pokeGameRuleHelperService.GetRandomMoveSetFromPokemon(pokemonFromApi, wildPokemonLevel);
 
         (Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)? wildPokemonMoveSet =
             string.IsNullOrEmpty(wildPokemonMoveSetResourceNames.MoveOneResourceName)
@@ -108,10 +108,30 @@ internal sealed class InGrassRandomPokemonEncounterCommand
                     wildPokemonMoveSetResourceNames.MoveOneResourceName,
                     wildPokemonMoveSetResourceNames.MoveTwoResourceName,
                     wildPokemonMoveSetResourceNames.MoveThreeResourceName,
-                    wildPokemonMoveSetResourceNames.MoveFourResourceName
+                    wildPokemonMoveSetResourceNames.MoveFourResourceName,
+                    cancelationToken
                 );
 
-        throw new NotImplementedException();
+        var newWildPokemon = new WildPokemon
+        {
+            Pokemon = pokemonFromApi,
+            CurrentHp = _pokeGameRuleHelperService.GetPokemonMaxHp(pokemonFromApi, wildPokemonLevel),
+            PokemonLevel = wildPokemonLevel,
+            MoveOneResourceName = wildPokemonMoveSetResourceNames.MoveOneResourceName,
+            MoveTwoResourceName = wildPokemonMoveSetResourceNames.MoveTwoResourceName,
+            MoveThreeResourceName = wildPokemonMoveSetResourceNames.MoveThreeResourceName,
+            MoveFourResourceName = wildPokemonMoveSetResourceNames.MoveFourResourceName,
+            PokemonResourceName = pokemonFromApi.Name,
+            MoveOne = wildPokemonMoveSet?.MoveOne,
+            MoveTwo = wildPokemonMoveSet?.MoveTwo,
+            MoveThree = wildPokemonMoveSet?.MoveThree,
+            MoveFour = wildPokemonMoveSet?.MoveFour,
+        };
+
+        return new DomainCommandResult<WildPokemon?>
+        {
+            CommandResult = newWildPokemon,
+        };
     }
 
     private async Task<GameSaveData> GetGameDataFromSession(
