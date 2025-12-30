@@ -4,6 +4,7 @@ import { PokePreloader } from "./scenes/PokePreloader.ts";
 import { BasiliaTownScene } from "./scenes/BasiliaTownScene.ts";
 import BasiliaTownStarterHomeScene from "./scenes/BasiliaTownStarterHomeScene.ts";
 import BasiliaTownStarterLabScene from "./scenes/BasiliaTownStarterLabScene.ts";
+import { BasiliaForestScene } from "./scenes/BasiliaForestScene.ts";
 
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
@@ -33,6 +34,7 @@ const config: Phaser.Types.Core.GameConfig = {
         BasiliaTownScene,
         BasiliaTownStarterHomeScene,
         BasiliaTownStarterLabScene,
+        BasiliaForestScene,
     ] as any,
 };
 

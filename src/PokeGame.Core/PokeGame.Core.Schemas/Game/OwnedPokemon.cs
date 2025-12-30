@@ -1,5 +1,5 @@
+using System.Text.Json.Serialization;
 using PokeGame.Core.Schemas.PokeApi;
-using PokeGame.Core.Schemas.Pokedex;
 
 namespace PokeGame.Core.Schemas.Game;
 
@@ -9,23 +9,30 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
     public required string PokemonResourceName { get; set; }
     public DateTime CaughtAt { get; set; } = DateTime.UtcNow;
     public required int PokemonLevel { get; set; }
-    public int CurrentExperience { get; set; } = 0;
+    public int CurrentExperience { get; set; }
     public required int CurrentHp { get; set; }
     public required string MoveOneResourceName { get; set; }
+    [JsonIgnore]
     public Move? MoveOne { get; set; }
     public string? MoveTwoResourceName { get; set; }
+    [JsonIgnore]
     public Move? MoveTwo { get; set; }
     public string? MoveThreeResourceName { get; set; }
+    [JsonIgnore]
     public Move? MoveThree { get; set; }
     public string? MoveFourResourceName { get; set; }
+    [JsonIgnore]
     public Move? MoveFour { get; set; }
+    [JsonIgnore]
     public PokemonSpecies? PokemonSpecies { get; set; }
+    [JsonIgnore]
     public Pokemon? Pokemon { get; set; }
     public GameSave? GameSave { get; set; }
 
     public override bool Equals(OwnedPokemon? other)
     {
         return other is not null
+            && Id == other.Id
             && GameSaveId == other.GameSaveId
             && PokemonResourceName == other.PokemonResourceName
             && CaughtAt == other.CaughtAt

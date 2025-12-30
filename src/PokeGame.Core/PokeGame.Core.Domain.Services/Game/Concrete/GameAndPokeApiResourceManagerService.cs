@@ -27,29 +27,96 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         _logger = logger;
     }
 
+    public async Task<(Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetMoveSet(
+        string moveOneResourceName,
+        string? moveTwoResourceName,
+        string? moveThreeResourceName,
+        string? moveFourResourceName,
+        CancellationToken cancellationToken = default
+    )
+    {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
+        activity?.SetTag(nameof(moveOneResourceName), moveOneResourceName);
+        activity?.SetTag(nameof(moveTwoResourceName), moveTwoResourceName);
+        activity?.SetTag(nameof(moveThreeResourceName), moveThreeResourceName);
+        activity?.SetTag(nameof(moveFourResourceName), moveFourResourceName);
+
+        try
+        {
+            return await GetMoves(
+                (
+                    moveOneResourceName,
+                    moveTwoResourceName,
+                    moveThreeResourceName,
+                    moveFourResourceName
+                ),
+                cancellationToken
+            );
+        }
+        catch (PokeGameApiException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new PokeGameApiServerException("Failed to fetch owned pokemon resources", ex);
+        }
+    }
+
     public async Task<IReadOnlyCollection<OwnedPokemon>> GetDeepOwnedPokemon(
         IReadOnlyCollection<OwnedPokemon> ownedPokemons,
         CancellationToken cancellationToken = default
     )
     {
-        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
-            nameof(GetDeepOwnedPokemon)
-        );
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
         activity?.SetTag("ownedPokemons.count", ownedPokemons.Count);
 
         try
         {
-            var getResourcesJobList = ownedPokemons
-                .FastArraySelect(x => GetResourcesFromApiAsync(x, cancellationToken))
+            (
+                OwnedPokemon OwnedPokemon,
+                Task<(
+                    Pokemon Pokemon,
+                    PokemonSpecies PokemonSpecies,
+                    Move MoveOne,
+                    Move? MoveTwo,
+                    Move? MoveThree,
+                    Move? MoveFour
+                )> ResourceJob
+            )[] getResourcesJobList = ownedPokemons
+                .FastArraySelect(x =>
+                    (
+                        x,
+                        GetResourcesFromApiAsync(
+                            (
+                                x.PokemonResourceName,
+                                x.MoveOneResourceName,
+                                x.MoveTwoResourceName,
+                                x.MoveThreeResourceName,
+                                x.MoveFourResourceName
+                            ),
+                            cancellationToken
+                        )
+                    )
+                )
                 .ToArray();
 
-            await Task.WhenAll(getResourcesJobList);
+            await Task.WhenAll(getResourcesJobList.FastArraySelect(x => x.ResourceJob));
 
             var finalOwnedPokemon = new List<OwnedPokemon>();
 
             foreach (var resource in getResourcesJobList)
             {
-                finalOwnedPokemon.Add(await resource);
+                var results = await resource.ResourceJob;
+
+                resource.OwnedPokemon.Pokemon = results.Pokemon;
+                resource.OwnedPokemon.PokemonSpecies = results.PokemonSpecies;
+                resource.OwnedPokemon.MoveOne = results.MoveOne;
+                resource.OwnedPokemon.MoveTwo = results.MoveTwo;
+                resource.OwnedPokemon.MoveThree = results.MoveThree;
+                resource.OwnedPokemon.MoveFour = results.MoveFour;
+
+                finalOwnedPokemon.Add(resource.OwnedPokemon);
             }
 
             return finalOwnedPokemon;
@@ -105,92 +172,175 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         }
     }
 
-    private async Task<OwnedPokemon> GetResourcesFromApiAsync(
-        OwnedPokemon ownedPokemon,
+    private async Task<(
+        Pokemon Pokemon,
+        PokemonSpecies PokemonSpecies,
+        Move MoveOne,
+        Move? MoveTwo,
+        Move? MoveThree,
+        Move? MoveFour
+    )> GetResourcesFromApiAsync(
+        (
+            string PokemonResourceName,
+            string MoveOneResourceName,
+            string? MoveTwoResourceName,
+            string? MoveThreeResourceName,
+            string? MoveFourResourceName
+        ) pokemonInfo,
         CancellationToken cancellationToken = default
     )
     {
-        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
-            nameof(GetResourcesFromApiAsync)
-        );
-        activity?.SetTag("ownedPokemon.id", ownedPokemon.Id.ToString());
-        activity?.SetTag("ownedPokemon.pokemonResourceName", ownedPokemon.PokemonResourceName);
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
+        activity?.SetTag("pokemonResourceName", pokemonInfo.PokemonResourceName);
 
         _logger.LogInformation(
-            "Fetching OwnedPokemon resources from PokeApi with params: {@Params}",
+            "Fetching Pokemon resources from PokeApi with params: {@Params}",
             new
             {
-                ownedPokemon.Id,
-                ownedPokemon.PokemonResourceName,
-                ownedPokemon.MoveOneResourceName,
-                ownedPokemon.MoveTwoResourceName,
-                ownedPokemon.MoveThreeResourceName,
-                ownedPokemon.MoveFourResourceName,
+                pokemonInfo.PokemonResourceName,
+                pokemonInfo.MoveOneResourceName,
+                pokemonInfo.MoveTwoResourceName,
+                pokemonInfo.MoveThreeResourceName,
+                pokemonInfo.MoveFourResourceName,
             }
         );
 
-        var pokemonJob = _pokeApiClient.GetResourceAsync<Pokemon>(
-            ownedPokemon.PokemonResourceName,
+        var pokemon = await _pokeApiClient.GetResourceAsync<Pokemon>(
+            pokemonInfo.PokemonResourceName,
             cancellationToken
+        );
+
+        return await GetResourcesFromApiAsync(
+            (
+                pokemon,
+                pokemonInfo.MoveOneResourceName,
+                pokemonInfo.MoveTwoResourceName,
+                pokemonInfo.MoveThreeResourceName,
+                pokemonInfo.MoveFourResourceName
+            ),
+            cancellationToken
+        );
+    }
+
+    private async Task<(
+        Pokemon Pokemon,
+        PokemonSpecies PokemonSpecies,
+        Move MoveOne,
+        Move? MoveTwo,
+        Move? MoveThree,
+        Move? MoveFour
+    )> GetResourcesFromApiAsync(
+        (
+            Pokemon Pokemon,
+            string MoveOneResourceName,
+            string? MoveTwoResourceName,
+            string? MoveThreeResourceName,
+            string? MoveFourResourceName
+        ) pokemonInfo,
+        CancellationToken cancellationToken = default
+    )
+    {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
+        activity?.SetTag("pokemonResourceName", pokemonInfo.Pokemon.Name);
+
+        _logger.LogInformation(
+            "Fetching Pokemon resources from PokeApi with params: {@Params}",
+            new
+            {
+                pokemonInfo.Pokemon.Name,
+                pokemonInfo.MoveOneResourceName,
+                pokemonInfo.MoveTwoResourceName,
+                pokemonInfo.MoveThreeResourceName,
+                pokemonInfo.MoveFourResourceName,
+            }
         );
         var speciesJob = _pokeApiClient.GetResourceAsync<PokemonSpecies>(
-            ownedPokemon.PokemonResourceName,
+            pokemonInfo.Pokemon.Name,
+            cancellationToken
+        );
+        var getMovesJob = GetMoves(
+            (
+                pokemonInfo.MoveOneResourceName,
+                pokemonInfo.MoveTwoResourceName,
+                pokemonInfo.MoveThreeResourceName,
+                pokemonInfo.MoveFourResourceName
+            ),
             cancellationToken
         );
 
-        var moveJobList = new List<Task<Move>>
-        {
-            _pokeApiClient.GetResourceAsync<Move>(
-                ownedPokemon.MoveOneResourceName,
-                cancellationToken
-            ),
-        };
-
-        if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveTwoResourceName))
-        {
-            moveJobList.Add(
-                _pokeApiClient.GetResourceAsync<Move>(
-                    ownedPokemon.MoveTwoResourceName,
-                    cancellationToken
-                )
-            );
-        }
-        if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveThreeResourceName))
-        {
-            moveJobList.Add(
-                _pokeApiClient.GetResourceAsync<Move>(
-                    ownedPokemon.MoveThreeResourceName,
-                    cancellationToken
-                )
-            );
-        }
-        if (!string.IsNullOrWhiteSpace(ownedPokemon.MoveFourResourceName))
-        {
-            moveJobList.Add(
-                _pokeApiClient.GetResourceAsync<Move>(
-                    ownedPokemon.MoveFourResourceName,
-                    cancellationToken
-                )
-            );
-        }
-
-        var executionList = new List<Task> { pokemonJob, speciesJob }
-            .Concat(moveJobList)
+        var executionList = new List<Task> { speciesJob }
+            .Append(getMovesJob)
             .ToArray();
 
         await Task.WhenAll(executionList);
+
+        var pokemonSpecies = await speciesJob;
+        var moveSet = await getMovesJob;
+
+        return (
+            pokemonInfo.Pokemon,
+            pokemonSpecies,
+            moveSet.MoveOne,
+            moveSet.MoveTwo,
+            moveSet.MoveThree,
+            moveSet.MoveFour
+        );
+    }
+
+    private async Task<(Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetMoves(
+        (
+            string MoveOneResourceName,
+            string? MoveTwoResourceName,
+            string? MoveThreeResourceName,
+            string? MoveFourResourceName
+        ) moveInfo,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var moveJobList = new List<Task<Move>>
+        {
+            _pokeApiClient.GetResourceAsync<Move>(moveInfo.MoveOneResourceName, cancellationToken),
+        };
+
+        if (!string.IsNullOrWhiteSpace(moveInfo.MoveTwoResourceName))
+        {
+            moveJobList.Add(
+                _pokeApiClient.GetResourceAsync<Move>(
+                    moveInfo.MoveTwoResourceName,
+                    cancellationToken
+                )
+            );
+        }
+        if (!string.IsNullOrWhiteSpace(moveInfo.MoveThreeResourceName))
+        {
+            moveJobList.Add(
+                _pokeApiClient.GetResourceAsync<Move>(
+                    moveInfo.MoveThreeResourceName,
+                    cancellationToken
+                )
+            );
+        }
+        if (!string.IsNullOrWhiteSpace(moveInfo.MoveFourResourceName))
+        {
+            moveJobList.Add(
+                _pokeApiClient.GetResourceAsync<Move>(
+                    moveInfo.MoveFourResourceName,
+                    cancellationToken
+                )
+            );
+        }
+
+        await Task.WhenAll(moveJobList);
 
         var finalMoveTwo = moveJobList.ElementAtOrDefault(1);
         var finalMoveThree = moveJobList.ElementAtOrDefault(2);
         var finalMoveFour = moveJobList.ElementAtOrDefault(3);
 
-        ownedPokemon.Pokemon = await pokemonJob;
-        ownedPokemon.PokemonSpecies = await speciesJob;
-        ownedPokemon.MoveOne = await moveJobList[0];
-        ownedPokemon.MoveTwo = finalMoveTwo is null ? null : await finalMoveTwo;
-        ownedPokemon.MoveThree = finalMoveThree is null ? null : await finalMoveThree;
-        ownedPokemon.MoveFour = finalMoveFour is null ? null : await finalMoveFour;
+        var moveOne = await moveJobList[0];
+        var moveTwo = finalMoveTwo is null ? null : await finalMoveTwo;
+        var moveThree = finalMoveThree is null ? null : await finalMoveThree;
+        var moveFour = finalMoveFour is null ? null : await finalMoveFour;
 
-        return ownedPokemon;
+        return (moveOne, moveTwo, moveThree, moveFour);
     }
 }
