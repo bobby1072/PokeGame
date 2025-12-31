@@ -659,7 +659,7 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
             Name = name,
             Height = 4,
             Weight = 60,
-            BaseExperience = 112,
+            BaseExperienceFromDefeating = 112,
             Sprites = new PokemonSprites(),
             Types = new List<PokemonType>(),
             Stats = new List<PokemonStat>(),

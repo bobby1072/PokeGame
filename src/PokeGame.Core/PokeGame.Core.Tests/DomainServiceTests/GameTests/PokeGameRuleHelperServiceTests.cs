@@ -630,7 +630,7 @@ public sealed class PokeGameRuleHelperServiceTests
         {
             Id = 1,
             Name = "bulbasaur",
-            BaseExperience = 64,
+            BaseExperienceFromDefeating = 64,
             Height = 7,
             Weight = 69,
             IsDefault = true,
