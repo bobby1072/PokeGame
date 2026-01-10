@@ -1,11 +1,14 @@
-﻿using PokeGame.Core.Schemas.Game;
-using PokeGame.Core.Schemas.Game.PokemonRelated;
+﻿using PokeGame.Core.Schemas.Game.PokemonRelated;
 using PokeGame.Core.Schemas.PokeApi;
 
 namespace PokeGame.Core.Domain.Services.Game.Abstract;
 
 internal interface IGameAndPokeApiResourceManagerService
 {
+    Task<(Pokemon Pokemon, PokemonSpecies pokemonSpecies)> GetPokemonAndSpecies(int pokemonNumber, 
+        CancellationToken cancellationToken = default);
+    Task<(Pokemon Pokemon, PokemonSpecies pokemonSpecies)> GetPokemonAndSpecies(string pokemonName, 
+        CancellationToken cancellationToken = default);
     Task<(Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetMoveSet(
         string moveOneResourceName,
         string? moveTwoResourceName,

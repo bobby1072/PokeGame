@@ -24,7 +24,7 @@ public sealed class WildPokemon: DomainModel<WildPokemon>
     [JsonIgnore]
     public Pokemon? Pokemon { get; set; }
     [JsonIgnore]
-    public PokemonSpecies? Species { get; set; }
+    public PokemonSpecies? PokemonSpecies { get; set; }
 
     public PokemonInnerDetails InnerDetails => this.CreatePokemonInnerDetails();
 

@@ -11,7 +11,7 @@ internal static class PokemonDetailsExtensions
     public static PokemonInnerDetails CreatePokemonInnerDetails(this WildPokemon wildPokemon)
     {
         if (wildPokemon.Pokemon is null ||
-            wildPokemon.Species is null)
+            wildPokemon.PokemonSpecies is null)
         {
             throw new PokeGameApiServerException(
                 "Failed to create pokemon inner details as owned pokemon missing data");
@@ -22,7 +22,7 @@ internal static class PokemonDetailsExtensions
             BaseExperienceFromDefeating = wildPokemon.Pokemon.BaseExperienceFromDefeating,
             Height = wildPokemon.Pokemon.Height,
             Weight = wildPokemon.Pokemon.Weight,
-            IsLegendary = wildPokemon.Species.IsLegendary,
+            IsLegendary = wildPokemon.PokemonSpecies.IsLegendary,
             Sprites = wildPokemon.Pokemon.Sprites.CreatePokemonSpriteDetails(),
             Types = wildPokemon.Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeDetails()).ToArray(),
             Stats = wildPokemon.Pokemon.Stats.FastArraySelect(x => x.CreatePokemonStatDetails()).ToArray()
