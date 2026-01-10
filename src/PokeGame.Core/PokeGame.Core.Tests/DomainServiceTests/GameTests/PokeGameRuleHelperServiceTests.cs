@@ -43,8 +43,7 @@ public sealed class PokeGameRuleHelperServiceTests
     public void GetRandomMoveSetFromPokemon_Should_Return_Empty_When_Pokemon_Has_No_Moves()
     {
         // Arrange
-        var pokemon = CreateTestPokemon();
-        pokemon.Moves = new List<PokemonMove>();
+        var pokemon = CreateTestPokemon(moves: new List<PokemonMove>());
         var level = 10;
 
         // Act
@@ -61,8 +60,7 @@ public sealed class PokeGameRuleHelperServiceTests
     public void GetRandomMoveSetFromPokemon_Should_Return_Single_Move_When_Only_One_Move_Available()
     {
         // Arrange
-        var pokemon = CreateTestPokemon();
-        pokemon.Moves = new List<PokemonMove>
+        var moves = new List<PokemonMove>
         {
             new PokemonMove
             {
@@ -82,6 +80,7 @@ public sealed class PokeGameRuleHelperServiceTests
                 }
             }
         };
+        var pokemon = CreateTestPokemon(moves: moves);
         var level = 10;
 
         // Act
@@ -98,8 +97,7 @@ public sealed class PokeGameRuleHelperServiceTests
     public void GetRandomMoveSetFromPokemon_Should_Return_Up_To_Four_Moves()
     {
         // Arrange
-        var pokemon = CreateTestPokemon();
-        pokemon.Moves = new List<PokemonMove>
+        var moves = new List<PokemonMove>
         {
             CreatePokemonMove("tackle", 1),
             CreatePokemonMove("growl", 1),
@@ -108,6 +106,7 @@ public sealed class PokeGameRuleHelperServiceTests
             CreatePokemonMove("fire-blast", 50),
             CreatePokemonMove("flamethrower", 30)
         };
+        var pokemon = CreateTestPokemon(moves: moves);
         var level = 10;
 
         // Act
@@ -131,13 +130,13 @@ public sealed class PokeGameRuleHelperServiceTests
     public void GetRandomMoveSetFromPokemon_Should_Only_Return_Moves_Learned_At_Or_Below_Level()
     {
         // Arrange
-        var pokemon = CreateTestPokemon();
-        pokemon.Moves = new List<PokemonMove>
+        var moves = new List<PokemonMove>
         {
             CreatePokemonMove("tackle", 1),
             CreatePokemonMove("ember", 5),
             CreatePokemonMove("fire-blast", 50)
         };
+        var pokemon = CreateTestPokemon(moves: moves);
         var level = 10;
 
         // Act
@@ -159,14 +158,14 @@ public sealed class PokeGameRuleHelperServiceTests
     public void GetRandomMoveSetFromPokemon_Should_Return_Unique_Moves()
     {
         // Arrange
-        var pokemon = CreateTestPokemon();
-        pokemon.Moves = new List<PokemonMove>
+        var moves = new List<PokemonMove>
         {
             CreatePokemonMove("tackle", 1),
             CreatePokemonMove("growl", 1),
             CreatePokemonMove("ember", 5),
             CreatePokemonMove("scratch", 5)
         };
+        var pokemon = CreateTestPokemon(moves: moves);
         var level = 10;
 
         // Act
@@ -345,8 +344,7 @@ public sealed class PokeGameRuleHelperServiceTests
     public void GetPokemonMaxHp_Should_Calculate_Correct_Hp()
     {
         // Arrange
-        var pokemon = CreateTestPokemon();
-        pokemon.Stats = new List<PokemonStat>
+        var stats = new List<PokemonStat>
         {
             new PokemonStat
             {
@@ -355,6 +353,7 @@ public sealed class PokeGameRuleHelperServiceTests
                 Stat = new NamedApiResource<Stat> { Name = "hp", Url = "" }
             }
         };
+        var pokemon = CreateTestPokemon(stats: stats);
         var level = 50;
 
         // Act
@@ -369,8 +368,7 @@ public sealed class PokeGameRuleHelperServiceTests
     public void GetPokemonMaxHp_Should_Scale_With_Level()
     {
         // Arrange
-        var pokemon = CreateTestPokemon();
-        pokemon.Stats = new List<PokemonStat>
+        var stats = new List<PokemonStat>
         {
             new PokemonStat
             {
@@ -379,6 +377,7 @@ public sealed class PokeGameRuleHelperServiceTests
                 Stat = new NamedApiResource<Stat> { Name = "hp", Url = "" }
             }
         };
+        var pokemon = CreateTestPokemon(stats: stats);
 
         // Act
         var hp1 = _service.GetPokemonMaxHp(pokemon, 10);
@@ -394,8 +393,7 @@ public sealed class PokeGameRuleHelperServiceTests
     public void GetPokemonMaxHp_Should_Use_Hp_Stat()
     {
         // Arrange
-        var pokemon = CreateTestPokemon();
-        pokemon.Stats = new List<PokemonStat>
+        var stats = new List<PokemonStat>
         {
             new PokemonStat
             {
@@ -410,6 +408,7 @@ public sealed class PokeGameRuleHelperServiceTests
                 Stat = new NamedApiResource<Stat> { Name = "attack", Url = "" }
             }
         };
+        var pokemon = CreateTestPokemon(stats: stats);
         var level = 50;
 
         // Act
@@ -427,11 +426,7 @@ public sealed class PokeGameRuleHelperServiceTests
     public void RefillOwnedPokemonHp_Should_Restore_Hp_To_Max()
     {
         // Arrange
-        var ownedPokemon = CreateTestOwnedPokemon();
-        ownedPokemon.PokemonLevel = 50;
-        ownedPokemon.CurrentHp = 10;
-        ownedPokemon.Pokemon = CreateTestPokemon();
-        ownedPokemon.Pokemon.Stats = new List<PokemonStat>
+        var stats = new List<PokemonStat>
         {
             new PokemonStat
             {
@@ -440,6 +435,10 @@ public sealed class PokeGameRuleHelperServiceTests
                 Stat = new NamedApiResource<Stat> { Name = "hp", Url = "" }
             }
         };
+        var ownedPokemon = CreateTestOwnedPokemon();
+        ownedPokemon.PokemonLevel = 50;
+        ownedPokemon.CurrentHp = 10;
+        ownedPokemon.Pokemon = CreateTestPokemon(stats: stats);
 
         // Act
         var result = _service.RefillOwnedPokemonHp(ownedPokemon);
@@ -472,11 +471,7 @@ public sealed class PokeGameRuleHelperServiceTests
     public void AddXpToOwnedPokemon_Should_Add_Experience_Without_Level_Up()
     {
         // Arrange
-        var ownedPokemon = CreateTestOwnedPokemon();
-        ownedPokemon.PokemonLevel = 5;
-        ownedPokemon.CurrentExperience = 50;
-        ownedPokemon.Pokemon = CreateTestPokemon();
-        ownedPokemon.Pokemon.Stats = new List<PokemonStat>
+        var stats = new List<PokemonStat>
         {
             new PokemonStat
             {
@@ -485,6 +480,10 @@ public sealed class PokeGameRuleHelperServiceTests
                 Stat = new NamedApiResource<Stat> { Name = "hp", Url = "" }
             }
         };
+        var ownedPokemon = CreateTestOwnedPokemon();
+        ownedPokemon.PokemonLevel = 5;
+        ownedPokemon.CurrentExperience = 50;
+        ownedPokemon.Pokemon = CreateTestPokemon(stats: stats);
         ownedPokemon.PokemonSpecies = CreateTestPokemonSpecies(isLegendary: false);
 
         // Act
@@ -499,11 +498,7 @@ public sealed class PokeGameRuleHelperServiceTests
     public void AddXpToOwnedPokemon_Should_Level_Up_When_Enough_Experience()
     {
         // Arrange
-        var ownedPokemon = CreateTestOwnedPokemon();
-        ownedPokemon.PokemonLevel = 1;
-        ownedPokemon.CurrentExperience = 0;
-        ownedPokemon.Pokemon = CreateTestPokemon();
-        ownedPokemon.Pokemon.Stats = new List<PokemonStat>
+        var stats = new List<PokemonStat>
         {
             new PokemonStat
             {
@@ -512,6 +507,10 @@ public sealed class PokeGameRuleHelperServiceTests
                 Stat = new NamedApiResource<Stat> { Name = "hp", Url = "" }
             }
         };
+        var ownedPokemon = CreateTestOwnedPokemon();
+        ownedPokemon.PokemonLevel = 1;
+        ownedPokemon.CurrentExperience = 0;
+        ownedPokemon.Pokemon = CreateTestPokemon(stats: stats);
         ownedPokemon.PokemonSpecies = CreateTestPokemonSpecies(isLegendary: false);
 
         // Act - Add enough XP to level up (BaseXpCeiling is 100, multiplier is 1.5)
@@ -525,11 +524,7 @@ public sealed class PokeGameRuleHelperServiceTests
     public void AddXpToOwnedPokemon_Should_Use_Different_Multiplier_For_Legendary()
     {
         // Arrange - Regular pokemon
-        var regularPokemon = CreateTestOwnedPokemon();
-        regularPokemon.PokemonLevel = 1;
-        regularPokemon.CurrentExperience = 0;
-        regularPokemon.Pokemon = CreateTestPokemon();
-        regularPokemon.Pokemon.Stats = new List<PokemonStat>
+        var stats = new List<PokemonStat>
         {
             new PokemonStat
             {
@@ -538,22 +533,17 @@ public sealed class PokeGameRuleHelperServiceTests
                 Stat = new NamedApiResource<Stat> { Name = "hp", Url = "" }
             }
         };
+        var regularPokemon = CreateTestOwnedPokemon();
+        regularPokemon.PokemonLevel = 1;
+        regularPokemon.CurrentExperience = 0;
+        regularPokemon.Pokemon = CreateTestPokemon(stats: stats);
         regularPokemon.PokemonSpecies = CreateTestPokemonSpecies(isLegendary: false);
 
         // Arrange - Legendary pokemon
         var legendaryPokemon = CreateTestOwnedPokemon();
         legendaryPokemon.PokemonLevel = 1;
         legendaryPokemon.CurrentExperience = 0;
-        legendaryPokemon.Pokemon = CreateTestPokemon();
-        legendaryPokemon.Pokemon.Stats = new List<PokemonStat>
-        {
-            new PokemonStat
-            {
-                BaseStat = 45,
-                Effort = 0,
-                Stat = new NamedApiResource<Stat> { Name = "hp", Url = "" }
-            }
-        };
+        legendaryPokemon.Pokemon = CreateTestPokemon(stats: stats);
         legendaryPokemon.PokemonSpecies = CreateTestPokemonSpecies(isLegendary: true);
 
         // Act - Add same XP to both
@@ -599,11 +589,7 @@ public sealed class PokeGameRuleHelperServiceTests
     public void AddXpToOwnedPokemon_Should_Handle_Multiple_Level_Ups()
     {
         // Arrange
-        var ownedPokemon = CreateTestOwnedPokemon();
-        ownedPokemon.PokemonLevel = 1;
-        ownedPokemon.CurrentExperience = 0;
-        ownedPokemon.Pokemon = CreateTestPokemon();
-        ownedPokemon.Pokemon.Stats = new List<PokemonStat>
+        var stats = new List<PokemonStat>
         {
             new PokemonStat
             {
@@ -612,6 +598,10 @@ public sealed class PokeGameRuleHelperServiceTests
                 Stat = new NamedApiResource<Stat> { Name = "hp", Url = "" }
             }
         };
+        var ownedPokemon = CreateTestOwnedPokemon();
+        ownedPokemon.PokemonLevel = 1;
+        ownedPokemon.CurrentExperience = 0;
+        ownedPokemon.Pokemon = CreateTestPokemon(stats: stats);
         ownedPokemon.PokemonSpecies = CreateTestPokemonSpecies(isLegendary: false);
 
         // Act - Add massive XP to trigger multiple level ups
@@ -625,7 +615,7 @@ public sealed class PokeGameRuleHelperServiceTests
 
     #region Helper Methods
 
-    private static Pokemon CreateTestPokemon()
+    private static Pokemon CreateTestPokemon(List<PokemonMove>? moves = null, List<PokemonStat>? stats = null)
     {
         return new Pokemon
         {
@@ -641,11 +631,17 @@ public sealed class PokeGameRuleHelperServiceTests
             GameIndicies = new List<VersionGameIndex>(),
             HeldItems = new List<PokemonHeldItem>(),
             LocationAreaEncounters = "",
-            Moves = new List<PokemonMove>(),
+            Moves = moves ?? new List<PokemonMove>(),
             PastTypes = new List<PokemonPastTypes>(),
-            Sprites = new PokemonSprites(),
+            Sprites = new PokemonSprites
+            {
+                FrontDefault = "front",
+                FrontShiny = "front-shiny",
+                BackDefault = "back",
+                BackShiny = "back-shiny"
+            },
             Species = new NamedApiResource<PokemonSpecies> { Name = "bulbasaur", Url = "" },
-            Stats = new List<PokemonStat>(),
+            Stats = stats ?? new List<PokemonStat>(),
             Types = new List<PokemonType>()
         };
     }

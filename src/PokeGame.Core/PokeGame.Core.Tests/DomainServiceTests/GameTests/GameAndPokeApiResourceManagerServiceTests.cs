@@ -678,7 +678,13 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
             Height = 4,
             Weight = 60,
             BaseExperienceFromDefeating = 112,
-            Sprites = new PokemonSprites(),
+            Sprites = new PokemonSprites
+            {
+                FrontDefault = "front",
+                FrontShiny = "front-shiny",
+                BackDefault = "back",
+                BackShiny = "back-shiny"
+            },
             Types = new List<PokemonType>(),
             Stats = new List<PokemonStat>(),
             Moves = new List<PokemonMove>(),
