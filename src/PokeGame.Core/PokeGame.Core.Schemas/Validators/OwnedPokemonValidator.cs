@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 
 namespace PokeGame.Core.Schemas.Validators;
 

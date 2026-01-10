@@ -5,6 +5,7 @@ using PokeGame.Core.Common.Extensions;
 using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Domain.Services.User.Abstract;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 using PokeGame.Core.SignalR.Models;
 
 namespace PokeGame.Core.SignalR.Hubs;

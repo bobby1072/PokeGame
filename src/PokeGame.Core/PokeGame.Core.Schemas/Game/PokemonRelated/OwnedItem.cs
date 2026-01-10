@@ -1,4 +1,4 @@
-namespace PokeGame.Core.Schemas.Game;
+namespace PokeGame.Core.Schemas.Game.PokemonRelated;
 
 public sealed class OwnedItem : PersistableDomainModel<OwnedItem, Guid?>
 {

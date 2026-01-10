@@ -7,6 +7,7 @@ using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Domain.Services.Game.Concrete;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 using PokeGame.Core.Schemas.PokeApi;
 
 namespace PokeGame.Core.Tests.DomainServiceTests.GameTests;

@@ -1,6 +1,4 @@
-using PokeGame.Core.Schemas.Game.PokemonRelated;
-
-namespace PokeGame.Core.Schemas.Game;
+namespace PokeGame.Core.Schemas.Game.PokemonRelated;
 
 public sealed class PokemonInnerDetails: DomainModel<PokemonInnerDetails>
 {

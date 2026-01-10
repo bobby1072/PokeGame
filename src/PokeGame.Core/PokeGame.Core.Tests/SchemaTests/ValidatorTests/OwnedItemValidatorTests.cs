@@ -1,6 +1,7 @@
 using AutoFixture;
 using FluentValidation.TestHelper;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 using PokeGame.Core.Schemas.Validators;
 
 namespace PokeGame.Core.Tests.SchemaTests.ValidatorTests;
