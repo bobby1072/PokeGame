@@ -8,6 +8,7 @@ using PokeGame.Core.Persistence.Entities.Extensions;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 
 namespace PokeGame.Core.Persistence.Repositories.Concrete;
 

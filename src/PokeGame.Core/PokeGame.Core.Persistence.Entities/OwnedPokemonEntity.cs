@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 
 namespace PokeGame.Core.Persistence.Entities;
 

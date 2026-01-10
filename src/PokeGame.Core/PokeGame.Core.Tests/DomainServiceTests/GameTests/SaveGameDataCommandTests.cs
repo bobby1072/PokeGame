@@ -10,6 +10,7 @@ using PokeGame.Core.Domain.Services.Game.Commands;
 using PokeGame.Core.Persistence.Entities;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 using User = PokeGame.Core.Schemas.Game.User;
 
 namespace PokeGame.Core.Tests.DomainServiceTests.GameTests;

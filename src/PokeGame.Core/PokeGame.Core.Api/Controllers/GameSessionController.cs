@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PokeGame.Core.Common.Attributes;
 using PokeGame.Core.Domain.Services.Game.Abstract;
-using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 
 namespace PokeGame.Core.Api.Controllers;
 

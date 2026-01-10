@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 using PokeGame.Core.Schemas.Validators;
 
 namespace PokeGame.Core.Schemas.Extensions;

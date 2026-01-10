@@ -1,4 +1,5 @@
 ﻿using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 
 namespace PokeGame.Core.Domain.Services.Game.Abstract;
 

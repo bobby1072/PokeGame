@@ -1,7 +1,8 @@
 using System.Text.Json.Serialization;
+using PokeGame.Core.Schemas.Extensions;
 using PokeGame.Core.Schemas.PokeApi;
 
-namespace PokeGame.Core.Schemas.Game;
+namespace PokeGame.Core.Schemas.Game.PokemonRelated;
 
 public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
 {
@@ -28,6 +29,7 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
     [JsonIgnore]
     public Pokemon? Pokemon { get; set; }
     public GameSave? GameSave { get; set; }
+    public PokemonInnerDetails InnerDetails => this.CreatePokemonInnerDetails();
 
     public override bool Equals(OwnedPokemon? other)
     {

@@ -6,6 +6,7 @@ using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 using PokeGame.Core.Schemas.PokeApi;
 
 namespace PokeGame.Core.Domain.Services.Game.Concrete;
@@ -27,6 +28,54 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         _logger = logger;
     }
 
+    public async Task<(Pokemon Pokemon, PokemonSpecies pokemonSpecies)> GetPokemonAndSpecies(int pokemonNumber,
+        CancellationToken cancellationToken = default)
+    {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
+        activity?.SetTag(nameof(pokemonNumber), pokemonNumber);
+
+        try
+        {
+            var pokemonMainJob = _pokeApiClient.GetResourceAsync<Pokemon>(pokemonNumber, cancellationToken);
+            var pokemonSpeciesJob = _pokeApiClient.GetResourceAsync<PokemonSpecies>(pokemonNumber, cancellationToken);
+
+            await Task.WhenAll(pokemonSpeciesJob, pokemonMainJob);
+            
+            return (await pokemonMainJob,await pokemonSpeciesJob);
+        }
+        catch (PokeGameApiException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new PokeGameApiServerException("Failed to fetch pokemon resources", ex);
+        }
+    }
+    public async Task<(Pokemon Pokemon, PokemonSpecies pokemonSpecies)> GetPokemonAndSpecies(string pokemonName,
+        CancellationToken cancellationToken = default)
+    {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
+        activity?.SetTag(nameof(pokemonName), pokemonName);
+
+        try
+        {
+            var pokemonMainJob = _pokeApiClient.GetResourceAsync<Pokemon>(pokemonName, cancellationToken);
+            var pokemonSpeciesJob = _pokeApiClient.GetResourceAsync<PokemonSpecies>(pokemonName, cancellationToken);
+
+            await Task.WhenAll(pokemonSpeciesJob, pokemonMainJob);
+            
+            return (await pokemonMainJob,await pokemonSpeciesJob);
+        }
+        catch (PokeGameApiException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new PokeGameApiServerException("Failed to fetch pokemon resources", ex);
+        }
+    }
     public async Task<(Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetMoveSet(
         string moveOneResourceName,
         string? moveTwoResourceName,

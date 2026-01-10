@@ -11,6 +11,7 @@ using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 using PokeGame.Core.Schemas.PokeApi;
 
 namespace PokeGame.Core.Domain.Services.Game.Commands;
@@ -24,21 +25,18 @@ internal sealed class InGrassRandomPokemonEncounterCommand
     public string CommandName => nameof(InGrassRandomPokemonEncounterCommand);
 
     private readonly IGameSessionRepository _gameSessionRepository;
-    private readonly IPokeApiClient _pokeApiClient;
     private readonly IPokeGameRuleHelperService _pokeGameRuleHelperService;
     private readonly IGameAndPokeApiResourceManagerService _gameAndPokeApiResourceManagerService;
     private readonly ILogger<InGrassRandomPokemonEncounterCommand> _logger;
 
     public InGrassRandomPokemonEncounterCommand(
         IGameSessionRepository gameSessionRepository,
-        IPokeApiClient pokeApiClient,
         IPokeGameRuleHelperService pokeGameRuleHelperService,
         IGameAndPokeApiResourceManagerService gameAndPokeApiResourceManagerService,
         ILogger<InGrassRandomPokemonEncounterCommand> logger
     )
     {
         _gameSessionRepository = gameSessionRepository;
-        _pokeApiClient = pokeApiClient;
         _pokeGameRuleHelperService = pokeGameRuleHelperService;
         _gameAndPokeApiResourceManagerService = gameAndPokeApiResourceManagerService;
         _logger = logger;
@@ -89,7 +87,7 @@ internal sealed class InGrassRandomPokemonEncounterCommand
             );
         }
 
-        var pokemonFromApi = await _pokeApiClient.GetResourceAsync<Pokemon>(
+        var (pokemonFromApi, pokemonSpeciesFromApi) = await _gameAndPokeApiResourceManagerService.GetPokemonAndSpecies(
             (int)randomPokemonId,
             cancelationToken
         );
@@ -117,6 +115,7 @@ internal sealed class InGrassRandomPokemonEncounterCommand
 
         var newWildPokemon = CreateNewWildPokemon(
             pokemonFromApi,
+            pokemonSpeciesFromApi,
             wildPokemonLevel,
             wildPokemonMoveSetResourceNames,
             wildPokemonMoveSet
@@ -127,6 +126,7 @@ internal sealed class InGrassRandomPokemonEncounterCommand
 
     private WildPokemon CreateNewWildPokemon(
         Pokemon pokemonFromApi,
+        PokemonSpecies  pokemonSpeciesFromApi,
         int wildPokemonLevel,
         (
             string? MoveOneResourceName,
@@ -140,6 +140,7 @@ internal sealed class InGrassRandomPokemonEncounterCommand
         return new WildPokemon
         {
             Pokemon = pokemonFromApi,
+            PokemonSpecies = pokemonSpeciesFromApi,
             CurrentHp = _pokeGameRuleHelperService.GetPokemonMaxHp(
                 pokemonFromApi,
                 wildPokemonLevel

@@ -6,65 +6,65 @@ namespace PokeGame.Core.Schemas.PokeApi
     /// Contest types are categories judges used to weigh
     /// a Pokémon's condition in Pokémon contests.
     /// </summary>
-    public class ContestType : NamedApiResource
+    public sealed record ContestType : NamedApiResource
     {
         /// <summary>
         /// The identifier for this resource.
         /// </summary>
-        public override int Id { get; set; }
+        public override int Id { get; init; }
 
         internal new static string ApiEndpoint { get; } = "contest-type";
 
         /// <summary>
         /// The name for this resource.
         /// </summary>
-        public override required string Name { get; set; }
+        public override required string Name { get; init; }
 
         /// <summary>
         /// The berry flavor that correlates with this contest
         /// type.
         /// </summary>
         [JsonPropertyName("berry_flavor")]
-        public required NamedApiResource<BerryFlavor> BerryFlavor { get; set; }
+        public required NamedApiResource<BerryFlavor> BerryFlavor { get; init; }
 
         /// <summary>
         /// The name of this contest type listed in different
         /// languages.
         /// </summary>
-        public required List<ContestName> Names { get; set; }
+        public required List<ContestName> Names { get; init; }
     }
 
     /// <summary>
     /// The name of the context
     /// </summary>
-    public class ContestName
+    public sealed record ContestName
     {
         /// <summary>
         /// The name for this contest.
         /// </summary>
-        public required string Name { get; set; }
+        public required string Name { get; init; }
 
         /// <summary>
         /// The color associated with this contest's name.
         /// </summary>
-        public required string Color { get; set; }
+        public required string Color { get; init; }
 
         /// <summary>
         /// The language that this name is in.
         /// </summary>
-        public required NamedApiResource<Language> Language { get; set; }
+        public required NamedApiResource<Language> Language { get; init; }
     }
 
     /// <summary>
     /// Contest effects refer to the effects of moves
     /// when used in contests.
     /// </summary>
-    public class ContestEffect : ApiResource
+    public sealed record ContestEffect : ApiResource
     {
         /// <summary>
         /// The identifier for this resource.
         /// </summary>
-        public override int Id { get; set; }
+        public override int Id { get; init; }
 
         internal new static string ApiEndpoint { get; } = "contest-effect";
 
@@ -72,58 +72,58 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// The base number of hearts the user of this move
         /// gets.
         /// </summary>
-        public int Appeal { get; set; }
+        public int Appeal { get; init; }
 
         /// <summary>
         /// The base number of hearts the user's opponent
         /// loses.
         /// </summary>
-        public int Jam { get; set; }
+        public int Jam { get; init; }
 
         /// <summary>
         /// The result of this contest effect listed in
         /// different languages.
         /// </summary>
         [JsonPropertyName("effect_entries")]
-        public required List<Effects> EffectEntries { get; set; }
+        public required List<Effects> EffectEntries { get; init; }
 
         /// <summary>
         /// The flavor text of this contest effect listed in
         /// different languages.
         /// </summary>
         [JsonPropertyName("flavor_text_entries")]
-        public required List<FlavorTexts> FlavorTextEntries { get; set; }
+        public required List<FlavorTexts> FlavorTextEntries { get; init; }
     }
 
     /// <summary>
     /// Super contest effects refer to the effects of moves
     /// when used in super contests.
     /// </summary>
-    public class SuperContestEffect : ApiResource
+    public sealed record SuperContestEffect : ApiResource
     {
         /// <summary>
         /// The identifier for this resource.
         /// </summary>
-        public override int Id { get; set; }
+        public override int Id { get; init; }
 
         internal new static string ApiEndpoint { get; } = "super-contest-effect";
 
         /// <summary>
         /// The level of appeal this super contest effect has.
         /// </summary>
-        public int Appeal { get; set; }
+        public int Appeal { get; init; }
 
         /// <summary>
         /// The flavor text of this super contest effect listed
         /// in different languages.
         /// </summary>
         [JsonPropertyName("flavor_text_entries")]
-        public required List<FlavorTexts> FlavorTextEntries { get; set; }
+        public required List<FlavorTexts> FlavorTextEntries { get; init; }
 
         /// <summary>
         /// A list of moves that have the effect when used in
         /// super contests.
         /// </summary>
-        public required List<NamedApiResource<Move>> Moves { get; set; }
+        public required List<NamedApiResource<Move>> Moves { get; init; }
     }
 }

@@ -3,6 +3,7 @@ using PokeGame.Core.Domain.Services.Game.Abstract;
 using PokeGame.Core.Domain.Services.Game.Commands;
 using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Schemas.Game;
+using PokeGame.Core.Schemas.Game.PokemonRelated;
 
 namespace PokeGame.Core.Domain.Services.Game.Concrete;
 

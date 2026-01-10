@@ -1,7 +1,8 @@
 using System.Text.Json.Serialization;
+using PokeGame.Core.Schemas.Extensions;
 using PokeGame.Core.Schemas.PokeApi;
 
-namespace PokeGame.Core.Schemas.Game;
+namespace PokeGame.Core.Schemas.Game.PokemonRelated;
 
 public sealed class WildPokemon: DomainModel<WildPokemon>
 {
@@ -22,6 +23,10 @@ public sealed class WildPokemon: DomainModel<WildPokemon>
     public Move? MoveFour { get; set; }
     [JsonIgnore]
     public Pokemon? Pokemon { get; set; }
+    [JsonIgnore]
+    public PokemonSpecies? PokemonSpecies { get; set; }
+
+    public PokemonInnerDetails InnerDetails => this.CreatePokemonInnerDetails();
 
     public override bool Equals(WildPokemon? other)
     {
