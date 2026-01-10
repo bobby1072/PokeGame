@@ -22,6 +22,8 @@ public sealed class WildPokemon: DomainModel<WildPokemon>
     public Move? MoveFour { get; set; }
     [JsonIgnore]
     public Pokemon? Pokemon { get; set; }
+    [JsonIgnore]
+    public PokemonSpecies? Species { get; set; }
 
     public override bool Equals(WildPokemon? other)
     {
