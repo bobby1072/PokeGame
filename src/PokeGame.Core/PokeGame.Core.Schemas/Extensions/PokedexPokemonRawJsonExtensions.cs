@@ -1,4 +1,5 @@
 ﻿using BT.Common.FastArray.Proto;
+using PokeGame.Core.Schemas.Common;
 using PokeGame.Core.Schemas.Pokedex;
 
 namespace PokeGame.Core.Schemas.Extensions;
@@ -21,9 +22,9 @@ public static class PokedexPokemonRawJsonExtensions
             Type = new PokedexPokemonType
             {
                 Type1 = foundFirstType is null
-                    ? PokemonType.None
-                    : Enum.Parse<PokemonType>(foundFirstType),
-                Type2 = foundSecondType is null ? null : Enum.Parse<PokemonType>(foundSecondType),
+                    ? PokemonTypeEnum.None
+                    : Enum.Parse<PokemonTypeEnum>(foundFirstType),
+                Type2 = foundSecondType is null ? null : Enum.Parse<PokemonTypeEnum>(foundSecondType),
             },
         };
     }

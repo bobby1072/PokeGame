@@ -9,7 +9,7 @@ public sealed class WildPokemon: DomainModel<WildPokemon>
     public required string PokemonResourceName { get; set; }
     public required int PokemonLevel { get; set; }
     public required int CurrentHp { get; set; }
-    public string? MoveOneResourceName { get; set; }
+    public required string MoveOneResourceName { get; set; }
     [JsonIgnore]
     public Move? MoveOne { get; set; }
     public string? MoveTwoResourceName { get; set; }
