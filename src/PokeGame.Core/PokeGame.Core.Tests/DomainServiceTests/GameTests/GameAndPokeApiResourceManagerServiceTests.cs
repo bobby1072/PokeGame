@@ -435,12 +435,12 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         Assert.Equal(2, result.Count);
 
         var enrichedPokemon1 = result.First(p => p.Id == ownedPokemon1.Id);
-        Assert.Equal("pikachu", enrichedPokemon1.Pokemon.Name);
-        Assert.Equal("thunderbolt", enrichedPokemon1.MoveOne.Name);
+        Assert.Equal("pikachu", enrichedPokemon1.Pokemon?.Name);
+        Assert.Equal("thunderbolt", enrichedPokemon1.MoveOne?.Name);
 
         var enrichedPokemon2 = result.First(p => p.Id == ownedPokemon2.Id);
-        Assert.Equal("charizard", enrichedPokemon2.Pokemon.Name);
-        Assert.Equal("flamethrower", enrichedPokemon2.MoveOne.Name);
+        Assert.Equal("charizard", enrichedPokemon2.Pokemon?.Name);
+        Assert.Equal("flamethrower", enrichedPokemon2.MoveOne?.Name);
     }
 
     [Fact]
@@ -525,7 +525,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
     {
         // Arrange
         var pokemonId = Guid.NewGuid();
-        var dbResult = new DbGetManyResult<OwnedPokemon>(null);
+        var dbResult = new DbGetManyResult<OwnedPokemon>();
 
         _mockOwnedPokemonRepository
             .Setup(x => x.GetMany(It.IsAny<Guid?[]>()))
@@ -639,8 +639,8 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.Contains(result, p => p.Id == pokemonId1 && p.Pokemon.Name == "pikachu");
-        Assert.Contains(result, p => p.Id == pokemonId2 && p.Pokemon.Name == "charizard");
+        Assert.Contains(result, p => p.Id == pokemonId1 && p.Pokemon?.Name == "pikachu");
+        Assert.Contains(result, p => p.Id == pokemonId2 && p.Pokemon?.Name == "charizard");
     }
 
     [Fact]
@@ -766,7 +766,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
             PastValues = new List<PastMoveStatValues>(),
             StatChanges = new List<MoveStatChange>(),
             Target = new NamedApiResource<MoveTarget> { Name = string.Empty, Url = string.Empty },
-            Type = new NamedApiResource<PokeGame.Core.Schemas.PokeApi.Type>
+            Type = new NamedApiResource<Schemas.PokeApi.Type>
             {
                 Name = string.Empty,
                 Url = string.Empty,
