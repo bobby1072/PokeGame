@@ -28,7 +28,7 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         _logger = logger;
     }
 
-    public async Task<(Pokemon Pokemon, PokemonSpecies pokemonSpecies)> GetPokemonAndSpecies(int pokemonNumber,
+    public async Task<(Pokemon Pokemon, PokemonSpecies PokemonSpecies)> GetPokemonAndSpecies(int pokemonNumber,
         CancellationToken cancellationToken = default)
     {
         using var activity = TelemetryHelperService.ActivitySource.StartActivity();
@@ -52,7 +52,7 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
             throw new PokeGameApiServerException("Failed to fetch pokemon resources", ex);
         }
     }
-    public async Task<(Pokemon Pokemon, PokemonSpecies pokemonSpecies)> GetPokemonAndSpecies(string pokemonName,
+    public async Task<(Pokemon Pokemon, PokemonSpecies PokemonSpecies)> GetPokemonAndSpecies(string pokemonName,
         CancellationToken cancellationToken = default)
     {
         using var activity = TelemetryHelperService.ActivitySource.StartActivity();
@@ -76,8 +76,8 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
             throw new PokeGameApiServerException("Failed to fetch pokemon resources", ex);
         }
     }
-    public async Task<(Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetMoveSet(
-        string moveOneResourceName,
+    public async Task<(Move? MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetMoveSet(
+        string? moveOneResourceName,
         string? moveTwoResourceName,
         string? moveThreeResourceName,
         string? moveFourResourceName,
@@ -127,7 +127,7 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
                 Task<(
                     Pokemon Pokemon,
                     PokemonSpecies PokemonSpecies,
-                    Move MoveOne,
+                    Move? MoveOne,
                     Move? MoveTwo,
                     Move? MoveThree,
                     Move? MoveFour
@@ -224,14 +224,14 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
     private async Task<(
         Pokemon Pokemon,
         PokemonSpecies PokemonSpecies,
-        Move MoveOne,
+        Move? MoveOne,
         Move? MoveTwo,
         Move? MoveThree,
         Move? MoveFour
     )> GetResourcesFromApiAsync(
         (
-            string PokemonResourceName,
-            string MoveOneResourceName,
+            string PokemonName,
+            string? MoveOneResourceName,
             string? MoveTwoResourceName,
             string? MoveThreeResourceName,
             string? MoveFourResourceName
@@ -240,13 +240,13 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
     )
     {
         using var activity = TelemetryHelperService.ActivitySource.StartActivity();
-        activity?.SetTag("pokemonResourceName", pokemonInfo.PokemonResourceName);
+        activity?.SetTag("pokemonResourceName", pokemonInfo.PokemonName);
 
         _logger.LogInformation(
             "Fetching Pokemon resources from PokeApi with params: {@Params}",
             new
             {
-                pokemonInfo.PokemonResourceName,
+                pokemonInfo.PokemonName,
                 pokemonInfo.MoveOneResourceName,
                 pokemonInfo.MoveTwoResourceName,
                 pokemonInfo.MoveThreeResourceName,
@@ -254,59 +254,8 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
             }
         );
 
-        var pokemon = await _pokeApiClient.GetResourceAsync<Pokemon>(
-            pokemonInfo.PokemonResourceName,
-            cancellationToken
-        );
-
-        return await GetResourcesFromApiAsync(
-            (
-                pokemon,
-                pokemonInfo.MoveOneResourceName,
-                pokemonInfo.MoveTwoResourceName,
-                pokemonInfo.MoveThreeResourceName,
-                pokemonInfo.MoveFourResourceName
-            ),
-            cancellationToken
-        );
-    }
-
-    private async Task<(
-        Pokemon Pokemon,
-        PokemonSpecies PokemonSpecies,
-        Move MoveOne,
-        Move? MoveTwo,
-        Move? MoveThree,
-        Move? MoveFour
-    )> GetResourcesFromApiAsync(
-        (
-            Pokemon Pokemon,
-            string MoveOneResourceName,
-            string? MoveTwoResourceName,
-            string? MoveThreeResourceName,
-            string? MoveFourResourceName
-        ) pokemonInfo,
-        CancellationToken cancellationToken = default
-    )
-    {
-        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
-        activity?.SetTag("pokemonResourceName", pokemonInfo.Pokemon.Name);
-
-        _logger.LogInformation(
-            "Fetching Pokemon resources from PokeApi with params: {@Params}",
-            new
-            {
-                pokemonInfo.Pokemon.Name,
-                pokemonInfo.MoveOneResourceName,
-                pokemonInfo.MoveTwoResourceName,
-                pokemonInfo.MoveThreeResourceName,
-                pokemonInfo.MoveFourResourceName,
-            }
-        );
-        var speciesJob = _pokeApiClient.GetResourceAsync<PokemonSpecies>(
-            pokemonInfo.Pokemon.Name,
-            cancellationToken
-        );
+        var speciesAndPokemonJob = GetPokemonAndSpecies(pokemonInfo.PokemonName, cancellationToken);
+        
         var getMovesJob = GetMoves(
             (
                 pokemonInfo.MoveOneResourceName,
@@ -316,18 +265,16 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
             ),
             cancellationToken
         );
+        
 
-        var executionList = new List<Task> { speciesJob }
-            .Append(getMovesJob)
-            .ToArray();
+        await Task.WhenAll(getMovesJob, speciesAndPokemonJob);
 
-        await Task.WhenAll(executionList);
-
-        var pokemonSpecies = await speciesJob;
+        var pokemonSpecies = (await speciesAndPokemonJob).PokemonSpecies;
+        var pokemon = (await speciesAndPokemonJob).Pokemon;
         var moveSet = await getMovesJob;
 
         return (
-            pokemonInfo.Pokemon,
+            pokemon,
             pokemonSpecies,
             moveSet.MoveOne,
             moveSet.MoveTwo,
@@ -336,9 +283,9 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         );
     }
 
-    private async Task<(Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetMoves(
+    private async Task<(Move? MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetMoves(
         (
-            string MoveOneResourceName,
+            string? MoveOneResourceName,
             string? MoveTwoResourceName,
             string? MoveThreeResourceName,
             string? MoveFourResourceName
@@ -346,10 +293,17 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
         CancellationToken cancellationToken = default
     )
     {
-        var moveJobList = new List<Task<Move>>
+        var moveJobList = new List<Task<Move>>();
+
+        if (!string.IsNullOrWhiteSpace(moveInfo.MoveOneResourceName))
         {
-            _pokeApiClient.GetResourceAsync<Move>(moveInfo.MoveOneResourceName, cancellationToken),
-        };
+            moveJobList.Add(
+                _pokeApiClient.GetResourceAsync<Move>(
+                    moveInfo.MoveOneResourceName,
+                    cancellationToken
+                )
+            );
+        }
 
         if (!string.IsNullOrWhiteSpace(moveInfo.MoveTwoResourceName))
         {
@@ -381,11 +335,12 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
 
         await Task.WhenAll(moveJobList);
 
+        var finalMoveOne = moveJobList.ElementAtOrDefault(0);
         var finalMoveTwo = moveJobList.ElementAtOrDefault(1);
         var finalMoveThree = moveJobList.ElementAtOrDefault(2);
         var finalMoveFour = moveJobList.ElementAtOrDefault(3);
 
-        var moveOne = await moveJobList[0];
+        var moveOne = finalMoveOne is null ? null :await finalMoveOne;
         var moveTwo = finalMoveTwo is null ? null : await finalMoveTwo;
         var moveThree = finalMoveThree is null ? null : await finalMoveThree;
         var moveFour = finalMoveFour is null ? null : await finalMoveFour;

@@ -90,8 +90,8 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
         var input = (SceneName: invalidSceneName, ConnectionId: connectionId, CurrentUser: user);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(() =>
-            _command.ExecuteAsync(input)
+        var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(
+            () => _command.ExecuteAsync(input)
         );
 
         Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
@@ -155,7 +155,7 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
 
         _mockGameAndPokeApiResourceManagerService
             .Setup(x => x.GetPokemonAndSpecies(It.IsAny<int>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Pokemon: pokemon, pokemonSpecies: pokemonSpecies));
+            .ReturnsAsync((Pokemon: pokemon, PokemonSpecies: pokemonSpecies));
 
         _mockPokeGameRuleHelperService
             .Setup(x => x.GetRandomNumberFromIntRange(It.IsAny<IntRange>()))
@@ -251,8 +251,8 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
             .ReturnsAsync(new DbGetOneResult<GameSession>(gameSession));
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(() =>
-            _command.ExecuteAsync(input)
+        var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(
+            () => _command.ExecuteAsync(input)
         );
 
         Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
@@ -290,8 +290,8 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
             .ReturnsAsync(new DbGetOneResult<GameSession>((GameSession?)null));
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(() =>
-            _command.ExecuteAsync(input)
+        var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(
+            () => _command.ExecuteAsync(input)
         );
 
         Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
@@ -329,8 +329,8 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
             .ReturnsAsync((DbGetOneResult<GameSession>)null!);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(() =>
-            _command.ExecuteAsync(input)
+        var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
+            () => _command.ExecuteAsync(input)
         );
 
         Assert.Equal("Failed to fetch game session results", exception.Message);
@@ -376,8 +376,8 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
             .ReturnsAsync(new DbGetOneResult<GameSession>(gameSession));
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(() =>
-            _command.ExecuteAsync(input)
+        var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
+            () => _command.ExecuteAsync(input)
         );
 
         Assert.Equal(
@@ -446,8 +446,8 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
             .ReturnsAsync(new DbGetOneResult<GameSession>(gameSession));
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(() =>
-            _command.ExecuteAsync(input)
+        var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(
+            () => _command.ExecuteAsync(input)
         );
 
         Assert.Equal(HttpStatusCode.Unauthorized, exception.StatusCode);
@@ -511,7 +511,7 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
 
         _mockGameAndPokeApiResourceManagerService
             .Setup(x => x.GetPokemonAndSpecies(It.IsAny<int>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Pokemon: pokemon, pokemonSpecies: pokemonSpecies));
+            .ReturnsAsync((Pokemon: pokemon, PokemonSpecies: pokemonSpecies));
 
         _mockPokeGameRuleHelperService
             .Setup(x => x.GetRandomNumberFromIntRange(It.IsAny<IntRange>()))
@@ -587,6 +587,13 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
             MoveFourResourceName: (string?)null
         );
 
+        var moveSet = (
+            MoveOne: (Move?)null,
+            MoveTwo: (Move?)null,
+            MoveThree: (Move?)null,
+            MoveFour: (Move?)null
+        );
+
         var input = (SceneName: sceneName, ConnectionId: connectionId, CurrentUser: user);
 
         _mockPokeGameRuleHelperService
@@ -603,7 +610,7 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
 
         _mockGameAndPokeApiResourceManagerService
             .Setup(x => x.GetPokemonAndSpecies(It.IsAny<int>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Pokemon: pokemon, pokemonSpecies: pokemonSpecies));
+            .ReturnsAsync((Pokemon: pokemon, PokemonSpecies: pokemonSpecies));
 
         _mockPokeGameRuleHelperService
             .Setup(x => x.GetRandomNumberFromIntRange(It.IsAny<IntRange>()))
@@ -612,6 +619,18 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
         _mockPokeGameRuleHelperService
             .Setup(x => x.GetRandomMoveSetFromPokemon(pokemon, wildPokemonLevel))
             .Returns(moveSetResourceNames);
+
+        _mockGameAndPokeApiResourceManagerService
+            .Setup(x =>
+                x.GetMoveSet(
+                    moveSetResourceNames.MoveOneResourceName,
+                    moveSetResourceNames.MoveTwoResourceName,
+                    moveSetResourceNames.MoveThreeResourceName,
+                    moveSetResourceNames.MoveFourResourceName,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(moveSet);
 
         _mockPokeGameRuleHelperService
             .Setup(x => x.GetPokemonMaxHp(pokemon, wildPokemonLevel))
@@ -632,13 +651,13 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
         _mockGameAndPokeApiResourceManagerService.Verify(
             x =>
                 x.GetMoveSet(
-                    It.IsAny<string>(),
-                    It.IsAny<string?>(),
-                    It.IsAny<string?>(),
-                    It.IsAny<string?>(),
+                    moveSetResourceNames.MoveOneResourceName,
+                    moveSetResourceNames.MoveTwoResourceName,
+                    moveSetResourceNames.MoveThreeResourceName,
+                    moveSetResourceNames.MoveFourResourceName,
                     It.IsAny<CancellationToken>()
                 ),
-            Times.Never
+            Times.Once
         );
     }
 
@@ -657,7 +676,7 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
                 FrontDefault = "front",
                 FrontShiny = "front-shiny",
                 BackDefault = "back",
-                BackShiny = "back-shiny"
+                BackShiny = "back-shiny",
             },
             Types = new List<PokemonType>(),
             Stats = new List<PokemonStat>(),
@@ -687,15 +706,31 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
             Color = new NamedApiResource<PokemonColor> { Name = string.Empty, Url = string.Empty },
             EggGroups = new List<NamedApiResource<EggGroup>>(),
             EvolutionChain = new ApiResource<EvolutionChain> { Url = string.Empty },
-            EvolvesFromSpecies = new NamedApiResource<PokemonSpecies> { Name = string.Empty, Url = string.Empty },
+            EvolvesFromSpecies = new NamedApiResource<PokemonSpecies>
+            {
+                Name = string.Empty,
+                Url = string.Empty,
+            },
             FlavorTextEntries = new List<PokemonSpeciesFlavorTexts>(),
             FormDescriptions = new List<Descriptions>(),
             FormsSwitchable = false,
             GenderRate = -1,
             Genera = new List<Genuses>(),
-            Generation = new NamedApiResource<Generation> { Name = string.Empty, Url = string.Empty },
-            GrowthRate = new NamedApiResource<GrowthRate> { Name = string.Empty, Url = string.Empty },
-            Habitat = new NamedApiResource<PokemonHabitat> { Name = string.Empty, Url = string.Empty },
+            Generation = new NamedApiResource<Generation>
+            {
+                Name = string.Empty,
+                Url = string.Empty,
+            },
+            GrowthRate = new NamedApiResource<GrowthRate>
+            {
+                Name = string.Empty,
+                Url = string.Empty,
+            },
+            Habitat = new NamedApiResource<PokemonHabitat>
+            {
+                Name = string.Empty,
+                Url = string.Empty,
+            },
             HasGenderDifferences = false,
             HatchCounter = 20,
             IsBaby = false,
@@ -801,4 +836,3 @@ public sealed class InGrassRandomPokemonEncounterCommandTests
         };
     }
 }
-

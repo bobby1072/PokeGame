@@ -13,7 +13,7 @@ public sealed class OwnedPokemonEntity : BasePokeGameEntity<Guid?, OwnedPokemon>
     public required int PokemonLevel { get; set; }
     public required int CurrentExperience { get; set; }
     public required int CurrentHp { get; set; }
-    public required string MoveOneResourceName { get; set; }
+    public string? MoveOneResourceName { get; set; }
     public string? MoveTwoResourceName { get; set; }
     public string? MoveThreeResourceName { get; set; }
     public string? MoveFourResourceName { get; set; }

@@ -12,7 +12,7 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
     public required int PokemonLevel { get; set; }
     public int CurrentExperience { get; set; }
     public required int CurrentHp { get; set; }
-    public required string MoveOneResourceName { get; set; }
+    public string? MoveOneResourceName { get; set; }
     [JsonIgnore]
     public Move? MoveOne { get; set; }
     public string? MoveTwoResourceName { get; set; }

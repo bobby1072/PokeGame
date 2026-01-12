@@ -102,16 +102,14 @@ internal sealed class InGrassRandomPokemonEncounterCommand
                 wildPokemonLevel
             );
 
-        (Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)? wildPokemonMoveSet =
-            string.IsNullOrEmpty(wildPokemonMoveSetResourceNames.MoveOneResourceName)
-                ? null
-                : await _gameAndPokeApiResourceManagerService.GetMoveSet(
-                    wildPokemonMoveSetResourceNames.MoveOneResourceName,
-                    wildPokemonMoveSetResourceNames.MoveTwoResourceName,
-                    wildPokemonMoveSetResourceNames.MoveThreeResourceName,
-                    wildPokemonMoveSetResourceNames.MoveFourResourceName,
-                    cancelationToken
-                );
+        (Move? MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)? wildPokemonMoveSet =
+            await _gameAndPokeApiResourceManagerService.GetMoveSet(
+                wildPokemonMoveSetResourceNames.MoveOneResourceName,
+                wildPokemonMoveSetResourceNames.MoveTwoResourceName,
+                wildPokemonMoveSetResourceNames.MoveThreeResourceName,
+                wildPokemonMoveSetResourceNames.MoveFourResourceName,
+                cancelationToken
+            );
 
         var newWildPokemon = CreateNewWildPokemon(
             pokemonFromApi,
@@ -134,7 +132,7 @@ internal sealed class InGrassRandomPokemonEncounterCommand
             string? MoveThreeResourceName,
             string? MoveFourResourceName
         ) wildPokemonMoveSetResourceNames,
-        (Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)? wildPokemonMoveSet
+        (Move? MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)? wildPokemonMoveSet
     )
     {
         return new WildPokemon

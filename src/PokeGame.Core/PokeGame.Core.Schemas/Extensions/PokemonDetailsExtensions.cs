@@ -1,5 +1,6 @@
 ﻿using BT.Common.FastArray.Proto;
 using PokeGame.Core.Common.Exceptions;
+using PokeGame.Core.Schemas.Common;
 using PokeGame.Core.Schemas.Game;
 using PokeGame.Core.Schemas.Game.PokemonRelated;
 using PokeGame.Core.Schemas.PokeApi;
@@ -24,7 +25,7 @@ internal static class PokemonDetailsExtensions
             Weight = wildPokemon.Pokemon.Weight,
             IsLegendary = wildPokemon.PokemonSpecies.IsLegendary,
             Sprites = wildPokemon.Pokemon.Sprites.CreatePokemonSpriteDetails(),
-            Types = wildPokemon.Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeDetails()).ToArray(),
+            Types = wildPokemon.Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeEnum()).ToArray(),
             Stats = wildPokemon.Pokemon.Stats.FastArraySelect(x => x.CreatePokemonStatDetails()).ToArray()
         };
     }
@@ -45,22 +46,19 @@ internal static class PokemonDetailsExtensions
             IsLegendary = ownedPokemon.PokemonSpecies.IsLegendary,
             Sprites = ownedPokemon.Pokemon.Sprites.CreatePokemonSpriteDetails(),
             Stats = ownedPokemon.Pokemon.Stats.FastArraySelect(x => x.CreatePokemonStatDetails()).ToArray(),
-            Types = ownedPokemon.Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeDetails()).ToArray()
+            Types = ownedPokemon.Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeEnum()).ToArray()
         };
     }
 
-    private static PokemonTypeDetails CreatePokemonTypeDetails(this PokemonType pokemonType)
+    private static PokemonTypeEnum CreatePokemonTypeEnum(this PokemonType pokemonType)
     {
-        return new PokemonTypeDetails
-        {
-            Name = pokemonType.Type.Name
-        };
+        return Enum.Parse<PokemonTypeEnum>(pokemonType.Type.Name, true);
     }
     private static PokemonStatDetails CreatePokemonStatDetails(this PokemonStat pokeStat)
     {
         return new PokemonStatDetails
         {
-            Name = pokeStat.Stat.Name,
+            Name = Enum.Parse<PokemonStatEnum>(pokeStat.Stat.Name, true),
             BaseStat = pokeStat.BaseStat,
         };
     }
