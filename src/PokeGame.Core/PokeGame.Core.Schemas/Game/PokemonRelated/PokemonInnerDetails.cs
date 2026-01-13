@@ -12,6 +12,11 @@ public sealed class PokemonInnerDetails: DomainModel<PokemonInnerDetails>
     public required IReadOnlyCollection<PokemonTypeEnum> Types { get; init; }
     public required bool IsLegendary { get; init; }
     
+    public PokemonMoveDetails? MoveOne { get; init; }
+    public PokemonMoveDetails? MoveTwo { get; init; }
+    public PokemonMoveDetails? MoveThree { get; init; }
+    public PokemonMoveDetails? MoveFour { get; init; }
+    
     public override bool Equals(PokemonInnerDetails? other)
     {
         return BaseExperienceFromDefeating == other?.BaseExperienceFromDefeating &&
@@ -20,6 +25,10 @@ public sealed class PokemonInnerDetails: DomainModel<PokemonInnerDetails>
                Sprites.Equals(other.Sprites) &&
                Stats.SequenceEqual(other.Stats) &&
                Types.SequenceEqual(other.Types) &&
-               IsLegendary == other.IsLegendary;;
+               IsLegendary == other.IsLegendary &&
+               MoveOne?.Equals(other.MoveOne) == true &&
+               MoveTwo?.Equals(other.MoveTwo) == true &&
+               MoveThree?.Equals(other.MoveThree) == true &&
+               MoveFour?.Equals(other.MoveFour) == true;
     }
 }

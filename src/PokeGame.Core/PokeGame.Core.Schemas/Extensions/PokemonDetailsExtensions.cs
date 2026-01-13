@@ -26,7 +26,11 @@ internal static class PokemonDetailsExtensions
             IsLegendary = wildPokemon.PokemonSpecies.IsLegendary,
             Sprites = wildPokemon.Pokemon.Sprites.CreatePokemonSpriteDetails(),
             Types = wildPokemon.Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeEnum()).ToArray(),
-            Stats = wildPokemon.Pokemon.Stats.FastArraySelect(x => x.CreatePokemonStatDetails()).ToArray()
+            Stats = wildPokemon.Pokemon.Stats.FastArraySelect(x => x.CreatePokemonStatDetails()).ToArray(),
+            MoveOne = wildPokemon.MoveOne?.CreatePokemonMoveDetails(),
+            MoveTwo = wildPokemon.MoveTwo?.CreatePokemonMoveDetails(),
+            MoveThree = wildPokemon.MoveThree?.CreatePokemonMoveDetails(),
+            MoveFour = wildPokemon.MoveFour?.CreatePokemonMoveDetails(),
         };
     }
     public static PokemonInnerDetails CreatePokemonInnerDetails(this OwnedPokemon ownedPokemon)
@@ -46,10 +50,37 @@ internal static class PokemonDetailsExtensions
             IsLegendary = ownedPokemon.PokemonSpecies.IsLegendary,
             Sprites = ownedPokemon.Pokemon.Sprites.CreatePokemonSpriteDetails(),
             Stats = ownedPokemon.Pokemon.Stats.FastArraySelect(x => x.CreatePokemonStatDetails()).ToArray(),
-            Types = ownedPokemon.Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeEnum()).ToArray()
+            Types = ownedPokemon.Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeEnum()).ToArray(),
+            MoveOne = ownedPokemon.MoveOne?.CreatePokemonMoveDetails(),
+            MoveTwo = ownedPokemon.MoveTwo?.CreatePokemonMoveDetails(),
+            MoveThree = ownedPokemon.MoveThree?.CreatePokemonMoveDetails(),
+            MoveFour = ownedPokemon.MoveFour?.CreatePokemonMoveDetails(),
+            
         };
     }
 
+    private static PokemonMoveDetails CreatePokemonMoveDetails(this Move move)
+    {
+        return new PokemonMoveDetails
+        {
+            Accuracy = move.Accuracy ?? 100,
+            Healing = move.Meta.Healing,
+            Power = move.Power,
+            Priority = move.Priority,
+            Type = Enum.Parse<PokemonTypeEnum>(move.Type.Name, true),
+            AilmentChance = move.Meta.AilmentChance,
+            AilmentName = move.Meta.Ailment.Name,
+            CritRate = move.Meta.CritRate,
+            DamageClass = Enum.Parse<DamageClassTypeEnum>(move.DamageClass.Name, true),
+            EffectChance = move.EffectChance,
+            FlinchChance = move.Meta.FlinchChance,
+            MoveName = move.Name,
+            PowerPoints = move.PowerPoints,
+            StatChance = move.Meta.StatChance,
+            MaxTurns = move.Meta.MaxTurns,
+            MinTurns = move.Meta.MinTurns,
+        };
+    }
     private static PokemonTypeEnum CreatePokemonTypeEnum(this PokemonType pokemonType)
     {
         return Enum.Parse<PokemonTypeEnum>(pokemonType.Type.Name, true);
