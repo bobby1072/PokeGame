@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using BT.Common.Persistence.Shared.Entities;
 using PokeGame.Core.Schemas;
+using PokeGame.Core.Schemas.Common;
 using PokeGame.Core.Schemas.Extensions;
 using PokeGame.Core.Schemas.Pokedex;
 
@@ -36,8 +37,8 @@ public sealed class PokedexPokemonEntity : BasePokeGameEntity<int, PokedexPokemo
             FrenchName = FrenchName,
             Type = new PokedexPokemonType
             {
-                Type1 = Enum.Parse<PokemonType>(Type1),
-                Type2 = Type2 is null ? null : Enum.Parse<PokemonType>(Type2),
+                Type1 = Enum.Parse<PokemonTypeEnum>(Type1),
+                Type2 = Type2 is null ? null : Enum.Parse<PokemonTypeEnum>(Type2),
             },
             Stats = new PokedexPokemonStats
             {

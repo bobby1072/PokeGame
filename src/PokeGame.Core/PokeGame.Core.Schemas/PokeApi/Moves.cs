@@ -37,7 +37,8 @@ namespace PokeGame.Core.Schemas.PokeApi
         /// <summary>
         /// Power points. The number of times this move can be used.
         /// </summary>
-        public int? Pp { get; init; }
+        [JsonPropertyName("pp")]
+        public int? PowerPoints { get; init; }
 
         /// <summary>
         /// A value between -8 and 8. Sets the order in which moves are executed

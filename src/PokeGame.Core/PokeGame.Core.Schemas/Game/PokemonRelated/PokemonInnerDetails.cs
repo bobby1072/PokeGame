@@ -1,14 +1,21 @@
+using PokeGame.Core.Schemas.Common;
+
 namespace PokeGame.Core.Schemas.Game.PokemonRelated;
 
 public sealed class PokemonInnerDetails: DomainModel<PokemonInnerDetails>
 {
-    public required int BaseExperienceFromDefeating { get; set; }
-    public required int Height { get; set; }
-    public required int Weight { get; set; }
-    public required PokemonSpriteDetails Sprites { get; set; }
-    public required IReadOnlyCollection<PokemonStatDetails> Stats { get; set; }
-    public required IReadOnlyCollection<PokemonTypeDetails> Types { get; set; }
-    public required bool IsLegendary { get; set; }
+    public required int BaseExperienceFromDefeating { get; init; }
+    public required int Height { get; init; }
+    public required int Weight { get; init; }
+    public required PokemonSpriteDetails Sprites { get; init; }
+    public required IReadOnlyCollection<PokemonStatDetails> Stats { get; init; }
+    public required IReadOnlyCollection<PokemonTypeEnum> Types { get; init; }
+    public required bool IsLegendary { get; init; }
+    
+    public PokemonMoveDetails? MoveOne { get; init; }
+    public PokemonMoveDetails? MoveTwo { get; init; }
+    public PokemonMoveDetails? MoveThree { get; init; }
+    public PokemonMoveDetails? MoveFour { get; init; }
     
     public override bool Equals(PokemonInnerDetails? other)
     {
@@ -18,6 +25,10 @@ public sealed class PokemonInnerDetails: DomainModel<PokemonInnerDetails>
                Sprites.Equals(other.Sprites) &&
                Stats.SequenceEqual(other.Stats) &&
                Types.SequenceEqual(other.Types) &&
-               IsLegendary == other.IsLegendary;;
+               IsLegendary == other.IsLegendary &&
+               MoveOne?.Equals(other.MoveOne) == true &&
+               MoveTwo?.Equals(other.MoveTwo) == true &&
+               MoveThree?.Equals(other.MoveThree) == true &&
+               MoveFour?.Equals(other.MoveFour) == true;
     }
 }

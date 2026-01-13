@@ -1,8 +1,8 @@
-﻿namespace PokeGame.Core.Schemas.Pokedex;
+﻿namespace PokeGame.Core.Schemas.Common;
 
-public enum PokemonType
+public enum PokemonTypeEnum
 {
-    None,
+    None = 1,
     Bug,
     Dark,
     Dragon,

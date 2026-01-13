@@ -1,9 +1,11 @@
-﻿namespace PokeGame.Core.Schemas.Pokedex;
+﻿using PokeGame.Core.Schemas.Common;
+
+namespace PokeGame.Core.Schemas.Pokedex;
 
 public sealed class PokedexPokemonType : DomainModel<PokedexPokemonType>
 {
-    public required PokemonType Type1 { get; set; }
-    public PokemonType? Type2 { get; set; }
+    public required PokemonTypeEnum Type1 { get; set; }
+    public PokemonTypeEnum? Type2 { get; set; }
 
     public override bool Equals(PokedexPokemonType? other)
     {

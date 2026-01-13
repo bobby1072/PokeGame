@@ -5,12 +5,12 @@ namespace PokeGame.Core.Domain.Services.Game.Abstract;
 
 internal interface IGameAndPokeApiResourceManagerService
 {
-    Task<(Pokemon Pokemon, PokemonSpecies pokemonSpecies)> GetPokemonAndSpecies(int pokemonNumber, 
+    Task<(Pokemon Pokemon, PokemonSpecies PokemonSpecies)> GetPokemonAndSpecies(int pokemonNumber, 
         CancellationToken cancellationToken = default);
-    Task<(Pokemon Pokemon, PokemonSpecies pokemonSpecies)> GetPokemonAndSpecies(string pokemonName, 
+    Task<(Pokemon Pokemon, PokemonSpecies PokemonSpecies)> GetPokemonAndSpecies(string pokemonName, 
         CancellationToken cancellationToken = default);
-    Task<(Move MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetMoveSet(
-        string moveOneResourceName,
+    Task<(Move? MoveOne, Move? MoveTwo, Move? MoveThree, Move? MoveFour)> GetMoveSet(
+        string? moveOneResourceName,
         string? moveTwoResourceName,
         string? moveThreeResourceName,
         string? moveFourResourceName,

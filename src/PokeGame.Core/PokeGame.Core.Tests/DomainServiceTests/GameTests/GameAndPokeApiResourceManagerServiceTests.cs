@@ -280,7 +280,12 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
             .ReturnsAsync(moveFour);
 
         // Act
-        var result = await _service.GetMoveSet("tackle", "thunderbolt", "quick-attack", "thunder-wave");
+        var result = await _service.GetMoveSet(
+            "tackle",
+            "thunderbolt",
+            "quick-attack",
+            "thunder-wave"
+        );
 
         // Assert
         Assert.NotNull(result.MoveOne);
@@ -399,7 +404,9 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
             .ReturnsAsync(pokemon1);
 
         _mockPokeApiClient
-            .Setup(x => x.GetResourceAsync<PokemonSpecies>("pikachu", It.IsAny<CancellationToken>()))
+            .Setup(x =>
+                x.GetResourceAsync<PokemonSpecies>("pikachu", It.IsAny<CancellationToken>())
+            )
             .ReturnsAsync(species1);
 
         _mockPokeApiClient
@@ -411,7 +418,9 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
             .ReturnsAsync(pokemon2);
 
         _mockPokeApiClient
-            .Setup(x => x.GetResourceAsync<PokemonSpecies>("charizard", It.IsAny<CancellationToken>()))
+            .Setup(x =>
+                x.GetResourceAsync<PokemonSpecies>("charizard", It.IsAny<CancellationToken>())
+            )
             .ReturnsAsync(species2);
 
         _mockPokeApiClient
@@ -426,12 +435,12 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         Assert.Equal(2, result.Count);
 
         var enrichedPokemon1 = result.First(p => p.Id == ownedPokemon1.Id);
-        Assert.Equal("pikachu", enrichedPokemon1.Pokemon.Name);
-        Assert.Equal("thunderbolt", enrichedPokemon1.MoveOne.Name);
+        Assert.Equal("pikachu", enrichedPokemon1.Pokemon?.Name);
+        Assert.Equal("thunderbolt", enrichedPokemon1.MoveOne?.Name);
 
         var enrichedPokemon2 = result.First(p => p.Id == ownedPokemon2.Id);
-        Assert.Equal("charizard", enrichedPokemon2.Pokemon.Name);
-        Assert.Equal("flamethrower", enrichedPokemon2.MoveOne.Name);
+        Assert.Equal("charizard", enrichedPokemon2.Pokemon?.Name);
+        Assert.Equal("flamethrower", enrichedPokemon2.MoveOne?.Name);
     }
 
     [Fact]
@@ -458,7 +467,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
             () => _service.GetDeepOwnedPokemon(new[] { ownedPokemon })
         );
 
-        Assert.Equal("Failed to fetch owned pokemon resources", exception.Message);
+        Assert.Equal("Failed to fetch pokemon resources", exception.Message);
     }
 
     [Fact]
@@ -516,7 +525,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
     {
         // Arrange
         var pokemonId = Guid.NewGuid();
-        var dbResult = new DbGetManyResult<OwnedPokemon>(null);
+        var dbResult = new DbGetManyResult<OwnedPokemon>();
 
         _mockOwnedPokemonRepository
             .Setup(x => x.GetMany(It.IsAny<Guid?[]>()))
@@ -589,7 +598,11 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         var move2 = CreateTestMove("flamethrower", 90, 100);
 
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetMany(It.Is<Guid?[]>(ids => ids.Contains(pokemonId1) && ids.Contains(pokemonId2))))
+            .Setup(x =>
+                x.GetMany(
+                    It.Is<Guid?[]>(ids => ids.Contains(pokemonId1) && ids.Contains(pokemonId2))
+                )
+            )
             .ReturnsAsync(dbResult);
 
         _mockPokeApiClient
@@ -597,7 +610,9 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
             .ReturnsAsync(pokemon1);
 
         _mockPokeApiClient
-            .Setup(x => x.GetResourceAsync<PokemonSpecies>("pikachu", It.IsAny<CancellationToken>()))
+            .Setup(x =>
+                x.GetResourceAsync<PokemonSpecies>("pikachu", It.IsAny<CancellationToken>())
+            )
             .ReturnsAsync(species1);
 
         _mockPokeApiClient
@@ -609,7 +624,9 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
             .ReturnsAsync(pokemon2);
 
         _mockPokeApiClient
-            .Setup(x => x.GetResourceAsync<PokemonSpecies>("charizard", It.IsAny<CancellationToken>()))
+            .Setup(x =>
+                x.GetResourceAsync<PokemonSpecies>("charizard", It.IsAny<CancellationToken>())
+            )
             .ReturnsAsync(species2);
 
         _mockPokeApiClient
@@ -622,8 +639,8 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.Contains(result, p => p.Id == pokemonId1 && p.Pokemon.Name == "pikachu");
-        Assert.Contains(result, p => p.Id == pokemonId2 && p.Pokemon.Name == "charizard");
+        Assert.Contains(result, p => p.Id == pokemonId1 && p.Pokemon?.Name == "pikachu");
+        Assert.Contains(result, p => p.Id == pokemonId2 && p.Pokemon?.Name == "charizard");
     }
 
     [Fact]
@@ -683,7 +700,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
                 FrontDefault = "front",
                 FrontShiny = "front-shiny",
                 BackDefault = "back",
-                BackShiny = "back-shiny"
+                BackShiny = "back-shiny",
             },
             Types = new List<PokemonType>(),
             Stats = new List<PokemonStat>(),
@@ -694,7 +711,11 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
             HeldItems = new List<PokemonHeldItem>(),
             LocationAreaEncounters = string.Empty,
             PastTypes = new List<PokemonPastTypes>(),
-            Species = new NamedApiResource<PokemonSpecies> { Name = string.Empty, Url = string.Empty },
+            Species = new NamedApiResource<PokemonSpecies>
+            {
+                Name = string.Empty,
+                Url = string.Empty,
+            },
         };
     }
 
@@ -714,22 +735,42 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
             Name = name,
             Power = power,
             Accuracy = accuracy,
-            DamageClass = new NamedApiResource<MoveDamageClass> { Name = string.Empty, Url = string.Empty },
+            DamageClass = new NamedApiResource<MoveDamageClass>
+            {
+                Name = string.Empty,
+                Url = string.Empty,
+            },
             EffectChanges = new List<AbilityEffectChange>(),
             FlavorTextEntries = new List<MoveFlavorText>(),
-            Generation = new NamedApiResource<Generation> { Name = string.Empty, Url = string.Empty },
+            Generation = new NamedApiResource<Generation>
+            {
+                Name = string.Empty,
+                Url = string.Empty,
+            },
             LearnedByPokemon = new List<NamedApiResource<Pokemon>>(),
             Machines = new List<MachineVersionDetail>(),
             Meta = new MoveMetaData
             {
-                Ailment = new NamedApiResource<MoveAilment> { Name = string.Empty, Url = string.Empty },
-                Category = new NamedApiResource<MoveCategory> { Name = string.Empty, Url = string.Empty },
+                Ailment = new NamedApiResource<MoveAilment>
+                {
+                    Name = string.Empty,
+                    Url = string.Empty,
+                },
+                Category = new NamedApiResource<MoveCategory>
+                {
+                    Name = string.Empty,
+                    Url = string.Empty,
+                },
             },
             Names = new List<Names>(),
             PastValues = new List<PastMoveStatValues>(),
             StatChanges = new List<MoveStatChange>(),
             Target = new NamedApiResource<MoveTarget> { Name = string.Empty, Url = string.Empty },
-            Type = new NamedApiResource<PokeGame.Core.Schemas.PokeApi.Type> { Name = string.Empty, Url = string.Empty },
+            Type = new NamedApiResource<Schemas.PokeApi.Type>
+            {
+                Name = string.Empty,
+                Url = string.Empty,
+            },
         };
     }
 }

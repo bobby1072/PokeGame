@@ -33,8 +33,9 @@ public sealed class OwnedPokemonValidatorTests
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.PokemonLevel)
-              .WithErrorMessage("Pokemon level must be between 1 - 99");
+        result
+            .ShouldHaveValidationErrorFor(x => x.PokemonLevel)
+            .WithErrorMessage("Pokemon level must be between 1 - 99");
     }
 
     [Theory]
@@ -50,8 +51,9 @@ public sealed class OwnedPokemonValidatorTests
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.PokemonLevel)
-              .WithErrorMessage("Pokemon level must be between 1 - 99");
+        result
+            .ShouldHaveValidationErrorFor(x => x.PokemonLevel)
+            .WithErrorMessage("Pokemon level must be between 1 - 99");
     }
 
     [Theory]
@@ -61,9 +63,7 @@ public sealed class OwnedPokemonValidatorTests
     public void Should_Not_Have_Error_When_PokemonLevel_Is_Valid(int validLevel)
     {
         // Arrange
-        var ownedPokemon = CreateValidOwnedPokemon()
-            .With(x => x.PokemonLevel, validLevel)
-            .Create();
+        var ownedPokemon = CreateValidOwnedPokemon().With(x => x.PokemonLevel, validLevel).Create();
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
@@ -78,7 +78,9 @@ public sealed class OwnedPokemonValidatorTests
     [InlineData(0)]
     [InlineData(-1)]
     [InlineData(-1000)]
-    public void Should_Have_Error_When_CurrentExperience_Is_Not_Greater_Than_Zero(int invalidExperience)
+    public void Should_Have_Error_When_CurrentExperience_Is_Not_Greater_Than_Zero(
+        int invalidExperience
+    )
     {
         // Arrange
         var ownedPokemon = CreateValidOwnedPokemon()
@@ -87,15 +89,18 @@ public sealed class OwnedPokemonValidatorTests
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.CurrentExperience)
-              .WithErrorMessage("Current experience must be greater than 0");
+        result
+            .ShouldHaveValidationErrorFor(x => x.CurrentExperience)
+            .WithErrorMessage("Current experience must be greater than 0");
     }
 
     [Theory]
     [InlineData(1)]
     [InlineData(1000)]
     [InlineData(int.MaxValue)]
-    public void Should_Not_Have_Error_When_CurrentExperience_Is_Greater_Than_Zero(int validExperience)
+    public void Should_Not_Have_Error_When_CurrentExperience_Is_Greater_Than_Zero(
+        int validExperience
+    )
     {
         // Arrange
         var ownedPokemon = CreateValidOwnedPokemon()
@@ -118,14 +123,13 @@ public sealed class OwnedPokemonValidatorTests
     public void Should_Have_Error_When_CurrentHp_Is_Less_Than_Zero(int invalidHP)
     {
         // Arrange
-        var ownedPokemon = CreateValidOwnedPokemon()
-            .With(x => x.CurrentHp, invalidHP)
-            .Create();
+        var ownedPokemon = CreateValidOwnedPokemon().With(x => x.CurrentHp, invalidHP).Create();
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.CurrentHp)
-              .WithErrorMessage("Current hp cannot be negative");
+        result
+            .ShouldHaveValidationErrorFor(x => x.CurrentHp)
+            .WithErrorMessage("Current hp cannot be negative");
     }
 
     [Theory]
@@ -136,9 +140,7 @@ public sealed class OwnedPokemonValidatorTests
     public void Should_Not_Have_Error_When_CurrentHp_Is_Valid(int validHP)
     {
         // Arrange
-        var ownedPokemon = CreateValidOwnedPokemon()
-            .With(x => x.CurrentHp, validHP)
-            .Create();
+        var ownedPokemon = CreateValidOwnedPokemon().With(x => x.CurrentHp, validHP).Create();
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
@@ -150,7 +152,20 @@ public sealed class OwnedPokemonValidatorTests
     #region Move Resource Name Validation Tests
 
     [Fact]
-    public void Should_Have_Error_When_MoveOneResourceName_Is_Empty()
+    public void Should_Not_Have_Error_When_MoveOneResourceName_Is_Null()
+    {
+        // Arrange
+        var ownedPokemon = CreateValidOwnedPokemon()
+            .With(x => x.MoveOneResourceName, (string?)null)
+            .Create();
+
+        // Act & Assert
+        var result = _validator.TestValidate(ownedPokemon);
+        result.ShouldNotHaveValidationErrorFor(x => x.MoveOneResourceName);
+    }
+
+    [Fact]
+    public void Should_Not_Have_Error_When_MoveOneResourceName_Is_Empty()
     {
         // Arrange
         var ownedPokemon = CreateValidOwnedPokemon()
@@ -159,22 +174,7 @@ public sealed class OwnedPokemonValidatorTests
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.MoveOneResourceName)
-              .WithErrorMessage("Move one resource name cannot be empty");
-    }
-
-    [Fact]
-    public void Should_Have_Error_When_MoveOneResourceName_Is_Null()
-    {
-        // Arrange
-        var ownedPokemon = CreateValidOwnedPokemon()
-            .With(x => x.MoveOneResourceName, (string)null!)
-            .Create();
-
-        // Act & Assert
-        var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.MoveOneResourceName)
-              .WithErrorMessage("Move one resource name cannot be empty");
+        result.ShouldNotHaveValidationErrorFor(x => x.MoveOneResourceName);
     }
 
     [Theory]
@@ -190,8 +190,9 @@ public sealed class OwnedPokemonValidatorTests
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.MoveOneResourceName)
-              .WithErrorMessage("Resource names must be valid Uris");
+        result
+            .ShouldHaveValidationErrorFor(x => x.MoveOneResourceName)
+            .WithErrorMessage("Resource names must be valid Uris");
     }
 
     [Theory]
@@ -207,8 +208,9 @@ public sealed class OwnedPokemonValidatorTests
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.MoveTwoResourceName)
-              .WithErrorMessage("Resource names must be valid Uris");
+        result
+            .ShouldHaveValidationErrorFor(x => x.MoveTwoResourceName)
+            .WithErrorMessage("Resource names must be valid Uris");
     }
 
     [Theory]
@@ -224,8 +226,9 @@ public sealed class OwnedPokemonValidatorTests
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.MoveThreeResourceName)
-              .WithErrorMessage("Resource names must be valid Uris");
+        result
+            .ShouldHaveValidationErrorFor(x => x.MoveThreeResourceName)
+            .WithErrorMessage("Resource names must be valid Uris");
     }
 
     [Theory]
@@ -241,8 +244,9 @@ public sealed class OwnedPokemonValidatorTests
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.MoveFourResourceName)
-              .WithErrorMessage("Resource names must be valid Uris");
+        result
+            .ShouldHaveValidationErrorFor(x => x.MoveFourResourceName)
+            .WithErrorMessage("Resource names must be valid Uris");
     }
 
     [Theory]
@@ -296,8 +300,9 @@ public sealed class OwnedPokemonValidatorTests
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.PokemonResourceName)
-              .WithErrorMessage("Resource name cannot be empty");
+        result
+            .ShouldHaveValidationErrorFor(x => x.PokemonResourceName)
+            .WithErrorMessage("Resource name cannot be empty");
     }
 
     [Theory]
@@ -313,8 +318,9 @@ public sealed class OwnedPokemonValidatorTests
 
         // Act & Assert
         var result = _validator.TestValidate(ownedPokemon);
-        result.ShouldHaveValidationErrorFor(x => x.PokemonResourceName)
-              .WithErrorMessage("Resource names must be valid Uris");
+        result
+            .ShouldHaveValidationErrorFor(x => x.PokemonResourceName)
+            .WithErrorMessage("Resource names must be valid Uris");
     }
 
     #endregion
@@ -336,7 +342,8 @@ public sealed class OwnedPokemonValidatorTests
     public void Should_Have_Multiple_Errors_When_Multiple_Fields_Are_Invalid()
     {
         // Arrange
-        var ownedPokemon = _fixture.Build<OwnedPokemon>()
+        var ownedPokemon = _fixture
+            .Build<OwnedPokemon>()
             .With(x => x.PokemonLevel, 0) // Invalid
             .With(x => x.CurrentExperience, 0) // Invalid
             .With(x => x.CurrentHp, -1) // Invalid
@@ -374,7 +381,8 @@ public sealed class OwnedPokemonValidatorTests
 
     private IPostprocessComposer<OwnedPokemon> CreateValidOwnedPokemon()
     {
-        return _fixture.Build<OwnedPokemon>()
+        return _fixture
+            .Build<OwnedPokemon>()
             .With(x => x.PokemonLevel, _fixture.Create<int>() % 99 + 1) // 1-99
             .With(x => x.CurrentExperience, _fixture.Create<int>() % 10000 + 1) // > 0
             .With(x => x.CurrentHp, Math.Abs(_fixture.Create<int>()) % 1000) // >= 0
