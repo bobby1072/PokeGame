@@ -672,6 +672,7 @@ public sealed class PokeGameRuleHelperServiceTests
         return new OwnedPokemon
         {
             Id = Guid.NewGuid(),
+            PokedexId = 1,
             GameSaveId = Guid.NewGuid(),
             PokemonResourceName = "bulbasaur",
             PokemonLevel = 1,

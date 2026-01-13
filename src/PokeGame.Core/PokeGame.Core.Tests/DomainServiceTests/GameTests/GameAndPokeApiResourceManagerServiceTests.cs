@@ -34,6 +34,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         // Arrange
         var ownedPokemon = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = Guid.NewGuid(),
             GameSaveId = Guid.NewGuid(),
             PokemonResourceName = "pikachu",
@@ -109,6 +110,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         // Arrange
         var ownedPokemon = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = Guid.NewGuid(),
             GameSaveId = Guid.NewGuid(),
             PokemonResourceName = "bulbasaur",
@@ -167,6 +169,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         var pokemonId = Guid.NewGuid();
         var ownedPokemon = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = pokemonId,
             GameSaveId = Guid.NewGuid(),
             PokemonResourceName = "charmander",
@@ -371,6 +374,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         // Arrange
         var ownedPokemon1 = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = Guid.NewGuid(),
             GameSaveId = Guid.NewGuid(),
             PokemonResourceName = "pikachu",
@@ -382,6 +386,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
 
         var ownedPokemon2 = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = Guid.NewGuid(),
             GameSaveId = Guid.NewGuid(),
             PokemonResourceName = "charizard",
@@ -449,6 +454,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         // Arrange
         var ownedPokemon = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = Guid.NewGuid(),
             GameSaveId = Guid.NewGuid(),
             PokemonResourceName = "pikachu",
@@ -476,6 +482,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         // Arrange
         var ownedPokemon = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = Guid.NewGuid(),
             GameSaveId = Guid.NewGuid(),
             PokemonResourceName = "pikachu",
@@ -567,6 +574,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
 
         var ownedPokemon1 = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = pokemonId1,
             GameSaveId = Guid.NewGuid(),
             PokemonResourceName = "pikachu",
@@ -578,6 +586,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
 
         var ownedPokemon2 = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = pokemonId2,
             GameSaveId = Guid.NewGuid(),
             PokemonResourceName = "charizard",

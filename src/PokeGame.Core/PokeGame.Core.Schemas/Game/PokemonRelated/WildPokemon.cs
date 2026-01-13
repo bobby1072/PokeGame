@@ -7,6 +7,7 @@ namespace PokeGame.Core.Schemas.Game.PokemonRelated;
 public sealed class WildPokemon: DomainModel<WildPokemon>
 {
     public required string PokemonResourceName { get; set; }
+    public required int PokedexId { get; set; }
     public required int PokemonLevel { get; set; }
     public required int CurrentHp { get; set; }
     public string? MoveOneResourceName { get; set; }

@@ -72,7 +72,7 @@ stages:
           - task: Npm@1
             displayName: "Check types"
             inputs:
-              commands: "custom"
+              command: "custom"
               customCommand: "run check-types"
               workingDir: $(Build.SourcesDirectory)/src/phaser-client
 

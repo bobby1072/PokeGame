@@ -1,4 +1,4 @@
-import { PokemonInnerDetails } from './PokemonDetails';
+import { PokemonInnerDetails } from "./PokemonDetails";
 
 export type OwnedPokemon = {
     id: string;
@@ -8,7 +8,7 @@ export type OwnedPokemon = {
     pokemonLevel: number;
     currentExperience: number;
     currentHp: number;
-    moveOneResourceName: string;
+    moveOneResourceName?: string;
     moveTwoResourceName?: string;
     moveThreeResourceName?: string;
     moveFourResourceName?: string;

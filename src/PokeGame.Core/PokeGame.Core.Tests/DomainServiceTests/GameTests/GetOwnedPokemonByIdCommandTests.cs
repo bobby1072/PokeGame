@@ -46,6 +46,7 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var ownedPokemon = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = ownedPokemonId,
             GameSaveId = gameSaveId,
             PokemonResourceName = "pikachu",
@@ -113,6 +114,7 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var ownedPokemon = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = ownedPokemonId,
             GameSaveId = gameSaveId,
             PokemonResourceName = "pikachu",
@@ -130,6 +132,7 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var deepOwnedPokemon = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = ownedPokemonId,
             GameSaveId = gameSaveId,
             PokemonResourceName = "pikachu",
@@ -270,11 +273,13 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var ownedPokemon = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = ownedPokemonId,
             GameSaveId = gameSaveId,
             PokemonResourceName = "pikachu",
             PokemonLevel = 5,
             CurrentHp = 20,
+            CurrentExperience = 0,
             MoveOneResourceName = "tackle",
             GameSave = new GameSave
             {
@@ -323,12 +328,14 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var ownedPokemon = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = ownedPokemonId,
             GameSaveId = gameSaveId,
             PokemonResourceName = "pikachu",
             PokemonLevel = 5,
             CurrentHp = 20,
             MoveOneResourceName = "tackle",
+            CurrentExperience = 0,
             GameSave = new GameSave
             {
                 Id = gameSaveId,
@@ -375,11 +382,13 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var ownedPokemon = new OwnedPokemon
         {
+            PokedexId = 1,
             Id = ownedPokemonId,
             GameSaveId = gameSaveId,
             PokemonResourceName = "pikachu",
             PokemonLevel = 5,
             CurrentHp = 20,
+            CurrentExperience = 0,
             MoveOneResourceName = "tackle",
             GameSave = null, // Null GameSave
         };
