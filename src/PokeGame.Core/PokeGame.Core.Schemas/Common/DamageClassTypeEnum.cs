@@ -1,4 +1,4 @@
-﻿namespace PokeGame.Core.Schemas.Game.PokemonRelated;
+﻿namespace PokeGame.Core.Schemas.Common;
 
 public enum DamageClassTypeEnum
 {

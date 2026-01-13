@@ -31,9 +31,7 @@ internal sealed class PokedexService : IPokedexService
         CancellationToken cancellationToken = default
     )
     {
-        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
-            nameof(CreatePokedexPokemonAsync)
-        );
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
         activity?.SetTag("pokemonToCreate.count", pokemonToCreate.Count);
 
         _logger.LogInformation(
@@ -56,7 +54,7 @@ internal sealed class PokedexService : IPokedexService
             _logger.LogWarning(
                 "None of the new entries are unique so no pokedex pokemon records to created."
             );
-            return Array.Empty<PokedexPokemon>();
+            return [];
         }
 
         var saveResult =
@@ -78,9 +76,7 @@ internal sealed class PokedexService : IPokedexService
         CancellationToken cancellationToken = default
     )
     {
-        using var activity = TelemetryHelperService.ActivitySource.StartActivity(
-            nameof(GetPokedexPokemonAsync)
-        );
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
         activity?.SetTag("fetchMultiple", input.FetchMultiple);
 
         _logger.LogInformation(

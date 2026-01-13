@@ -51,7 +51,7 @@ internal sealed class PokeGameRuleHelperService : IPokeGameRuleHelperService
             "Possible moves for pokemon species id: {PokemonSpeciesId} at level: {Level} are: {@PossibleMoves}",
             pokemonSpecies.Id,
             level,
-            possibleMoves
+            possibleMoves.ToList()
         );
 
         var selectedMoves = new List<string>();
