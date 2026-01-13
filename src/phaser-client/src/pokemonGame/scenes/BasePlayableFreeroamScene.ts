@@ -262,7 +262,7 @@ export abstract class BasePlayableFreeroamScene extends Scene {
             const deckPokemon =
                 currentDeck && currentDeck.length > 0
                     ? currentDeck.map((pokemon) => ({
-                          ownedPokemonId: pokemon.Id,
+                          ownedPokemonId: pokemon.id,
                       }))
                     : this.currentGameSave.gameSaveData.gameData.deckPokemon;
 

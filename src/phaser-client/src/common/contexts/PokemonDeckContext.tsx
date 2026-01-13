@@ -36,7 +36,7 @@ export const PokemonDeckProvider: React.FC<PokemonDeckProviderProps> = ({
         (deepPokemon: OwnedPokemon) => {
             setPokemonDeck((currentDeck) => {
                 const index = currentDeck.findIndex(
-                    (p) => p.Id === deepPokemon.Id
+                    (p) => p.id === deepPokemon.id
                 );
                 if (index !== -1) {
                     const updatedDeck = [...currentDeck];
