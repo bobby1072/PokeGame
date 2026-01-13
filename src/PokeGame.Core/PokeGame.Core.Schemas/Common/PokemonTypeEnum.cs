@@ -1,5 +1,8 @@
-﻿namespace PokeGame.Core.Schemas.Common;
+﻿using System.Text.Json.Serialization;
 
+namespace PokeGame.Core.Schemas.Common;
+
+[JsonConverter(typeof(JsonStringEnumConverter<PokemonTypeEnum>))]
 public enum PokemonTypeEnum
 {
     None = 1,
@@ -20,5 +23,5 @@ public enum PokemonTypeEnum
     Psychic,
     Rock,
     Steel,
-    Water
+    Water,
 }

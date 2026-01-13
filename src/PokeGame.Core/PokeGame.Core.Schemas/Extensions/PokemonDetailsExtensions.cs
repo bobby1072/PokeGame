@@ -9,15 +9,13 @@ namespace PokeGame.Core.Schemas.Extensions;
 
 internal static class PokemonDetailsExtensions
 {
-    public static PokemonInnerDetails CreatePokemonInnerDetails(this WildPokemon wildPokemon)
+    public static PokemonInnerDetails? CreatePokemonInnerDetails(this WildPokemon wildPokemon)
     {
         if (wildPokemon.Pokemon is null ||
             wildPokemon.PokemonSpecies is null)
         {
-            throw new PokeGameApiServerException(
-                "Failed to create pokemon inner details as owned pokemon missing data");
+            return null;
         }
-
         return new PokemonInnerDetails
         {   
             BaseExperienceFromDefeating = wildPokemon.Pokemon.BaseExperienceFromDefeating,
@@ -33,13 +31,13 @@ internal static class PokemonDetailsExtensions
             MoveFour = wildPokemon.MoveFour?.CreatePokemonMoveDetails(),
         };
     }
-    public static PokemonInnerDetails CreatePokemonInnerDetails(this OwnedPokemon ownedPokemon)
+    public static PokemonInnerDetails? CreatePokemonInnerDetails(this OwnedPokemon ownedPokemon)
     {
         if (ownedPokemon.Pokemon is null ||
             ownedPokemon.PokemonSpecies is null)
         {
-            throw new PokeGameApiServerException(
-                "Failed to create pokemon inner details as owned pokemon missing data");
+
+            return null;
         }
         
         return new PokemonInnerDetails
