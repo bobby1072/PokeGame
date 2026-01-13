@@ -10,6 +10,7 @@ public static class OwnedPokemonExtensions
         return new OwnedPokemonEntity
         {
             Id = ownedPokemon.Id,
+            PokedexId = ownedPokemon.PokedexId,
             GameSaveId = ownedPokemon.GameSaveId,
             ResourceName = ownedPokemon.PokemonResourceName,
             CaughtAt = ownedPokemon.CaughtAt,

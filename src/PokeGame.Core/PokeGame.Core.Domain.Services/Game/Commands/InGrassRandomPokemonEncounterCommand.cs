@@ -137,6 +137,7 @@ internal sealed class InGrassRandomPokemonEncounterCommand
     {
         return new WildPokemon
         {
+            PokedexId = pokemonFromApi.Id,
             Pokemon = pokemonFromApi,
             PokemonSpecies = pokemonSpeciesFromApi,
             CurrentHp = _pokeGameRuleHelperService.GetPokemonMaxHp(

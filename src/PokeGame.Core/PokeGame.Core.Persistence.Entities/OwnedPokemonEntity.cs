@@ -7,6 +7,7 @@ namespace PokeGame.Core.Persistence.Entities;
 [Table("owned_pokemon", Schema = "public")]
 public sealed class OwnedPokemonEntity : BasePokeGameEntity<Guid?, OwnedPokemon>
 {
+    public required int PokedexId { get; set; }
     public required Guid GameSaveId { get; set; }
     public required string ResourceName { get; set; }
     public DateTime CaughtAt { get; set; } = DateTime.UtcNow;
@@ -25,6 +26,7 @@ public sealed class OwnedPokemonEntity : BasePokeGameEntity<Guid?, OwnedPokemon>
         return new OwnedPokemon
         {
             Id = Id,
+            PokedexId = PokedexId,
             GameSaveId = GameSaveId,
             PokemonResourceName = ResourceName,
             CaughtAt = CaughtAt,

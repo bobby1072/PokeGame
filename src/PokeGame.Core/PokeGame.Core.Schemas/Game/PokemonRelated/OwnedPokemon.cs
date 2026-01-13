@@ -8,9 +8,10 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
 {
     public required Guid GameSaveId { get; set; }
     public required string PokemonResourceName { get; set; }
+    public required int PokedexId { get; set; }
     public DateTime CaughtAt { get; set; } = DateTime.UtcNow;
     public required int PokemonLevel { get; set; }
-    public int CurrentExperience { get; set; }
+    public required int CurrentExperience { get; set; }
     public required int CurrentHp { get; set; }
     public string? MoveOneResourceName { get; set; }
     [JsonIgnore]
@@ -29,7 +30,7 @@ public sealed class OwnedPokemon : PersistableDomainModel<OwnedPokemon, Guid?>
     [JsonIgnore]
     public Pokemon? Pokemon { get; set; }
     public GameSave? GameSave { get; set; }
-    public PokemonInnerDetails InnerDetails => this.CreatePokemonInnerDetails();
+    public PokemonInnerDetails? InnerDetails => this.CreatePokemonInnerDetails();
 
     public override bool Equals(OwnedPokemon? other)
     {

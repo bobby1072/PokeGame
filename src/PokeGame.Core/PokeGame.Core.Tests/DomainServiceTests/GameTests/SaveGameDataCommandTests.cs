@@ -202,10 +202,12 @@ public sealed class SaveGameDataCommandTests
         var ownedPokemon = new OwnedPokemon
         {
             Id = newPokemonId,
+            PokedexId = 1,
             GameSaveId = gameSaveId,
             PokemonResourceName = "pikachu",
             PokemonLevel = 5,
             CurrentHp = 20,
+            CurrentExperience = 0,
             MoveOneResourceName = "tackle",
             GameSave = new GameSave
             {
@@ -623,10 +625,12 @@ public sealed class SaveGameDataCommandTests
         var ownedPokemon = new OwnedPokemon
         {
             Id = newPokemonId,
+            PokedexId = 1,
             GameSaveId = Guid.NewGuid(),
             PokemonResourceName = "pikachu",
             PokemonLevel = 5,
             CurrentHp = 20,
+            CurrentExperience = 0,
             MoveOneResourceName = "tackle",
             GameSave = new GameSave
             {
