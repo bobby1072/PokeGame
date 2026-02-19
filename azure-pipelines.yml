@@ -199,3 +199,24 @@ stages:
                 latest
                 $(Build.BuildNumber)
 
+
+  - stage: DeployInfra
+    displayName: "Deploy Infrastructure (Production)"
+    dependsOn: Publish
+    condition: and(eq(variables.isMain, true), succeeded())
+    jobs:
+      - deployment: DeployInfrastructure
+        displayName: "Queue Infrastructure Update"
+        environment: production-infra   # This triggers approval
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                  submodules: recursive
+
+                - template: path/to/your/infrastructure-template.yml
+                  parameters:
+                    serverUrl: $(InfraServerUrl)
+                    apiKey: $(InfraApiKey)
+                    requestBodyPath: "$(Build.SourcesDirectory)/Infrastructure/app.json"
