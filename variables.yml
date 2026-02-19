@@ -22,7 +22,7 @@ variables:
     value: $(dockerHubPassword)
   - name: 2.dockerHubDetails.password
     value: $(dockerHubPassword)   
-  - name: 2.dockerHubDetails.password
+  - name: 3.dockerHubDetails.password
     value: $(dockerHubPassword)
 
   - name: 0.configMap.POSTGRES_PASSWORD
