@@ -10,6 +10,7 @@ resources:
     - repository: Hetzner-Container-Management
       type: github
       name: bobby1072/Hetzner-Container-Management
+      endpoint: bobby1072
 
 pr:
   branches:
