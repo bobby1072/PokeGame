@@ -1,19 +1,3 @@
-variables:
-  - name: isMain
-    value: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
-  - name: ApiDockerRepository
-    value: bobby1072/poke_game_api
-  - name: ReactServerDockerRepository
-    value: bobby1072/poke_game_react_server
-  - name: SignalRApiDockerRepository
-    value: bobby1072/poke_game_signal_r_api    
-  - name: ReleaseVersion
-    value: $(Build.BuildNumber)     
-  - name: ServiceInfo.ReleaseVersion
-    value: $(Build.BuildNumber)     
-  - name: appReleaseVersion
-    value: $(Build.BuildNumber)
-
 trigger:
   branches:
     include:
@@ -32,6 +16,8 @@ pr:
 pool:
   vmImage: "ubuntu-latest"
 
+variables:
+  - template: variables.yml
 
 stages:
   - stage: Build
@@ -205,6 +191,14 @@ stages:
     dependsOn: Publish
     condition: and(eq(variables.isMain, true), succeeded())
     jobs:
+      - task: FileTransform@2
+        displayName: "Transform app json"
+        inputs:
+          folderPath: "$(Build.SourcesDirectory)/Infrastructure"
+          enableXmlTransform: false
+          fileType: "json"
+          jsonTargetFiles: "app.json"
+
       - deployment: DeployInfrastructure
         displayName: "Queue Infrastructure Update"
         environment: production-infra   # This triggers approval
@@ -215,8 +209,9 @@ stages:
                 - checkout: self
                   submodules: recursive
 
-                - template: path/to/your/infrastructure-template.yml
+                - template: azure-pipeline-templates/deploy-infrastructure.yml@Hetzner-Container-Management
                   parameters:
                     serverUrl: $(InfraServerUrl)
                     apiKey: $(InfraApiKey)
                     requestBodyPath: "$(Build.SourcesDirectory)/Infrastructure/app.json"
+                    waitForCompletion: true
