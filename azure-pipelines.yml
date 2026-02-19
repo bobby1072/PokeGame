@@ -191,14 +191,6 @@ stages:
     dependsOn: Publish
     condition: and(eq(variables.isMain, true), succeeded())
     jobs:
-      - task: FileTransform@2
-        displayName: "Transform app json"
-        inputs:
-          folderPath: "$(Build.SourcesDirectory)/Infrastructure"
-          enableXmlTransform: false
-          fileType: "json"
-          jsonTargetFiles: "app.json"
-
       - deployment: DeployInfrastructure
         displayName: "Queue Infrastructure Update"
         environment: production-infra   # This triggers approval
@@ -208,6 +200,14 @@ stages:
               steps:
                 - checkout: self
                   submodules: recursive
+
+                - task: FileTransform@2
+                  displayName: "Transform app json"
+                  inputs:
+                    folderPath: "$(Build.SourcesDirectory)/Infrastructure"
+                    enableXmlTransform: false
+                    fileType: "json"
+                    jsonTargetFiles: "app.json"
 
                 - template: azure-pipeline-templates/deploy-infrastructure.yml@Hetzner-Container-Management
                   parameters:
