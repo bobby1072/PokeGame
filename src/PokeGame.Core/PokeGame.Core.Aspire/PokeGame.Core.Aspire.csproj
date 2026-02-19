@@ -4,16 +4,20 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <UserSecretsId>cab132c5-0d19-48c6-8fcc-d9afc3ff72e6</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Dashboard.Sdk.win-x64" Version="9.5.2" />
-        <PackageReference Include="Aspire.Hosting.AppHost" Version="9.5.2" />
-        <PackageReference Include="Aspire.Hosting.Orchestration.win-x64" Version="9.5.2" />
+        <PackageReference Include="Aspire.Dashboard.Sdk.win-x64" Version="13.1.1" />
+        <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.1" />
+        <PackageReference Include="Aspire.Hosting.Orchestration.win-x64" Version="13.1.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.3" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="10.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.3" />
     </ItemGroup>
 
     <ItemGroup>
