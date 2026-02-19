@@ -221,4 +221,3 @@ stages:
                     serverUrl: $(InfraServerUrl)
                     apiKey: $(InfraApiKey)
                     requestBodyPath: "$(Build.SourcesDirectory)/Infrastructure/app.json"
-                    waitForCompletion: true
