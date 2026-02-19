@@ -194,7 +194,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         var dbResult = new DbGetManyResult<OwnedPokemon>(new[] { ownedPokemon });
 
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetMany(It.Is<Guid?[]>(ids => ids.Contains(pokemonId))))
+            .Setup(x => x.GetMany(It.Is<Guid?[]>(ids => ids.Contains(pokemonId, null))))
             .ReturnsAsync(dbResult);
 
         _mockPokeApiClient
@@ -226,7 +226,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         Assert.Equal("ember", enrichedPokemon.MoveOne.Name);
 
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetMany(It.Is<Guid?[]>(ids => ids.Contains(pokemonId))),
+            x => x.GetMany(It.Is<Guid?[]>(ids => ids.Contains(pokemonId, null))),
             Times.Once
         );
     }
@@ -609,7 +609,7 @@ public sealed class GameAndPokeApiResourceManagerServiceTests
         _mockOwnedPokemonRepository
             .Setup(x =>
                 x.GetMany(
-                    It.Is<Guid?[]>(ids => ids.Contains(pokemonId1) && ids.Contains(pokemonId2))
+                    It.Is<Guid?[]>(ids => ids.Contains(pokemonId1, null) && ids.Contains(pokemonId2, null))
                 )
             )
             .ReturnsAsync(dbResult);
