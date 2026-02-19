@@ -216,7 +216,7 @@ stages:
                     fileType: "json"
                     jsonTargetFiles: "app.json"
 
-                - template: azure-pipeline-templates/deploy-infrastructure.yml@Hetzner-Container-Management
+                - template: templates/deploy-infrastructure.yml@Hetzner-Container-Management
                   parameters:
                     serverUrl: $(InfraServerUrl)
                     apiKey: $(InfraApiKey)
