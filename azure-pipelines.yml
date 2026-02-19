@@ -5,6 +5,13 @@ trigger:
 
 name: $(Date:yy).$(Month)$(DayOfYear).$(Rev:r)
 
+resources:
+  repositories:
+    - repository: Hetzner-Container-Management
+      type: github
+      name: bobby1072/Hetzner-Container-Management
+      endpoint: GitHub
+
 pr:
   branches:
     include:
