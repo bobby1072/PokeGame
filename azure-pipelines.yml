@@ -230,6 +230,13 @@ stages:
         value: $(Build.BuildNumber) 
       - name: 3.labels.ReleaseVersion
         value: $(Build.BuildNumber)    
+
+      - name: 1.imageTag
+        value: $(Build.BuildNumber) 
+      - name: 2.imageTag
+        value: $(Build.BuildNumber) 
+      - name: 3.imageTag
+        value: $(Build.BuildNumber)    
     jobs:
       - deployment: DeployInfrastructure
         displayName: "Queue Infrastructure Update"
