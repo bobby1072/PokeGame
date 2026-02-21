@@ -197,6 +197,32 @@ stages:
     displayName: "Deploy Infrastructure (Production)"
     dependsOn: Publish
     condition: and(eq(variables.isMain, true), succeeded())
+    variables:
+      - name: 1.dockerHubDetails.password
+        value: $(dockerHubPassword)
+      - name: 2.dockerHubDetails.password
+        value: $(dockerHubPassword)   
+      - name: 3.dockerHubDetails.password
+        value: $(dockerHubPassword)
+
+      - name: 0.configMap.POSTGRES_PASSWORD
+        value: $(postgresPassword)
+
+      - name: 1.labels.traefik.http.routers.pokegame-api.rule    
+        value: $(PokeGameApiTraefikRule)
+      - name: 2.labels.traefik.http.routers.pokegame-singalr.rule    
+        value: $(PokeGameSignalRTraefikRule)
+      - name: 3.labels.traefik.http.routers.pokegame-react-server.rule    
+        value: $(PokeGameReactServerTraefikRule)          
+      
+      - name: 0.labels.ReleaseVersion
+        value: $(Build.BuildNumber) 
+      - name: 1.labels.ReleaseVersion
+        value: $(Build.BuildNumber) 
+      - name: 2.labels.ReleaseVersion
+        value: $(Build.BuildNumber) 
+      - name: 3.labels.ReleaseVersion
+        value: $(Build.BuildNumber)                                         
     jobs:
       - deployment: DeployInfrastructure
         displayName: "Queue Infrastructure Update"
