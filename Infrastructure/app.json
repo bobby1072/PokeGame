@@ -4,7 +4,7 @@
       "namespace": "library",
       "repositoryName": "postgres"
     },
-    "containerName": "pokegame/pokegame-db",
+    "containerName": "pokegame-db",
     "externalPortNumber": 5560,
     "internalPortNumber": 5432,
     "configMap": {
@@ -12,13 +12,17 @@
       "POSTGRES_USER": "postgres",
       "POSTGRES_PASSWORD": "<USE-SECRETS>"
     },
+    "labels": {
+      "com.docker.compose.project": "pokegame",
+      "ReleaseVersion": "1.0.0"
+    },
     "volumeInfo": {
       "volumeName": "postgres_data",
       "internalMountTarget": "/var/lib/postgresql"
     }
   },
   {
-    "containerName": "pokegame/pokegame-api",
+    "containerName": "pokegame-api",
     "externalPortNumber": 7110,
     "internalPortNumber": 80,
     "dockerHubDetails": {
@@ -27,13 +31,23 @@
       "namespace": "bobby1072",
       "repositoryName": "poke_game_api"
     },
+    "labels": {
+      "com.docker.compose.project": "pokegame",
+      "traefik.enable": "true",
+      "traefik.http.routers.pokegame-api.rule": "<USE-SECRETS>",
+      "traefik.http.routers.pokegame-api.entrypoints": "websecure",
+      "traefik.http.routers.pokegame-api.tls.certresolver": "myresolver",
+      "traefik.http.services.pokegame-api.loadbalancer.server.port": "80",
+      "ReleaseVersion": "1.0.0"
+    },
     "configMap": {
       "ASPNETCORE_ENVIRONMENT": "Production",
-      "Logging__LogLevel__Default": "Debug"
+      "Logging__LogLevel__Default": "Debug",
+      "ASPNETCORE_URLS": "http://+:80"
     }
   },
   {
-    "containerName": "pokegame/pokegame-singalr",
+    "containerName": "pokegame-singalr",
     "externalPortNumber": 7007,
     "internalPortNumber": 80,
     "dockerHubDetails": {
@@ -42,13 +56,23 @@
       "namespace": "bobby1072",
       "repositoryName": "poke_game_signal_r_api"
     },
+    "labels": {
+      "com.docker.compose.project": "pokegame",
+      "traefik.enable": "true",
+      "traefik.http.routers.pokegame-singalr.rule": "<USE-SECRETS>",
+      "traefik.http.routers.pokegame-singalr.entrypoints": "websecure",
+      "traefik.http.routers.pokegame-singalr.tls.certresolver": "myresolver",
+      "traefik.http.services.pokegame-singalr.loadbalancer.server.port": "80",
+      "ReleaseVersion": "1.0.0"
+    },
     "configMap": {
       "ASPNETCORE_ENVIRONMENT": "Production",
-      "Logging__LogLevel__Default": "Debug"
+      "Logging__LogLevel__Default": "Debug",
+      "ASPNETCORE_URLS": "http://+:80"
     }
   },
   {
-    "containerName": "pokegame/pokegame-react-server",
+    "containerName": "pokegame-react-server",
     "externalPortNumber": 7111,
     "internalPortNumber": 80,
     "dockerHubDetails": {
@@ -57,9 +81,19 @@
       "namespace": "bobby1072",
       "repositoryName": "poke_game_react_server"
     },
+    "labels": {
+      "com.docker.compose.project": "pokegame",
+      "traefik.enable": "true",
+      "traefik.http.routers.pokegame-react-server.rule": "<USE-SECRETS>",
+      "traefik.http.routers.pokegame-react-server.entrypoints": "websecure",
+      "traefik.http.routers.pokegame-react-server.tls.certresolver": "myresolver",
+      "traefik.http.services.pokegame-react-server.loadbalancer.server.port": "80",
+      "ReleaseVersion": "1.0.0"
+    },
     "configMap": {
       "ASPNETCORE_ENVIRONMENT": "Production",
-      "Logging__LogLevel__Default": "Debug"
+      "Logging__LogLevel__Default": "Debug",
+      "ASPNETCORE_URLS": "http://+:80"
     }
   }
 ]
