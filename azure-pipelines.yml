@@ -206,7 +206,14 @@ stages:
         value: $(dockerHubPassword)
 
       - name: 0.configMap.POSTGRES_PASSWORD
-        value: $(postgresPassword)
+        value: $(PostgresPassword)
+      - name: 0.configMap.POSTGRES_USER
+        value: $(PostgresUser)
+
+      - name: 1.configMap.ConnectionStrings__PostgresConnection
+        value: $(PostgresConnectionString)
+      - name: 2.configMap.ConnectionStrings__PostgresConnection
+        value: $(PostgresConnectionString)
 
       - name: 1.labels.traefik.http.routers.pokegame-api.rule    
         value: $(PokeGameApiTraefikRule)
@@ -222,7 +229,7 @@ stages:
       - name: 2.labels.ReleaseVersion
         value: $(Build.BuildNumber) 
       - name: 3.labels.ReleaseVersion
-        value: $(Build.BuildNumber)                                         
+        value: $(Build.BuildNumber)    
     jobs:
       - deployment: DeployInfrastructure
         displayName: "Queue Infrastructure Update"

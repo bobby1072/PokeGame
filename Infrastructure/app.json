@@ -9,7 +9,7 @@
     "internalPortNumber": 5432,
     "configMap": {
       "POSTGRES_DB": "poke_game",
-      "POSTGRES_USER": "postgres",
+      "POSTGRES_USER": "<USE-SECRETS>",
       "POSTGRES_PASSWORD": "<USE-SECRETS>"
     },
     "labels": {
@@ -43,7 +43,8 @@
     "configMap": {
       "ASPNETCORE_ENVIRONMENT": "Production",
       "Logging__LogLevel__Default": "Debug",
-      "ASPNETCORE_URLS": "http://+:80"
+      "ASPNETCORE_URLS": "http://+:80",
+      "ConnectionStrings__PostgresConnection": "<USE-SECRETS>"
     }
   },
   {
@@ -68,7 +69,8 @@
     "configMap": {
       "ASPNETCORE_ENVIRONMENT": "Production",
       "Logging__LogLevel__Default": "Debug",
-      "ASPNETCORE_URLS": "http://+:80"
+      "ASPNETCORE_URLS": "http://+:80",
+      "ConnectionStrings__PostgresConnection": "<USE-SECRETS>"
     }
   },
   {
