@@ -1,10 +1,10 @@
-using System.Text.Json;
 using BT.Common.Api.Helpers.Extensions;
 using BT.Common.Api.Helpers.Models;
 using BT.Common.Helpers;
 using BT.Common.Helpers.Extensions;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.Net.Http.Headers;
+using PokeGame.Core.React.Server.Configuration;
 
 var localLogger = LoggingHelper.CreateLogger();
 
@@ -13,7 +13,7 @@ try
     localLogger.LogInformation("Application starting...");
     var builder = WebApplication.CreateBuilder(args);
     builder.WebHost.ConfigureKestrel(server => server.AddServerHeader = false);
-    
+
     var serviceInfo = builder.Configuration.GetSection(ServiceInfo.Key);
 
     if (!serviceInfo.Exists())
@@ -24,7 +24,7 @@ try
     builder.Services.ConfigureSingletonOptions<ServiceInfo>(serviceInfo);
 
     builder.Logging.AddJsonLogging();
-    
+
     var requestTimeout = builder.Configuration.GetValue<int>("RequestTimeout");
 
     builder.Services.AddRequestTimeouts(opts =>
@@ -34,39 +34,46 @@ try
             Timeout = TimeSpan.FromSeconds(requestTimeout > 0 ? requestTimeout : 30),
         };
     });
-    
-    builder.Services
-        .AddControllers()
-        .AddJsonOptions(opts =>
-        {
-            opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        });
-    
+
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddResponseCompression();
     builder.Services.AddHealthChecks();
+    builder.Services.AddAuthorization();
+
+    var hstsOpts = builder.CheckAndAddSingletonOptions<HstsOptions>();
     
+    builder.Services.AddHsts(opts =>
+    {
+        opts.ExcludedHosts.Clear();
+        opts.IncludeSubDomains = hstsOpts.IncludeSubDomains;
+        opts.Preload = hstsOpts.Preload;
+        opts.MaxAge = TimeSpan.FromSeconds((double)hstsOpts.MaxAgeInSeconds);
+    });
+
     var app = builder.Build();
 
-    app.UseRouting();
-
     app.UseResponseCompression();
-    
+
+    app.UseHsts();
+
     app.UseHttpsRedirection();
+
+    app.UseStaticFiles();
+
+    app.UseRouting();
 
     app.UseAuthorization();
 
     app.UseCorrelationIdMiddleware();
 
     app.UseHealthGetEndpoints();
-    
-    #pragma warning disable ASP0014
+
+#pragma warning disable ASP0014
     app.UseEndpoints(endpoint =>
     {
         endpoint.MapFallbackToFile("index.html");
     });
-    #pragma warning restore ASP0014
-    app.UseStaticFiles();
+#pragma warning restore ASP0014
     app.UseSpa(spa =>
     {
         spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
@@ -98,7 +105,7 @@ try
             },
         };
     });
-    
+
     await app.RunAsync();
 }
 catch (Exception ex)
