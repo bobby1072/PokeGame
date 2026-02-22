@@ -1,3 +1,4 @@
+using BT.Common.Services.Concrete;
 using PokeGame.Core.React.Server.Configuration;
 using PokeGame.Core.React.Server.Services.Abstract;
 
@@ -21,6 +22,7 @@ internal sealed class ReactAppSettingsBackgroundEditorExecutor: BackgroundServic
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
         await using var asyncScope = _serviceScopeFactory.CreateAsyncScope();
         var reactAppEditor = asyncScope.ServiceProvider.GetRequiredService<IReactAppSettingsEditor>();
 

@@ -24,6 +24,7 @@ internal sealed class ReactAppSettingsEditor: IReactAppSettingsEditor
     public async Task UpdateAppSettingsAsync(Dictionary<string, string> keyValueUpdates, CancellationToken cancellationToken = default)
     {
         using var activity = TelemetryHelperService.ActivitySource.StartActivity();
+        activity?.SetTag(nameof(_reactAppSettingsFilePath), _reactAppSettingsFilePath);
         foreach (var keyValuePair in keyValueUpdates)
         {
             activity?.SetTag(keyValuePair.Key, keyValuePair.Value);
@@ -32,11 +33,13 @@ internal sealed class ReactAppSettingsEditor: IReactAppSettingsEditor
         var retryPipeline = DefaulyEditAppSettingsRetryPolicy.ToPipeline();
         
         await retryPipeline.ExecuteAsync(async ct => await HandleUpdateAppSettingsAsync(keyValueUpdates, ct), cancellationToken);
+        
     }
 
     private async Task HandleUpdateAppSettingsAsync(Dictionary<string, string> keyValueUpdates,
         CancellationToken cancellationToken = default)
     {
+        using var activity = TelemetryHelperService.ActivitySource.StartActivity();
         var readFileAppSettings = await File.ReadAllTextAsync(_reactAppSettingsFilePath, cancellationToken);
         var parsedAppSettings = JsonSerializer.Deserialize<Dictionary<string, string>>(readFileAppSettings)
             ?? throw new JsonException("Failed to parse ReactAppSettings file");
@@ -52,6 +55,14 @@ internal sealed class ReactAppSettingsEditor: IReactAppSettingsEditor
         if (newAppSettings.Any(x => !parsedAppSettings.TryGetValue(x.Key, out var setting) || !setting.Equals(x.Value)))
         {
             await File.WriteAllTextAsync(_reactAppSettingsFilePath, JsonSerializer.Serialize(newAppSettings), cancellationToken);
+            _logger.LogInformation("Successfully updated react settings from: {@OldSettings} to {@NewSettings}",
+                parsedAppSettings,
+                newAppSettings);
         }
+        else
+        {
+            _logger.LogInformation("No react app settings update needed");
+        }
+        
     }
 }
