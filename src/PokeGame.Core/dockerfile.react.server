@@ -20,6 +20,7 @@ COPY src/Submodules/BT/src/BT.Common/BT.Common.Helpers/*.csproj ./Submodules/BT/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.FastArray/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.FastArray/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Polly/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Polly/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Services/*.csproj ./Submodules/BT/src/BT.Common/BT.Common.Services/
 
 ARG WEB_APP_CLIENT_PATH
 COPY ${WEB_APP_CLIENT_PATH} ./PokeGame.Core/PokeGame.Core.React.Server/wwwroot/
@@ -33,6 +34,7 @@ COPY src/Submodules/BT/src/BT.Common/BT.Common.Helpers/ ./Submodules/BT/src/BT.C
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/ ./Submodules/BT/src/BT.Common/BT.Common.Api.Helpers/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.FastArray/ ./Submodules/BT/src/BT.Common/BT.Common.FastArray/
 COPY src/Submodules/BT/src/BT.Common/BT.Common.Polly/ ./Submodules/BT/src/BT.Common/BT.Common.Polly/
+COPY src/Submodules/BT/src/BT.Common/BT.Common.Services/ ./Submodules/BT/src/BT.Common/BT.Common.Services/
 
 
 WORKDIR /src/PokeGame.Core/PokeGame.Core.React.Server 
