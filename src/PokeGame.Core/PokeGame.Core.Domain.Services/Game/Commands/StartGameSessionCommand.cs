@@ -86,14 +86,6 @@ internal sealed class StartGameSessionCommand
             )?.FirstResult
             ?? throw new PokeGameApiServerException("Failed to add new game session");
 
-        if (savedSession is null)
-        {
-            throw new PokeGameApiUserException(
-                HttpStatusCode.InternalServerError,
-                "Failed to save new game session"
-            );
-        }
-
         return new DomainCommandResult<GameSession> { CommandResult = savedSession };
     }
 }
