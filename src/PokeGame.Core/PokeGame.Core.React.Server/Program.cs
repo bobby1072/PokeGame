@@ -56,7 +56,7 @@ try
     var reactAppSettingsPath =
         Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "reactappsettings.json"));
     
-    builder.Services.AddScoped<IReactAppSettingsEditor, ReactAppSettingsEditor>(sp => new ReactAppSettingsEditor(
+    builder.Services.AddTransient<IReactAppSettingsEditor, ReactAppSettingsEditor>(sp => new ReactAppSettingsEditor(
         reactAppSettingsPath,
         sp.GetRequiredService<ILoggerFactory>().CreateLogger<ReactAppSettingsEditor>()
     ));
