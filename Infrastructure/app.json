@@ -104,7 +104,9 @@
     "configMap": {
       "ASPNETCORE_ENVIRONMENT": "Production",
       "Logging__LogLevel__Default": "Debug",
-      "ASPNETCORE_URLS": "http://+:80"
+      "ASPNETCORE_URLS": "http://+:80",
+      "PokeGameBackendSettings__PokeGameApiProdUri": "<USE-SECRETS>",
+      "PokeGameBackendSettings__PokeGameSignalRProdUri": "<USE-SECRETS>"
     }
   }
 ]

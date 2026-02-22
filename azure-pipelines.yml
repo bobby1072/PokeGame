@@ -236,7 +236,12 @@ stages:
       - name: 2.imageTag
         value: $(Build.BuildNumber) 
       - name: 3.imageTag
-        value: $(Build.BuildNumber)    
+        value: $(Build.BuildNumber)
+
+      - name: 3.configMap.PokeGameBackendSettings__PokeGameApiProdUri
+        value: $(PokeGameApiProdUri)    
+      - name: 3.configMap.PokeGameBackendSettings__PokeGameSignalRProdUri
+        value: $(PokeGameSignalRProdUri)
     jobs:
       - deployment: DeployInfrastructure
         displayName: "Queue Infrastructure Update"
