@@ -1,10 +1,14 @@
+using System.Reflection;
 using BT.Common.Api.Helpers.Extensions;
 using BT.Common.Api.Helpers.Models;
 using BT.Common.Helpers;
 using BT.Common.Helpers.Extensions;
+using BT.Common.Services.Extensions;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.Net.Http.Headers;
 using PokeGame.Core.React.Server.Configuration;
+using PokeGame.Core.React.Server.Services.Abstract;
+using PokeGame.Core.React.Server.Services.Concrete;
 
 var localLogger = LoggingHelper.CreateLogger();
 
@@ -14,14 +18,7 @@ try
     var builder = WebApplication.CreateBuilder(args);
     builder.WebHost.ConfigureKestrel(server => server.AddServerHeader = false);
 
-    var serviceInfo = builder.Configuration.GetSection(ServiceInfo.Key);
-
-    if (!serviceInfo.Exists())
-    {
-        throw new ArgumentNullException(ServiceInfo.Key);
-    }
-
-    builder.Services.ConfigureSingletonOptions<ServiceInfo>(serviceInfo);
+    var serviceOpts = builder.CheckAndAddSingletonOptions<ServiceInfo>();
 
     builder.Logging.AddJsonLogging();
 
@@ -35,6 +32,11 @@ try
         };
     });
 
+    builder.Services
+        .AddTelemetryService(
+            serviceOpts.ReleaseName
+        );
+    
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddResponseCompression();
     builder.Services.AddHealthChecks();
@@ -50,6 +52,19 @@ try
         opts.MaxAge = TimeSpan.FromSeconds((double)hstsOpts.MaxAgeInSeconds);
     });
 
+
+    var reactAppSettingsPath =
+        Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "reactappsettings.json"));
+    
+    builder.Services.AddScoped<IReactAppSettingsEditor, ReactAppSettingsEditor>(sp => new ReactAppSettingsEditor(
+        reactAppSettingsPath,
+        sp.GetRequiredService<ILoggerFactory>().CreateLogger<ReactAppSettingsEditor>()
+    ));
+
+    builder.CheckAndAddSingletonOptions<PokeGameBackendSettings>();
+
+    builder.Services.AddHostedService<ReactAppSettingsBackgroundEditorExecutor>();
+    
     var app = builder.Build();
 
     app.UseResponseCompression();
