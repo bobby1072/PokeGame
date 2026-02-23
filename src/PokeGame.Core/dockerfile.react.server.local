@@ -41,6 +41,6 @@ RUN dotnet publish PokeGame.Core.React.Server.csproj -c ${CONF} -o /app
 FROM base AS final
 ARG CONF=Release
 WORKDIR /app
-COPY --from=publish /app .
+COPY --chown=10000:10000 --from=publish /app .
 
 ENTRYPOINT ["dotnet", "PokeGame.Core.React.Server.dll"]
