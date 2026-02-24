@@ -22,7 +22,7 @@ export default abstract class AppSettingsProvider {
                 ...acc,
                 [key]: AppSettingsProvider.TryGetValue(val as any, settings),
             }),
-            {}
+            {},
         ) as AppSettings;
     }
 
@@ -32,10 +32,11 @@ export default abstract class AppSettingsProvider {
         }
 
         try {
-            const response = await axios.get("/reactappsettings.json");
+            const base = import.meta.env.BASE_URL ?? "/";
+            const response = await axios.get(`${base}reactappsettings.json`);
             if (!response.data) {
                 throw new Error(
-                    `Failed to load app settings: ${response.status}`
+                    `Failed to load app settings: ${response.status}`,
                 );
             }
             AppSettingsProvider.appSettingsCache = response.data;
@@ -48,12 +49,12 @@ export default abstract class AppSettingsProvider {
 
     private static TryGetValue(
         key: AppSettingsKeys,
-        settings: Record<string, any>
+        settings: Record<string, any>,
     ): string | undefined | null {
         try {
             const prodResult = AppSettingsProvider.FindVal(
                 key.toString(),
-                settings
+                settings,
             );
 
             return prodResult?.toString();
@@ -63,7 +64,7 @@ export default abstract class AppSettingsProvider {
     }
     private static FindVal(
         key: string,
-        jsonDoc: Record<string, any>
+        jsonDoc: Record<string, any>,
     ): string | null | undefined {
         const keys = key.split(".");
         let result: any = jsonDoc;
