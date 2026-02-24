@@ -95,6 +95,8 @@ stages:
               command: "custom"
               customCommand: "run build"
               workingDir: $(Build.SourcesDirectory)/src/phaser-client
+            env:
+              VITE_BASE_PATH: /pokegame-react-server/
 
           - task: FileTransform@2
             displayName: "Transform frontend configuration file"
