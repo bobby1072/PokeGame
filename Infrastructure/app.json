@@ -55,7 +55,7 @@
     ]
   },
   {
-    "containerName": "pokegame-singalr",
+    "containerName": "pokegame-signalr",
     "imageTag": "latest",
     "dockerHubDetails": {
       "username": "bobby1072",
@@ -66,12 +66,12 @@
     "labels": {
       "com.docker.compose.project": "pokegame",
       "traefik.enable": "true",
-      "traefik.http.routers.pokegame-singalr.rule": "<USE-SECRETS>",
+      "traefik.http.routers.pokegame-signalr.rule": "<USE-SECRETS>",
       "traefik.http.middlewares.pokegame-signalr-strip.stripprefix.prefixes": "/pokegame-signalr",
-      "traefik.http.routers.pokegame-singalr.middlewares": "pokegame-signalr-strip",
-      "traefik.http.routers.pokegame-singalr.entrypoints": "websecure",
-      "traefik.http.routers.pokegame-singalr.tls.certresolver": "myresolver",
-      "traefik.http.services.pokegame-singalr.loadbalancer.server.port": "80",
+      "traefik.http.routers.pokegame-signalr.middlewares": "pokegame-signalr-strip",
+      "traefik.http.routers.pokegame-signalr.entrypoints": "websecure",
+      "traefik.http.routers.pokegame-signalr.tls.certresolver": "myresolver",
+      "traefik.http.services.pokegame-signalr.loadbalancer.server.port": "80",
       "ReleaseVersion": "1.0.0"
     },
     "configMap": {
