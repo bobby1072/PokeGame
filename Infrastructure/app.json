@@ -68,7 +68,7 @@
       "traefik.enable": "true",
       "traefik.http.routers.pokegame-singalr.rule": "<USE-SECRETS>",
       "traefik.http.middlewares.pokegame-signalr-strip.stripprefix.prefixes": "/pokegame-signalr",
-      "traefik.http.routers.pokegame-signalr.middlewares": "pokegame-signalr-strip",
+      "traefik.http.routers.pokegame-singalr.middlewares": "pokegame-signalr-strip",
       "traefik.http.routers.pokegame-singalr.entrypoints": "websecure",
       "traefik.http.routers.pokegame-singalr.tls.certresolver": "myresolver",
       "traefik.http.services.pokegame-singalr.loadbalancer.server.port": "80",
