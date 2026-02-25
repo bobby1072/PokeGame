@@ -237,7 +237,7 @@ stages:
 
       - name: 1.labels.traefik.http.routers.pokegame-api.rule    
         value: $(PokeGameApiTraefikRule)
-      - name: 2.labels.traefik.http.routers.pokegame-singalr.rule    
+      - name: 2.labels.traefik.http.routers.pokegame-signalr.rule    
         value: $(PokeGameSignalRTraefikRule)
       - name: 3.labels.traefik.http.routers.pokegame-react-server.rule    
         value: $(PokeGameReactServerTraefikRule)          
