@@ -158,8 +158,17 @@
          "tilewidth":16
         }, 
         {
+         "columns":140,
          "firstgid":21001,
-         "source":"..\/..\/..\/..\/Tiled\/tileset_by_chaoticcherrycake_d5xdb0y.tsx"
+         "image":"..\/..\/..\/..\/Tiled\/tileset_by_chaoticcherrycake_d5xdb0y.png",
+         "imageheight":2400,
+         "imagewidth":2240,
+         "margin":0,
+         "name":"tileset_by_chaoticcherrycake_d5xdb0y",
+         "spacing":0,
+         "tilecount":21000,
+         "tileheight":16,
+         "tilewidth":16
         }],
  "tilewidth":16,
  "type":"map",
