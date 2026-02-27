@@ -6,7 +6,9 @@
  <tileset firstgid="1" name="tileset_by_chaoticcherrycake_d5xdb0y" tilewidth="16" tileheight="16" tilecount="21000" columns="140">
   <image source="tileset_by_chaoticcherrycake_d5xdb0y.png" width="2240" height="2400"/>
  </tileset>
- <tileset firstgid="21001" source="tileset_by_chaoticcherrycake_d5xdb0y.tsx"/>
+ <tileset firstgid="21001" name="tileset_by_chaoticcherrycake_d5xdb0y" tilewidth="16" tileheight="16" tilecount="21000" columns="140">
+  <image source="tileset_by_chaoticcherrycake_d5xdb0y.png" width="2240" height="2400"/>
+ </tileset>
  <layer id="1" name="Background" width="30" height="30">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
