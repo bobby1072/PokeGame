@@ -3,6 +3,6 @@
 public enum PermissionAbilityPermissionType
 {
     Read = 1,
-    Create = 2,
-    Manage = 3
+    Create,
+    Manage
 }

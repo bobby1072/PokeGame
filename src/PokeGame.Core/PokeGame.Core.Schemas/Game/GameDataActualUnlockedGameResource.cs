@@ -1,8 +1,11 @@
-﻿namespace PokeGame.Core.Schemas.Game;
+﻿using System.Text.Json.Serialization;
+
+namespace PokeGame.Core.Schemas.Game;
 
 public sealed class GameDataActualUnlockedGameResource: DomainModel<GameDataActualUnlockedGameResource>
 {
-    public required GameDataActualUnlockedGameResourceType  Type { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public required GameDataActualUnlockedGameResourceType Type { get; set; }
     public required string ResourceName { get; set; }
 
     public override bool Equals(GameDataActualUnlockedGameResource? other)
