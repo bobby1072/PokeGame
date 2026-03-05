@@ -196,7 +196,7 @@
  </layer>
  <layer id="12" name="BasiliaForestCollision" width="30" height="30">
   <properties>
-   <property name="ge_scene" value="{&quot;SceneName&quot;: &quot;BasiliaForestScene&quot;,&quot;StartPosition&quot;: {&quot;x&quot;: 0,&quot;y&quot;: 25}}"/>
+   <property name="ge_scene" value="{&quot;SceneName&quot;: &quot;BasiliaForestScene&quot;,&quot;StartPosition&quot;: {&quot;x&quot;: 1,&quot;y&quot;: 25}}"/>
   </properties>
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

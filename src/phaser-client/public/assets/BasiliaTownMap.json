@@ -264,7 +264,7 @@
                 {
                  "name":"ge_scene",
                  "type":"string",
-                 "value":"{\"SceneName\": \"BasiliaForestScene\",\"StartPosition\": {\"x\": 0,\"y\": 25}}"
+                 "value":"{\"SceneName\": \"BasiliaForestScene\",\"StartPosition\": {\"x\": 1,\"y\": 25}}"
                 }],
          "type":"tilelayer",
          "visible":true,

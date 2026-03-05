@@ -2,6 +2,7 @@ import Phaser, { Types } from "phaser";
 import { Scene } from "phaser";
 import { HubConnection } from "@microsoft/signalr";
 import { GameSave } from "../../common/models/GameSave";
+import { GameDataActualUnlockedGameResourceType } from "../../common/models/GameSaveDataActual";
 import { OwnedPokemon } from "../../common/models/OwnedPokemon";
 
 export abstract class BasePlayableFreeroamScene extends Scene {
@@ -54,8 +55,8 @@ export abstract class BasePlayableFreeroamScene extends Scene {
             // Find the matching key - for now just use the first key that matches
             const matchingKey = tilesetKeys.find((key) =>
                 key.includes(
-                    tilesetName.replace("tileset_by_chaoticcherrycake_", "")
-                )
+                    tilesetName.replace("tileset_by_chaoticcherrycake_", ""),
+                ),
             );
 
             if (matchingKey) {
@@ -81,7 +82,7 @@ export abstract class BasePlayableFreeroamScene extends Scene {
 
             if (layerProperties) {
                 const sceneProp = layerProperties.find(
-                    (p: any) => p.name === "ge_scene"
+                    (p: any) => p.name === "ge_scene",
                 );
                 if (sceneProp && (sceneProp as any).value) {
                     isSceneTransition = true;
@@ -122,7 +123,7 @@ export abstract class BasePlayableFreeroamScene extends Scene {
 
                     if (layerProperties) {
                         const collidesProp = layerProperties.find(
-                            (p: any) => p.name === "ge_collide"
+                            (p: any) => p.name === "ge_collide",
                         );
 
                         if (collidesProp && (collidesProp as any).value) {
@@ -151,7 +152,7 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         this.player = this.physics.add.sprite(
             startPos.x,
             startPos.y,
-            "myPlayer"
+            "myPlayer",
         );
 
         // Scale player to exactly 16 pixels (one tile) to prevent overlapping transition zones
@@ -164,11 +165,11 @@ export abstract class BasePlayableFreeroamScene extends Scene {
         // Set player collision body to be smaller than sprite for tighter collision
         this.player.body.setSize(
             this.player.width * 0.5,
-            this.player.height * 0.5
+            this.player.height * 0.5,
         );
         this.player.body.setOffset(
             this.player.width * 0.25,
-            this.player.height * 0.25
+            this.player.height * 0.25,
         );
 
         // Add collision between player and collidable layers
@@ -184,7 +185,7 @@ export abstract class BasePlayableFreeroamScene extends Scene {
                     tile.x * 16 + 8,
                     tile.y * 16 + 8,
                     16,
-                    16
+                    16,
                 );
                 this.physics.add.existing(zone);
 
@@ -192,6 +193,21 @@ export abstract class BasePlayableFreeroamScene extends Scene {
                     this.player,
                     zone,
                     () => {
+                        // Check if the player has unlocked this scene
+                        const unlockedResources =
+                            this.currentGameSave?.gameSaveData?.gameData
+                                ?.unlockedGameResources ?? [];
+                        const isUnlocked = unlockedResources.some(
+                            (r) =>
+                                r.type ===
+                                    GameDataActualUnlockedGameResourceType.Scene &&
+                                r.resourceName === transitionData.sceneName,
+                        );
+
+                        if (!isUnlocked) {
+                            return;
+                        }
+
                         let spawnData: any = {};
 
                         if (transitionData.startPosition) {
@@ -207,7 +223,7 @@ export abstract class BasePlayableFreeroamScene extends Scene {
                         this.scene.start(transitionData.sceneName, spawnData);
                     },
                     undefined,
-                    this
+                    this,
                 );
             });
         });
@@ -239,7 +255,7 @@ export abstract class BasePlayableFreeroamScene extends Scene {
     private async saveGame() {
         if (!this.hubConnection || !this.currentGameSave) {
             console.warn(
-                "Cannot save game: missing hub connection or game save data"
+                "Cannot save game: missing hub connection or game save data",
             );
             return;
         }
