@@ -1,5 +1,3 @@
-import { PermissionAbility } from "./PermissionAbility";
-
 export enum GameDataActualUnlockedGameResourceType {
     Scene = "Scene",
 }
@@ -15,5 +13,4 @@ export type GameSaveDataActual = {
     lastPlayedLocationY: number;
     deckPokemon: { ownedPokemonId: string }[];
     unlockedGameResources: GameDataActualUnlockedGameResource[];
-    abilities: PermissionAbility[];
 };

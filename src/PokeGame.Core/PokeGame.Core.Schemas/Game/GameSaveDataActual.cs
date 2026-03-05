@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using BT.Common.FastArray.Proto;
 using PokeGame.Core.Common.Permissions;
 
@@ -10,6 +11,7 @@ public sealed class GameSaveDataActual : DomainModel<GameSaveDataActual>
     public required int LastPlayedLocationY { get; set; }
     public List<GameSaveDataActualDeckPokemon> DeckPokemon { get; set; } = [];
     public List<GameDataActualUnlockedGameResource> UnlockedGameResources { get; set; } = [];
+    [JsonIgnore]
     public List<PermissionAbility> Abilities => BuildAbilities();
 
     public override bool Equals(GameSaveDataActual? other)
