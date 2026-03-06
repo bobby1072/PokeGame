@@ -13,7 +13,7 @@ import {
     Tab,
 } from "@mui/material";
 import { PokeGameUser } from "../models/PokeGameUser";
-import { SaveUserInput } from "../models/SaveUserInput";
+import { SaveUserInput } from "../models/input/SaveUserInput";
 import { useGetUserMutation } from "../hooks/useGetUserMutation";
 import { useSaveUserMutation } from "../hooks/useSaveUserMutation";
 import { PageBase } from "../components/PageBase";
@@ -96,7 +96,7 @@ export const LoginPage: React.FC<{
 
     const handleTabChange = (
         _event: React.SyntheticEvent,
-        newValue: number
+        newValue: number,
     ) => {
         setTabValue(newValue);
         setSuccessMessage(null);
@@ -118,7 +118,7 @@ export const LoginPage: React.FC<{
     useEffect(() => {
         if (saveUserMutation.data) {
             setSuccessMessage(
-                "Registration successful! You are now logged in."
+                "Registration successful! You are now logged in.",
             );
             setUser(saveUserMutation.data);
         }

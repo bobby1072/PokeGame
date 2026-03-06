@@ -1,7 +1,5 @@
 ﻿using BT.Common.FastArray.Proto;
-using PokeGame.Core.Common.Exceptions;
 using PokeGame.Core.Schemas.Common;
-using PokeGame.Core.Schemas.Game;
 using PokeGame.Core.Schemas.Game.PokemonRelated;
 using PokeGame.Core.Schemas.PokeApi;
 
@@ -11,35 +9,37 @@ internal static class PokemonDetailsExtensions
 {
     public static PokemonInnerDetails? CreatePokemonInnerDetails(this WildPokemon wildPokemon)
     {
-        if (wildPokemon.Pokemon is null ||
-            wildPokemon.PokemonSpecies is null)
+        if (wildPokemon.Pokemon is null || wildPokemon.PokemonSpecies is null)
         {
             return null;
         }
         return new PokemonInnerDetails
-        {   
+        {
             BaseExperienceFromDefeating = wildPokemon.Pokemon.BaseExperienceFromDefeating,
             Height = wildPokemon.Pokemon.Height,
             Weight = wildPokemon.Pokemon.Weight,
             IsLegendary = wildPokemon.PokemonSpecies.IsLegendary,
             Sprites = wildPokemon.Pokemon.Sprites.CreatePokemonSpriteDetails(),
-            Types = wildPokemon.Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeEnum()).ToArray(),
-            Stats = wildPokemon.Pokemon.Stats.FastArraySelect(x => x.CreatePokemonStatDetails()).ToArray(),
+            Types = wildPokemon
+                .Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeEnum())
+                .ToArray(),
+            Stats = wildPokemon
+                .Pokemon.Stats.FastArraySelect(x => x.CreatePokemonStatDetails())
+                .ToArray(),
             MoveOne = wildPokemon.MoveOne?.CreatePokemonMoveDetails(),
             MoveTwo = wildPokemon.MoveTwo?.CreatePokemonMoveDetails(),
             MoveThree = wildPokemon.MoveThree?.CreatePokemonMoveDetails(),
             MoveFour = wildPokemon.MoveFour?.CreatePokemonMoveDetails(),
         };
     }
+
     public static PokemonInnerDetails? CreatePokemonInnerDetails(this OwnedPokemon ownedPokemon)
     {
-        if (ownedPokemon.Pokemon is null ||
-            ownedPokemon.PokemonSpecies is null)
+        if (ownedPokemon.Pokemon is null || ownedPokemon.PokemonSpecies is null)
         {
-
             return null;
         }
-        
+
         return new PokemonInnerDetails
         {
             BaseExperienceFromDefeating = ownedPokemon.Pokemon.BaseExperienceFromDefeating,
@@ -47,13 +47,16 @@ internal static class PokemonDetailsExtensions
             Weight = ownedPokemon.Pokemon.Weight,
             IsLegendary = ownedPokemon.PokemonSpecies.IsLegendary,
             Sprites = ownedPokemon.Pokemon.Sprites.CreatePokemonSpriteDetails(),
-            Stats = ownedPokemon.Pokemon.Stats.FastArraySelect(x => x.CreatePokemonStatDetails()).ToArray(),
-            Types = ownedPokemon.Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeEnum()).ToArray(),
+            Stats = ownedPokemon
+                .Pokemon.Stats.FastArraySelect(x => x.CreatePokemonStatDetails())
+                .ToArray(),
+            Types = ownedPokemon
+                .Pokemon.Types.FastArraySelect(x => x.CreatePokemonTypeEnum())
+                .ToArray(),
             MoveOne = ownedPokemon.MoveOne?.CreatePokemonMoveDetails(),
             MoveTwo = ownedPokemon.MoveTwo?.CreatePokemonMoveDetails(),
             MoveThree = ownedPokemon.MoveThree?.CreatePokemonMoveDetails(),
             MoveFour = ownedPokemon.MoveFour?.CreatePokemonMoveDetails(),
-            
         };
     }
 
@@ -79,10 +82,12 @@ internal static class PokemonDetailsExtensions
             MinTurns = move.Meta.MinTurns,
         };
     }
+
     private static PokemonTypeEnum CreatePokemonTypeEnum(this PokemonType pokemonType)
     {
         return Enum.Parse<PokemonTypeEnum>(pokemonType.Type.Name, true);
     }
+
     private static PokemonStatDetails CreatePokemonStatDetails(this PokemonStat pokeStat)
     {
         return new PokemonStatDetails

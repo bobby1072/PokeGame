@@ -1,9 +1,9 @@
 import axios, { AxiosInstance } from "axios";
-import { SaveUserInput } from "../models/SaveUserInput";
+import { SaveUserInput } from "../models/input/SaveUserInput";
 import { PokeGameUser } from "../models/PokeGameUser";
 import { WebOutcome } from "../models/WebOutcome";
 import { GameSave } from "../models/GameSave";
-import { NewGameSaveInput } from "../models/NewGameSaveInput";
+import { NewGameSaveInput } from "../models/input/NewGameSaveInput";
 import { ShallowOwnedPokemon } from "../models/ShallowOwnedPokemon";
 
 export default class PokeGameCoreHttpClient {
@@ -30,7 +30,7 @@ export default class PokeGameCoreHttpClient {
     public async SaveUser(input: SaveUserInput): Promise<PokeGameUser> {
         const { data } = await this._axiosClient.post<WebOutcome<PokeGameUser>>(
             "Api/User/Save",
-            input
+            input,
         );
 
         if (!data.isSuccess || !data.data) {
@@ -41,10 +41,10 @@ export default class PokeGameCoreHttpClient {
     }
 
     public async GetUser(
-        email: string
+        email: string,
     ): Promise<PokeGameUser | null | undefined> {
         const { data } = await this._axiosClient.get<WebOutcome<PokeGameUser>>(
-            `Api/User/Get?email=${email}`
+            `Api/User/Get?email=${email}`,
         );
 
         if (!data.isSuccess) {
@@ -60,7 +60,7 @@ export default class PokeGameCoreHttpClient {
             input,
             {
                 headers: this.getHeadersWithUserId(),
-            }
+            },
         );
 
         if (!data.isSuccess || !data.data) {
@@ -75,7 +75,7 @@ export default class PokeGameCoreHttpClient {
             "Api/GameSave/GetAllForSelf",
             {
                 headers: this.getHeadersWithUserId(),
-            }
+            },
         );
 
         if (!data.isSuccess || !data.data) {
@@ -86,7 +86,7 @@ export default class PokeGameCoreHttpClient {
     }
 
     public async GetShallowOwnedPokemonInDeck(
-        gameSessionId: string
+        gameSessionId: string,
     ): Promise<ShallowOwnedPokemon[]> {
         const { data } = await this._axiosClient.get<
             WebOutcome<ShallowOwnedPokemon[]>
@@ -94,7 +94,7 @@ export default class PokeGameCoreHttpClient {
             `Api/GameSession/GetShallowOwnedPokemonInDeck?gameSessionId=${gameSessionId}`,
             {
                 headers: this.getHeadersWithUserId(),
-            }
+            },
         );
 
         if (!data.isSuccess || !data.data) {
