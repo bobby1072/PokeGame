@@ -2,6 +2,7 @@ import Phaser, { Types } from "phaser";
 import { Scene } from "phaser";
 import { HubConnection } from "@microsoft/signalr";
 import { GameSave } from "../../common/models/GameSave";
+import { GameSaveData } from "../../common/models/GaveSaveData";
 import { GameDataActualUnlockedGameResourceType } from "../../common/models/GameSaveDataActual";
 import { OwnedPokemon } from "../../common/models/OwnedPokemon";
 
@@ -282,7 +283,7 @@ export abstract class BasePlayableFreeroamScene extends Scene {
                       }))
                     : this.currentGameSave.gameSaveData.gameData.deckPokemon;
 
-            const gameSaveData = {
+            const gameSaveData: GameSaveData = {
                 id: this.currentGameSave.gameSaveData.id,
                 gameSaveId: this.currentGameSave.gameSaveData.gameSaveId,
                 gameData: {
@@ -290,6 +291,9 @@ export abstract class BasePlayableFreeroamScene extends Scene {
                     lastPlayedLocationX: clampedX,
                     lastPlayedLocationY: clampedY,
                     deckPokemon,
+                    unlockedGameResources:
+                        this.currentGameSave.gameSaveData.gameData
+                            .unlockedGameResources,
                 },
             };
 
