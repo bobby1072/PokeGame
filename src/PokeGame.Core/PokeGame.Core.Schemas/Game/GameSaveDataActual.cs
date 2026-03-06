@@ -17,11 +17,10 @@ public sealed class GameSaveDataActual : DomainModel<GameSaveDataActual>
     public override bool Equals(GameSaveDataActual? other)
     {
         return LastPlayedScene == other?.LastPlayedScene
-            && LastPlayedLocationX == other.LastPlayedLocationX
-            && LastPlayedLocationY == other.LastPlayedLocationY
+            && LastPlayedLocationX == other?.LastPlayedLocationX
+            && LastPlayedLocationY == other?.LastPlayedLocationY
             && DeckPokemon.SequenceEqual(other.DeckPokemon)
             && UnlockedGameResources.SequenceEqual(other.UnlockedGameResources);
-        ;
     }
 
     private List<PermissionAbility> BuildAbilities()
