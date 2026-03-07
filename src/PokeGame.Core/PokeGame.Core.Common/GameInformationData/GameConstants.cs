@@ -22,31 +22,25 @@ public static class GameConstants
         {
             Min = 1,
             Max = 143,
-            Extras = [147,148,149]
+            Extras = [147, 148, 149],
         };
 
         public static readonly IntRange LegendaryPokedexRange = new()
         {
-            Extras = [144,145,146,150,151]
+            Extras = [144, 145, 146, 150, 151],
         };
 
-        public static readonly IReadOnlyDictionary<string, WildPokemonRange> SceneWildPokemonRange = new Dictionary<string, WildPokemonRange>
-        {
-            [SceneNames.BasiliaForest] = new ()
+        public static readonly IReadOnlyDictionary<string, WildPokemonRange> SceneWildPokemonRange =
+            new Dictionary<string, WildPokemonRange>
             {
-                PokedexRange = new ()
+                [SceneNames.BasiliaForest] = new()
                 {
-                    Extras = [10, 13, 16, 19]
+                    PokedexRange = new() { Extras = [10, 13, 16, 19] },
+                    PokemonLevelRange = new() { Min = 1, Max = 4 },
                 },
-                PokemonLevelRange = new ()
-                {
-                    Min = 1,
-                    Max = 4
-                }
-            },
-        };
+            };
     }
-    
+
     public static class SceneNames
     {
         public const string BasiliaTown = "BasiliaTownScene";
@@ -54,11 +48,12 @@ public static class GameConstants
         public const string BasiliaTownStarterLab = "BasiliaTownStarterLabScene";
         public const string BasiliaForest = "BasiliaForestScene";
 
-        public static readonly IReadOnlyCollection<string> ValidSceneList = [
+        public static readonly IReadOnlyCollection<string> ValidSceneList =
+        [
             BasiliaTown,
             BasiliaTownStarterHome,
             BasiliaTownStarterLab,
-            BasiliaForest
+            BasiliaForest,
         ];
     }
 }
