@@ -61,7 +61,8 @@ internal sealed class SaveGameDataCommand
 
         input.GameData.GameSaveId = foundGameSession.GameSaveId;
         input.GameData.Id = foundExistingGameData.Id;
-
+        input.GameData.GameData.UnlockedGameResources = foundExistingGameData.GameData.UnlockedGameResources;
+        
         await ValidateNewGameSaveDataAgainstOld(
             input.GameData,
             foundExistingGameData,
@@ -120,16 +121,6 @@ internal sealed class SaveGameDataCommand
                     "The pokemon in your deck have to belong to you"
                 );
             }
-        }
-
-
-        if (!newGameSaveData.GameData.UnlockedGameResources
-                .All(x =>
-                    oldGameSaveData.GameData.UnlockedGameResources
-                        .FastArrayFirstOrDefault(y => y.Equals(x)) is not null))
-        {
-            throw new PokeGameApiUserException(HttpStatusCode.BadRequest,
-                "You cannot update unlocked resources manually");
         }
 
         if (!oldGameSaveData.GameData.Abilities.Can(newGameSaveData.GameData.LastPlayedScene,
