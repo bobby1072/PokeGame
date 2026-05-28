@@ -18,15 +18,15 @@
     "dependencies": {
         "@emotion/react": "11.14.0",
         "@emotion/styled": "11.14.1",
-        "@hookform/resolvers": "5.2.2",
+        "@hookform/resolvers": "5.4.0",
         "@microsoft/signalr": "10.0.0",
         "@mui/material": "7.3.11",
-        "@tanstack/react-query": "5.100.10",
+        "@tanstack/react-query": "5.100.14",
         "axios": "1.16.1",
         "phaser": "3.90.0",
         "react": "19.2.6",
         "react-dom": "19.2.6",
-        "react-hook-form": "7.76.0",
+        "react-hook-form": "7.76.1",
         "react-router-dom": "7.15.1",
         "zod": "4.4.3"
     },
@@ -35,8 +35,8 @@
         "@testing-library/jest-dom": "6.9.1",
         "@testing-library/react": "16.3.2",
         "@testing-library/user-event": "14.6.1",
-        "@types/node": "25.8.0",
-        "@types/react": "19.2.14",
+        "@types/node": "25.9.1",
+        "@types/react": "19.2.15",
         "@types/react-dom": "19.2.3",
         "@vitejs/plugin-react": "5.2.0",
         "cross-fetch": "4.1.0",
@@ -44,9 +44,9 @@
         "jsdom": "29.1.1",
         "msw": "2.14.6",
         "phaser3spectorjs": "0.0.8",
-        "terser": "5.47.1",
+        "terser": "5.48.0",
         "typescript": "5.9.3",
         "vite": "7.3.3",
-        "vitest": "4.1.6"
+        "vitest": "4.1.7"
     }
 }
