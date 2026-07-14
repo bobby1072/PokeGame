@@ -21,13 +21,13 @@
         "@hookform/resolvers": "5.4.0",
         "@microsoft/signalr": "10.0.0",
         "@mui/material": "7.3.11",
-        "@tanstack/react-query": "5.101.1",
+        "@tanstack/react-query": "5.101.2",
         "axios": "1.18.1",
         "phaser": "3.90.0",
         "react": "19.2.7",
         "react-dom": "19.2.7",
-        "react-hook-form": "7.80.0",
-        "react-router-dom": "7.18.0",
+        "react-hook-form": "7.81.0",
+        "react-router-dom": "7.18.1",
         "zod": "4.4.3"
     },
     "devDependencies": {
@@ -42,11 +42,11 @@
         "cross-fetch": "4.1.0",
         "globals": "17.7.0",
         "jsdom": "29.1.1",
-        "msw": "2.14.6",
+        "msw": "2.15.0",
         "phaser3spectorjs": "0.0.8",
-        "terser": "5.48.0",
+        "terser": "5.49.0",
         "typescript": "5.9.3",
         "vite": "7.3.6",
-        "vitest": "4.1.9"
+        "vitest": "4.1.10"
     }
 }
