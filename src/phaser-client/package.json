@@ -45,7 +45,7 @@
         "msw": "2.15.0",
         "phaser3spectorjs": "0.0.8",
         "terser": "5.49.0",
-        "typescript": "5.9.3",
+        "typescript": "7.0.2",
         "vite": "7.3.6",
         "vitest": "4.1.10"
     }
