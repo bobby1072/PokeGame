@@ -50,7 +50,7 @@ internal sealed class StartGameSessionCommand
 
         var foundExistingGameSave =
             await EntityFrameworkUtils.TryDbOperation(
-                () => _gameSaveRepository.GetOne(input.GameSaveId),
+                () => _gameSaveRepository.GetOneAsync(input.GameSaveId),
                 _logger
             ) ?? throw new PokeGameApiServerException("Failed to fetch game save");
 
@@ -80,7 +80,7 @@ internal sealed class StartGameSessionCommand
         var savedSession =
             (
                 await EntityFrameworkUtils.TryDbOperation(
-                    () => _gameSessionRepository.Create(newSession),
+                    () => _gameSessionRepository.CreateAsync(newSession, cancellationToken),
                     _logger
                 )
             )?.FirstResult

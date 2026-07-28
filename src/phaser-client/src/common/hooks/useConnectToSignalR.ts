@@ -21,9 +21,7 @@ interface SignalRState {
 
 const hubConnectBuilder = new HubConnectionBuilder()
     .withAutomaticReconnect()
-    .configureLogging(
-        process.env.NODE_ENV === "development" ? LogLevel.Debug : LogLevel.None
-    );
+    .configureLogging(import.meta.env.DEV ? LogLevel.Debug : LogLevel.None);
 
 export const useConnectToSignalRQuery = () => {
     const applicationSettings = useGetAppSettingsContext();
@@ -37,7 +35,7 @@ export const useConnectToSignalRQuery = () => {
         queryFn: async () => {
             const localHub = hubConnectBuilder
                 .withUrl(
-                    `${applicationSettings.pokeGameCoreSignalRUrl}/Api/SignalR/PokeGameSession?GameSaveId=${gameSave.currentGameSave?.id}&UserId=${gameSave.currentGameSave?.userId}`
+                    `${applicationSettings.pokeGameCoreSignalRUrl}/Api/SignalR/PokeGameSession?GameSaveId=${gameSave.currentGameSave?.id}&UserId=${gameSave.currentGameSave?.userId}`,
                 )
                 .build();
 
@@ -63,7 +61,7 @@ export const useConnectToSignalRQuery = () => {
     useEffect(() => {
         if (state.hubConnection) {
             const handleGameSessionStarted = (
-                data: WebOutcome<GameSession>
+                data: WebOutcome<GameSession>,
             ) => {
                 setState((prev) => ({
                     ...prev,
@@ -74,7 +72,7 @@ export const useConnectToSignalRQuery = () => {
             };
 
             const handleGameSessionConnectionFailed = (
-                data: BaseWebOutcome
+                data: BaseWebOutcome,
             ) => {
                 setState((prev) => ({
                     ...prev,
@@ -86,36 +84,36 @@ export const useConnectToSignalRQuery = () => {
             const handleGameSaveFailed = (data: BaseWebOutcome) => {
                 console.error(
                     "Game save failed:",
-                    data.exceptionMessage || "Unknown error"
+                    data.exceptionMessage || "Unknown error",
                 );
             };
 
             state.hubConnection.on(
                 SignalREventKeys.GameSessionStarted,
-                handleGameSessionStarted
+                handleGameSessionStarted,
             );
             state.hubConnection.on(
                 SignalREventKeys.GameSessionConnectionFailed,
-                handleGameSessionConnectionFailed
+                handleGameSessionConnectionFailed,
             );
             state.hubConnection.on(
                 SignalREventKeys.GameSaveFailed,
-                handleGameSaveFailed
+                handleGameSaveFailed,
             );
 
             // Cleanup: Remove event listeners and stop connection
             return () => {
                 state.hubConnection?.off(
                     SignalREventKeys.GameSessionStarted,
-                    handleGameSessionStarted
+                    handleGameSessionStarted,
                 );
                 state.hubConnection?.off(
                     SignalREventKeys.GameSessionConnectionFailed,
-                    handleGameSessionConnectionFailed
+                    handleGameSessionConnectionFailed,
                 );
                 state.hubConnection?.off(
                     SignalREventKeys.GameSaveFailed,
-                    handleGameSaveFailed
+                    handleGameSaveFailed,
                 );
             };
         }

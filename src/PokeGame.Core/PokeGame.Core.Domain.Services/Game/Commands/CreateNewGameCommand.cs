@@ -55,7 +55,7 @@ internal sealed class CreateNewGameCommand
 
         var gameSaveCount =
             await EntityFrameworkUtils.TryDbOperation(
-                () => _gameSaveRepository.GetCount(x => x.UserId == input.CurrentUser.Id)
+                () => _gameSaveRepository.GetCountAsync(x => x.UserId == input.CurrentUser.Id, cancellationToken)
             ) ?? throw new PokeGameApiServerException("Failed to get game save count");
 
         if (gameSaveCount.Data >= 5)

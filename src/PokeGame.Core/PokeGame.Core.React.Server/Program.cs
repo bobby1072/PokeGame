@@ -33,7 +33,7 @@ try
     });
 
     builder.Services
-        .AddTelemetryService(
+        .AddTelemetryServices(
             serviceOpts.ReleaseName
         );
     

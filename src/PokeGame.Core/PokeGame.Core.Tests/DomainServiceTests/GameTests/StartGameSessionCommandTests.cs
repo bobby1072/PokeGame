@@ -54,11 +54,10 @@ public sealed class StartGameSessionCommandTests
         var sessionCreateResult = new DbSaveResult<GameSession>(new[] { expectedGameSession });
         var noExistingSession = new DbGetOneResult<GameSession>(null!) { IsSuccessful = true };
 
-        _mockGameSaveRepository.Setup(x => x.GetOne(gameSaveId)).ReturnsAsync(gameSaveResult);
-        
+        _mockGameSaveRepository.Setup(x => x.GetOneAsync(gameSaveId)).ReturnsAsync(gameSaveResult);
 
         _mockGameSessionRepository
-            .Setup(x => x.Create(It.IsAny<GameSession>()))
+            .Setup(x => x.CreateAsync(It.IsAny<GameSession>()))
             .ReturnsAsync(sessionCreateResult);
 
         // Act
@@ -71,8 +70,8 @@ public sealed class StartGameSessionCommandTests
         Assert.Equal(user.Id, result.CommandResult.UserId);
         Assert.Equal(connectionId, result.CommandResult.ConnectionId);
 
-        _mockGameSaveRepository.Verify(x => x.GetOne(gameSaveId), Times.Once);
-        _mockGameSessionRepository.Verify(x => x.Create(It.IsAny<GameSession>()), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.GetOneAsync(gameSaveId), Times.Once);
+        _mockGameSessionRepository.Verify(x => x.CreateAsync(It.IsAny<GameSession>()), Times.Once);
     }
 
     [Fact]
@@ -85,7 +84,7 @@ public sealed class StartGameSessionCommandTests
         var input = (gameSaveId, connectionId, user);
 
         _mockGameSaveRepository
-            .Setup(x => x.GetOne(gameSaveId))
+            .Setup(x => x.GetOneAsync(gameSaveId))
             .ReturnsAsync((DbGetOneResult<GameSave>)null!);
 
         // Act & Assert
@@ -94,12 +93,12 @@ public sealed class StartGameSessionCommandTests
         );
 
         Assert.Equal("Failed to fetch game save", exception.Message);
-        _mockGameSaveRepository.Verify(x => x.GetOne(gameSaveId), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.GetOneAsync(gameSaveId), Times.Once);
         _mockGameSessionRepository.Verify(
-            x => x.GetOne(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string[]>()),
+            x => x.GetOneAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>(),It.IsAny<string[]>()),
             Times.Never
         );
-        _mockGameSessionRepository.Verify(x => x.Create(It.IsAny<GameSession>()), Times.Never);
+        _mockGameSessionRepository.Verify(x => x.CreateAsync(It.IsAny<GameSession>()), Times.Never);
     }
 
     [Fact]
@@ -113,7 +112,7 @@ public sealed class StartGameSessionCommandTests
 
         var gameSaveResult = new DbGetOneResult<GameSave>(null!) { IsSuccessful = true };
 
-        _mockGameSaveRepository.Setup(x => x.GetOne(gameSaveId)).ReturnsAsync(gameSaveResult);
+        _mockGameSaveRepository.Setup(x => x.GetOneAsync(gameSaveId)).ReturnsAsync(gameSaveResult);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(
@@ -122,12 +121,12 @@ public sealed class StartGameSessionCommandTests
 
         Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
         Assert.Equal("Invalid game save id provided", exception.Message);
-        _mockGameSaveRepository.Verify(x => x.GetOne(gameSaveId), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.GetOneAsync(gameSaveId), Times.Once);
         _mockGameSessionRepository.Verify(
             x => x.DeleteAllSessionsByGameSaveIdAsync(It.IsAny<Guid>()),
             Times.Never
         );
-        _mockGameSessionRepository.Verify(x => x.Create(It.IsAny<GameSession>()), Times.Never);
+        _mockGameSessionRepository.Verify(x => x.CreateAsync(It.IsAny<GameSession>()), Times.Never);
     }
 
     [Fact]
@@ -148,7 +147,7 @@ public sealed class StartGameSessionCommandTests
 
         var gameSaveResult = new DbGetOneResult<GameSave>(existingGameSave);
 
-        _mockGameSaveRepository.Setup(x => x.GetOne(gameSaveId)).ReturnsAsync(gameSaveResult);
+        _mockGameSaveRepository.Setup(x => x.GetOneAsync(gameSaveId)).ReturnsAsync(gameSaveResult);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(
@@ -157,12 +156,12 @@ public sealed class StartGameSessionCommandTests
 
         Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
         Assert.Equal("Invalid game save id provided", exception.Message);
-        _mockGameSaveRepository.Verify(x => x.GetOne(gameSaveId), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.GetOneAsync(gameSaveId), Times.Once);
         _mockGameSessionRepository.Verify(
-            x => x.GetOne(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string[]>()),
+            x => x.GetOneAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>(),It.IsAny<string[]>()),
             Times.Never
         );
-        _mockGameSessionRepository.Verify(x => x.Create(It.IsAny<GameSession>()), Times.Never);
+        _mockGameSessionRepository.Verify(x => x.CreateAsync(It.IsAny<GameSession>()), Times.Never);
     }
 
     [Fact]
@@ -182,10 +181,10 @@ public sealed class StartGameSessionCommandTests
         };
 
         var gameSaveResult = new DbGetOneResult<GameSave>(existingGameSave);
-        _mockGameSaveRepository.Setup(x => x.GetOne(gameSaveId)).ReturnsAsync(gameSaveResult);
+        _mockGameSaveRepository.Setup(x => x.GetOneAsync(gameSaveId)).ReturnsAsync(gameSaveResult);
 
         _mockGameSessionRepository
-            .Setup(x => x.Create(It.IsAny<GameSession>()))
+            .Setup(x => x.CreateAsync(It.IsAny<GameSession>()))
             .ReturnsAsync((DbSaveResult<GameSession>)null!);
 
         // Act & Assert
@@ -194,8 +193,8 @@ public sealed class StartGameSessionCommandTests
         );
 
         Assert.Equal("Failed to add new game session", exception.Message);
-        _mockGameSaveRepository.Verify(x => x.GetOne(gameSaveId), Times.Once);
-        _mockGameSessionRepository.Verify(x => x.Create(It.IsAny<GameSession>()), Times.Once);
+        _mockGameSaveRepository.Verify(x => x.GetOneAsync(gameSaveId), Times.Once);
+        _mockGameSessionRepository.Verify(x => x.CreateAsync(It.IsAny<GameSession>()), Times.Once);
     }
 
     [Fact]

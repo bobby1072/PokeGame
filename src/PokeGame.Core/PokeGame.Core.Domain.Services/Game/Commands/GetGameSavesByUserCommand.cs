@@ -39,9 +39,10 @@ internal sealed class GetGameSavesByUserCommand
         var foundGameSaves =
             await EntityFrameworkUtils.TryDbOperation(
                 () =>
-                    _gameSaveRepository.GetMany<Guid>(
+                    _gameSaveRepository.GetManyAsync<Guid>(
                         (Guid)user.Id!,
                         nameof(GameSaveEntity.UserId),
+                        cancellationToken,
                         nameof(GameSaveEntity.GameSaveData)
                     ),
                 _logger

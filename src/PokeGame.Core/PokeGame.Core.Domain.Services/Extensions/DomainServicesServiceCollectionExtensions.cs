@@ -46,7 +46,7 @@ public static class DomainServicesServiceCollectionExtensions
             .AddHttpClient()
             .AddMemoryCache()
             .AddDomainModelValidators()
-            .AddTelemetryService(
+            .AddTelemetryServices(
                 serviceInfoSection.GetValue<string>(nameof(ServiceInfo.ReleaseName))
                     ?? Assembly
                         .GetExecutingAssembly()

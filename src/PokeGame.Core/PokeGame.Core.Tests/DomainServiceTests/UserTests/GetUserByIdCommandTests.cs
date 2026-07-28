@@ -1,3 +1,4 @@
+using System.Net;
 using AutoFixture;
 using BT.Common.Persistence.Shared.Models;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -7,7 +8,6 @@ using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Domain.Services.User.Commands;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas.Game;
-using System.Net;
 
 namespace PokeGame.Core.Tests.DomainServiceTests.UserTests;
 
@@ -33,9 +33,7 @@ public sealed class GetUserByIdCommandTests
         var expectedUser = _fixture.Create<User>();
         var dbResult = new DbGetOneResult<User>(expectedUser);
 
-        _mockUserRepository
-            .Setup(x => x.GetOne(userId))
-            .ReturnsAsync(dbResult);
+        _mockUserRepository.Setup(x => x.GetOneAsync(userId)).ReturnsAsync(dbResult);
 
         // Act
         var result = await _command.ExecuteAsync(userId);
@@ -43,7 +41,7 @@ public sealed class GetUserByIdCommandTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(expectedUser, result.CommandResult);
-        _mockUserRepository.Verify(x => x.GetOne(userId), Times.Once);
+        _mockUserRepository.Verify(x => x.GetOneAsync(userId), Times.Once);
     }
 
     [Fact]
@@ -53,7 +51,7 @@ public sealed class GetUserByIdCommandTests
         var userId = Guid.NewGuid();
 
         _mockUserRepository
-            .Setup(x => x.GetOne(userId))
+            .Setup(x => x.GetOneAsync(userId))
             .ReturnsAsync((DbGetOneResult<User>)null!);
 
         // Act & Assert
@@ -62,7 +60,7 @@ public sealed class GetUserByIdCommandTests
         );
 
         Assert.Equal("Failed to retrieve user", exception.Message);
-        _mockUserRepository.Verify(x => x.GetOne(userId), Times.Once);
+        _mockUserRepository.Verify(x => x.GetOneAsync(userId), Times.Once);
     }
 
     [Fact]
@@ -72,9 +70,7 @@ public sealed class GetUserByIdCommandTests
         var userId = Guid.NewGuid();
         var dbResult = new DbGetOneResult<User>(null!);
 
-        _mockUserRepository
-            .Setup(x => x.GetOne(userId))
-            .ReturnsAsync(dbResult);
+        _mockUserRepository.Setup(x => x.GetOneAsync(userId)).ReturnsAsync(dbResult);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(
@@ -83,7 +79,7 @@ public sealed class GetUserByIdCommandTests
 
         Assert.Equal("User not found", exception.Message);
         Assert.Equal(HttpStatusCode.NotFound, exception.StatusCode);
-        _mockUserRepository.Verify(x => x.GetOne(userId), Times.Once);
+        _mockUserRepository.Verify(x => x.GetOneAsync(userId), Times.Once);
     }
 
     [Fact]

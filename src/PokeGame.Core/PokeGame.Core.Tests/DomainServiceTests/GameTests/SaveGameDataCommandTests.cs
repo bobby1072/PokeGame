@@ -89,14 +89,14 @@ public sealed class SaveGameDataCommandTests
 
         var input = (newGameData, connectionId, user);
 
-        var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
+        var gameSessionResult = new DbGetOneResult<GameSession?>(gameSession);
         var updatedGameData = new GameSaveData
         {
             Id = 1,
             GameSaveId = gameSaveId,
             GameData = newGameData.GameData,
         };
-        var updateResult = new DbSaveResult<GameSaveData>(new[] { updatedGameData });
+        var updateResult = new DbSaveResult<GameSaveData?>(new[] { updatedGameData });
 
         _mockValidatorService
             .Setup(x =>
@@ -109,8 +109,8 @@ public sealed class SaveGameDataCommandTests
             .ReturnsAsync(gameSessionResult);
         
         _mockGameSaveDataRepository
-            .Setup(x => x.Update(It.IsAny<GameSaveData>()))
-            .ReturnsAsync(updateResult);
+            .Setup(x => x.UpdateAsync(It.IsAny<GameSaveData>()))
+            .ReturnsAsync(updateResult!);
 
         // Act
         var result = await _command.ExecuteAsync(input);
@@ -132,7 +132,7 @@ public sealed class SaveGameDataCommandTests
             x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId),
             Times.Once
         );
-        _mockGameSaveDataRepository.Verify(x => x.Update(It.IsAny<GameSaveData>()), Times.Once);
+        _mockGameSaveDataRepository.Verify(x => x.UpdateAsync(It.IsAny<GameSaveData>()), Times.Once);
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public sealed class SaveGameDataCommandTests
 
         var input = (newGameData, connectionId, user);
 
-        var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
+        var gameSessionResult = new DbGetOneResult<GameSession?>(gameSession);
         var ownedPokemonResult = new DbGetManyResult<OwnedPokemon>(new[] { ownedPokemon });
         var updatedGameData = new GameSaveData
         {
@@ -227,7 +227,7 @@ public sealed class SaveGameDataCommandTests
             GameSaveId = gameSaveId,
             GameData = newGameData.GameData,
         };
-        var updateResult = new DbSaveResult<GameSaveData>(new[] { updatedGameData });
+        var updateResult = new DbSaveResult<GameSaveData?>(new[] { updatedGameData });
 
         _mockValidatorService
             .Setup(x =>
@@ -240,12 +240,12 @@ public sealed class SaveGameDataCommandTests
             .ReturnsAsync(gameSessionResult);
         
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()))
+            .Setup(x => x.GetManyAsync(It.IsAny<Guid?[]>(), CancellationToken.None,It.IsAny<string[]>()))
             .ReturnsAsync(ownedPokemonResult);
 
         _mockGameSaveDataRepository
-            .Setup(x => x.Update(It.IsAny<GameSaveData>()))
-            .ReturnsAsync(updateResult);
+            .Setup(x => x.UpdateAsync(It.IsAny<GameSaveData>()))
+            .ReturnsAsync(updateResult!);
 
         // Act
         var result = await _command.ExecuteAsync(input);
@@ -256,7 +256,7 @@ public sealed class SaveGameDataCommandTests
         Assert.Equal(2, result.CommandResult.GameData.DeckPokemon.Count);
 
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()),
+            x => x.GetManyAsync(It.IsAny<Guid?[]>(), CancellationToken.None,It.IsAny<string[]>()),
             Times.Once
         );
     }
@@ -349,7 +349,7 @@ public sealed class SaveGameDataCommandTests
 
         _mockGameSessionRepository
             .Setup(x => x.GetOneWithGameSaveAndDataByConnectionIdAsync(connectionId))
-            .ReturnsAsync((DbGetOneResult<GameSession>)null!);
+            .ReturnsAsync((DbGetOneResult<GameSession?>)null!);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
@@ -391,7 +391,7 @@ public sealed class SaveGameDataCommandTests
 
         var input = (newGameData, connectionId, user);
 
-        var gameSessionResult = new DbGetOneResult<GameSession>(null!) { IsSuccessful = true };
+        var gameSessionResult = new DbGetOneResult<GameSession?>(null!) { IsSuccessful = true };
 
         _mockValidatorService
             .Setup(x =>
@@ -458,7 +458,7 @@ public sealed class SaveGameDataCommandTests
 
         var input = (newGameData, connectionId, user);
 
-        var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
+        var gameSessionResult = new DbGetOneResult<GameSession?>(gameSession);
 
         _mockValidatorService
             .Setup(x =>
@@ -538,7 +538,7 @@ public sealed class SaveGameDataCommandTests
 
         var input = (newGameData, connectionId, user);
 
-        var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
+        var gameSessionResult = new DbGetOneResult<GameSession?>(gameSession);
         var ownedPokemonResult = new DbGetManyResult<OwnedPokemon>(Array.Empty<OwnedPokemon>());
 
         _mockValidatorService
@@ -552,7 +552,7 @@ public sealed class SaveGameDataCommandTests
             .ReturnsAsync(gameSessionResult);
         
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()))
+            .Setup(x => x.GetManyAsync(It.IsAny<Guid?[]>(), CancellationToken.None,It.IsAny<string[]>()))
             .ReturnsAsync(ownedPokemonResult);
 
         // Act & Assert
@@ -563,7 +563,7 @@ public sealed class SaveGameDataCommandTests
         Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
         Assert.Equal("Failed to find the pokemon you're adding to you deck", exception.Message);
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()),
+            x => x.GetManyAsync(It.IsAny<Guid?[]>(), CancellationToken.None,It.IsAny<string[]>()),
             Times.Once
         );
     }
@@ -642,7 +642,7 @@ public sealed class SaveGameDataCommandTests
 
         var input = (newGameData, connectionId, user);
 
-        var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
+        var gameSessionResult = new DbGetOneResult<GameSession?>(gameSession);
         var ownedPokemonResult = new DbGetManyResult<OwnedPokemon>(new[] { ownedPokemon });
 
         _mockValidatorService
@@ -656,7 +656,7 @@ public sealed class SaveGameDataCommandTests
             .ReturnsAsync(gameSessionResult);
         
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()))
+            .Setup(x => x.GetManyAsync(It.IsAny<Guid?[]>(), CancellationToken.None,It.IsAny<string[]>()))
             .ReturnsAsync(ownedPokemonResult);
 
         // Act & Assert
@@ -667,7 +667,7 @@ public sealed class SaveGameDataCommandTests
         Assert.Equal(HttpStatusCode.Unauthorized, exception.StatusCode);
         Assert.Equal("The pokemon in your deck have to belong to you", exception.Message);
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()),
+            x => x.GetManyAsync(It.IsAny<Guid?[]>(), CancellationToken.None,It.IsAny<string[]>()),
             Times.Once
         );
     }
@@ -727,7 +727,7 @@ public sealed class SaveGameDataCommandTests
 
         var input = (newGameData, connectionId, user);
 
-        var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
+        var gameSessionResult = new DbGetOneResult<GameSession?>(gameSession);
 
         _mockValidatorService
             .Setup(x =>
@@ -740,7 +740,7 @@ public sealed class SaveGameDataCommandTests
             .ReturnsAsync(gameSessionResult);
         
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()))
+            .Setup(x => x.GetManyAsync(It.IsAny<Guid?[]>(), CancellationToken.None,It.IsAny<string[]>()))
             .ReturnsAsync((DbGetManyResult<OwnedPokemon>)null!);
 
         // Act & Assert
@@ -750,7 +750,7 @@ public sealed class SaveGameDataCommandTests
 
         Assert.Equal("Failed to fetch owned pokemon", exception.Message);
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetMany(It.IsAny<Guid?[]>(), It.IsAny<string[]>()),
+            x => x.GetManyAsync(It.IsAny<Guid?[]>(), CancellationToken.None,It.IsAny<string[]>()),
             Times.Once
         );
     }
@@ -817,7 +817,7 @@ public sealed class SaveGameDataCommandTests
 
         var input = (newGameData, connectionId, user);
 
-        var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
+        var gameSessionResult = new DbGetOneResult<GameSession?>(gameSession);
 
         _mockValidatorService
             .Setup(x =>
@@ -830,7 +830,7 @@ public sealed class SaveGameDataCommandTests
             .ReturnsAsync(gameSessionResult);
         
         _mockGameSaveDataRepository
-            .Setup(x => x.Update(It.IsAny<GameSaveData>()))
+            .Setup(x => x.UpdateAsync(It.IsAny<GameSaveData>()))
             .ReturnsAsync((DbSaveResult<GameSaveData>)null!);
 
         // Act & Assert
@@ -839,7 +839,7 @@ public sealed class SaveGameDataCommandTests
         );
 
         Assert.Equal("Failed to save game data", exception.Message);
-        _mockGameSaveDataRepository.Verify(x => x.Update(It.IsAny<GameSaveData>()), Times.Once);
+        _mockGameSaveDataRepository.Verify(x => x.UpdateAsync(It.IsAny<GameSaveData>()), Times.Once);
     }
 
     [Fact]
@@ -904,8 +904,8 @@ public sealed class SaveGameDataCommandTests
 
         var input = (newGameData, connectionId, user);
 
-        var gameSessionResult = new DbGetOneResult<GameSession>(gameSession);
-        var updateResult = new DbSaveResult<GameSaveData>(Array.Empty<GameSaveData>())
+        var gameSessionResult = new DbGetOneResult<GameSession?>(gameSession);
+        var updateResult = new DbSaveResult<GameSaveData?>(Array.Empty<GameSaveData>())
         {
             IsSuccessful = false,
         };
@@ -921,8 +921,8 @@ public sealed class SaveGameDataCommandTests
             .ReturnsAsync(gameSessionResult);
         
         _mockGameSaveDataRepository
-            .Setup(x => x.Update(It.IsAny<GameSaveData>()))
-            .ReturnsAsync(updateResult);
+            .Setup(x => x.UpdateAsync(It.IsAny<GameSaveData>()))
+            .ReturnsAsync(updateResult!);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
@@ -930,7 +930,7 @@ public sealed class SaveGameDataCommandTests
         );
 
         Assert.Equal("Failed to save game data", exception.Message);
-        _mockGameSaveDataRepository.Verify(x => x.Update(It.IsAny<GameSaveData>()), Times.Once);
+        _mockGameSaveDataRepository.Verify(x => x.UpdateAsync(It.IsAny<GameSaveData>()), Times.Once);
     }
 
     [Fact]

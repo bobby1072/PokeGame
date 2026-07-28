@@ -37,7 +37,7 @@ public sealed class SaveUserCommandTests
         {
             Id = null,
             Email = "test@example.com",
-            Name = "Test User"
+            Name = "Test User",
         };
 
         var expectedUser = input.ToUserModel();
@@ -48,9 +48,7 @@ public sealed class SaveUserCommandTests
             .Setup(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        _mockUserRepository
-            .Setup(x => x.Create(It.IsAny<User>()))
-            .ReturnsAsync(dbResult);
+        _mockUserRepository.Setup(x => x.CreateAsync(It.IsAny<User>())).ReturnsAsync(dbResult);
 
         // Act
         var result = await _command.ExecuteAsync(input);
@@ -58,10 +56,13 @@ public sealed class SaveUserCommandTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(expectedUser, result.CommandResult);
-        _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockUserRepository.Verify(x => x.Create(It.IsAny<User>()), Times.Once);
-        _mockUserRepository.Verify(x => x.GetOne(It.IsAny<Guid?>()), Times.Never);
-        _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
+        _mockValidatorService.Verify(
+            x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        _mockUserRepository.Verify(x => x.CreateAsync(It.IsAny<User>()), Times.Once);
+        _mockUserRepository.Verify(x => x.GetOneAsync(It.IsAny<Guid?>()), Times.Never);
+        _mockUserRepository.Verify(x => x.UpdateAsync(It.IsAny<User>()), Times.Never);
     }
 
     [Fact]
@@ -73,7 +74,7 @@ public sealed class SaveUserCommandTests
         {
             Id = userId,
             Email = "test@example.com",
-            Name = "Updated User"
+            Name = "Updated User",
         };
 
         var existingUser = _fixture.Create<User>();
@@ -89,13 +90,9 @@ public sealed class SaveUserCommandTests
             .Setup(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        _mockUserRepository
-            .Setup(x => x.GetOne(userId))
-            .ReturnsAsync(existingUserDbResult);
+        _mockUserRepository.Setup(x => x.GetOneAsync(userId)).ReturnsAsync(existingUserDbResult);
 
-        _mockUserRepository
-            .Setup(x => x.Update(It.IsAny<User>()))
-            .ReturnsAsync(updateDbResult);
+        _mockUserRepository.Setup(x => x.UpdateAsync(It.IsAny<User>())).ReturnsAsync(updateDbResult);
 
         // Act
         var result = await _command.ExecuteAsync(input);
@@ -103,10 +100,13 @@ public sealed class SaveUserCommandTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(updatedUser, result.CommandResult);
-        _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockUserRepository.Verify(x => x.GetOne(userId), Times.Once);
-        _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once);
-        _mockUserRepository.Verify(x => x.Create(It.IsAny<User>()), Times.Never);
+        _mockValidatorService.Verify(
+            x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        _mockUserRepository.Verify(x => x.GetOneAsync(userId), Times.Once);
+        _mockUserRepository.Verify(x => x.UpdateAsync(It.IsAny<User>()), Times.Once);
+        _mockUserRepository.Verify(x => x.CreateAsync(It.IsAny<User>()), Times.Never);
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public sealed class SaveUserCommandTests
         {
             Id = null,
             Email = "invalid-email",
-            Name = "Test User"
+            Name = "Test User",
         };
 
         var validationException = new ValidationException("Validation failed");
@@ -132,9 +132,12 @@ public sealed class SaveUserCommandTests
         );
 
         Assert.Equal("Validation failed", exception.Message);
-        _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockUserRepository.Verify(x => x.Create(It.IsAny<User>()), Times.Never);
-        _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
+        _mockValidatorService.Verify(
+            x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        _mockUserRepository.Verify(x => x.CreateAsync(It.IsAny<User>()), Times.Never);
+        _mockUserRepository.Verify(x => x.UpdateAsync(It.IsAny<User>()), Times.Never);
     }
 
     [Fact]
@@ -146,7 +149,7 @@ public sealed class SaveUserCommandTests
         {
             Id = userId,
             Email = "test@example.com",
-            Name = "Test User"
+            Name = "Test User",
         };
 
         _mockValidatorService
@@ -154,7 +157,7 @@ public sealed class SaveUserCommandTests
             .Returns(Task.CompletedTask);
 
         _mockUserRepository
-            .Setup(x => x.GetOne(userId))
+            .Setup(x => x.GetOneAsync(userId))
             .ReturnsAsync((DbGetOneResult<User>)null!);
 
         // Act & Assert
@@ -163,8 +166,11 @@ public sealed class SaveUserCommandTests
         );
 
         Assert.Equal("Failed to retrieve existing user", exception.Message);
-        _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockUserRepository.Verify(x => x.GetOne(userId), Times.Once);
+        _mockValidatorService.Verify(
+            x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        _mockUserRepository.Verify(x => x.GetOneAsync(userId), Times.Once);
     }
 
     [Fact]
@@ -176,7 +182,7 @@ public sealed class SaveUserCommandTests
         {
             Id = userId,
             Email = "test@example.com",
-            Name = "Test User"
+            Name = "Test User",
         };
 
         var existingUserDbResult = new DbGetOneResult<User>(null!);
@@ -185,9 +191,7 @@ public sealed class SaveUserCommandTests
             .Setup(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        _mockUserRepository
-            .Setup(x => x.GetOne(userId))
-            .ReturnsAsync(existingUserDbResult);
+        _mockUserRepository.Setup(x => x.GetOneAsync(userId)).ReturnsAsync(existingUserDbResult);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
@@ -195,8 +199,11 @@ public sealed class SaveUserCommandTests
         );
 
         Assert.Equal("Failed to retrieve existing user", exception.Message);
-        _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockUserRepository.Verify(x => x.GetOne(userId), Times.Once);
+        _mockValidatorService.Verify(
+            x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        _mockUserRepository.Verify(x => x.GetOneAsync(userId), Times.Once);
     }
 
     [Fact]
@@ -207,7 +214,7 @@ public sealed class SaveUserCommandTests
         {
             Id = null,
             Email = "test@example.com",
-            Name = "Test User"
+            Name = "Test User",
         };
 
         _mockValidatorService
@@ -215,7 +222,7 @@ public sealed class SaveUserCommandTests
             .Returns(Task.CompletedTask);
 
         _mockUserRepository
-            .Setup(x => x.Create(It.IsAny<User>()))
+            .Setup(x => x.CreateAsync(It.IsAny<User>()))
             .ReturnsAsync((DbSaveResult<User>)null!);
 
         // Act & Assert
@@ -224,8 +231,11 @@ public sealed class SaveUserCommandTests
         );
 
         Assert.Equal("Failed to save user", exception.Message);
-        _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockUserRepository.Verify(x => x.Create(It.IsAny<User>()), Times.Once);
+        _mockValidatorService.Verify(
+            x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        _mockUserRepository.Verify(x => x.CreateAsync(It.IsAny<User>()), Times.Once);
     }
 
     [Fact]
@@ -236,7 +246,7 @@ public sealed class SaveUserCommandTests
         {
             Id = null,
             Email = "test@example.com",
-            Name = "Test User"
+            Name = "Test User",
         };
 
         var dbResult = new DbSaveResult<User>(Array.Empty<User>());
@@ -245,9 +255,7 @@ public sealed class SaveUserCommandTests
             .Setup(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        _mockUserRepository
-            .Setup(x => x.Create(It.IsAny<User>()))
-            .ReturnsAsync(dbResult);
+        _mockUserRepository.Setup(x => x.CreateAsync(It.IsAny<User>())).ReturnsAsync(dbResult);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
@@ -255,8 +263,11 @@ public sealed class SaveUserCommandTests
         );
 
         Assert.Equal("Failed to save user", exception.Message);
-        _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockUserRepository.Verify(x => x.Create(It.IsAny<User>()), Times.Once);
+        _mockValidatorService.Verify(
+            x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        _mockUserRepository.Verify(x => x.CreateAsync(It.IsAny<User>()), Times.Once);
     }
 
     [Fact]
@@ -267,7 +278,7 @@ public sealed class SaveUserCommandTests
         {
             Id = null,
             Email = "test@example.com",
-            Name = "Test User"
+            Name = "Test User",
         };
 
         var dbResult = new DbSaveResult<User>(Array.Empty<User>());
@@ -276,9 +287,7 @@ public sealed class SaveUserCommandTests
             .Setup(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        _mockUserRepository
-            .Setup(x => x.Create(It.IsAny<User>()))
-            .ReturnsAsync(dbResult);
+        _mockUserRepository.Setup(x => x.CreateAsync(It.IsAny<User>())).ReturnsAsync(dbResult);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
@@ -286,8 +295,11 @@ public sealed class SaveUserCommandTests
         );
 
         Assert.Equal("Failed to save user", exception.Message);
-        _mockValidatorService.Verify(x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockUserRepository.Verify(x => x.Create(It.IsAny<User>()), Times.Once);
+        _mockValidatorService.Verify(
+            x => x.ValidateAndThrowAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        _mockUserRepository.Verify(x => x.CreateAsync(It.IsAny<User>()), Times.Once);
     }
 
     [Fact]

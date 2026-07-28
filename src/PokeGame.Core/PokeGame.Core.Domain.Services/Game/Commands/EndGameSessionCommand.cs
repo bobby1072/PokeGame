@@ -42,9 +42,10 @@ internal sealed class EndGameSessionCommand : IDomainCommand<string, DomainComma
         var foundGameSession =
             await EntityFrameworkUtils.TryDbOperation(
                 () =>
-                    _gameSessionRepository.GetOne(
+                    _gameSessionRepository.GetOneAsync(
                         connectionId,
-                        nameof(GameSessionEntity.ConnectionId)
+                        nameof(GameSessionEntity.ConnectionId),
+                        cancellationToken
                     ),
                 _logger
             ) ?? throw new PokeGameApiServerException("Failed to fetch game session");

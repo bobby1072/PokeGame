@@ -52,7 +52,7 @@ internal sealed class GetOwnedPokemonByIdCommand
         var foundOwnedPokemon =
             await EntityFrameworkUtils.TryDbOperation(
                 () =>
-                    _ownedPokemonRepository.GetOne(
+                    _ownedPokemonRepository.GetOneAsync(
                         input.OwnedPokemonId,
                         relations: nameof(OwnedPokemon.GameSave)
                     ),

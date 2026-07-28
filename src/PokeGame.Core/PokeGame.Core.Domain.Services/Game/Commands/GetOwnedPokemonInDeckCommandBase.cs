@@ -93,7 +93,8 @@ internal abstract class GetOwnedPokemonInDeckCommandBase<TInput>
                     .GameSave.GameSaveData.GameData.DeckPokemon.FastArraySelect(x =>
                         (Guid?)x.OwnedPokemonId
                     )
-                    .ToArray()
+                    .ToArray(),
+                cancellationToken
             );
 
             return allPokemon;
@@ -115,12 +116,13 @@ internal abstract class GetOwnedPokemonInDeckCommandBase<TInput>
     }
 
     private async Task<IReadOnlyCollection<OwnedPokemon>> GetShallowDeck(
-        IReadOnlyCollection<Guid?> deckPokemonIds
+        IReadOnlyCollection<Guid?> deckPokemonIds,
+        CancellationToken cancellationToken
     )
     {
         var foundPokemon =
             await EntityFrameworkUtils.TryDbOperation(
-                () => _ownedPokemonRepository.GetMany(entityIds: deckPokemonIds),
+                () => _ownedPokemonRepository.GetManyAsync(entityIds: deckPokemonIds, cancellationToken),
                 _logger
             ) ?? throw new PokeGameApiServerException("Failed to fetch own pokemon in deck");
 

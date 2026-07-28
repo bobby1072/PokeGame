@@ -137,7 +137,7 @@ public sealed class ValidatorServiceTests
         var testModel = _fixture.Create<User>();
         var mockValidator = new Mock<IValidator<User>>();
         var validationResult = new FluentValidation.Results.ValidationResult();
-        var cancellationToken = new CancellationToken();
+        var cancellationToken = CancellationToken.None;
         
         mockValidator.Setup(x => x.ValidateAsync(testModel, cancellationToken))
                     .ReturnsAsync(validationResult);
