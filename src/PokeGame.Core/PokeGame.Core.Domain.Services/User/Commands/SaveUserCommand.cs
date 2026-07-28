@@ -52,7 +52,7 @@ internal sealed class SaveUserCommand
 
             var foundExistingUser =
                 await EntityFrameworkUtils.TryDbOperation(
-                    () => _userRepository.GetOne(parsedUser.Id)
+                    () => _userRepository.GetOneAsync(parsedUser.Id)
                 ) ?? throw new PokeGameApiServerException("Failed to retrieve existing user");
 
             if (!foundExistingUser.IsSuccessful || foundExistingUser.Data is null)
@@ -68,8 +68,8 @@ internal sealed class SaveUserCommand
             await EntityFrameworkUtils.TryDbOperation(
                 () =>
                     parsedUser.Id is null
-                        ? _userRepository.Create(parsedUser)
-                        : _userRepository.Update(parsedUser),
+                        ? _userRepository.CreateAsync(parsedUser, cancellationToken)
+                        : _userRepository.UpdateAsync(parsedUser, cancellationToken),
                 _logger
             ) ?? throw new PokeGameApiServerException("Failed to save user");
 

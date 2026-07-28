@@ -64,10 +64,10 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var input = (DeepVersion: false, OwnedPokemonId: ownedPokemonId, CurrentUser: user);
 
-        var dbResult = new DbGetOneResult<OwnedPokemon>(ownedPokemon);
+        var dbResult = new DbGetOneResult<OwnedPokemon?>(ownedPokemon);
 
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()))
+            .Setup(x => x.GetOneAsync(ownedPokemonId, It.IsAny<CancellationToken>(),It.IsAny<string[]>()))
             .ReturnsAsync(dbResult);
 
         // Act
@@ -84,7 +84,7 @@ public sealed class GetOwnedPokemonByIdCommandTests
         Assert.Equal(50, result.CommandResult.CurrentExperience);
 
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()),
+            x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()),
             Times.Once
         );
         _mockGameAndPokeApiResourceManagerService.Verify(
@@ -151,10 +151,10 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var input = (DeepVersion: true, OwnedPokemonId: ownedPokemonId, CurrentUser: user);
 
-        var dbResult = new DbGetOneResult<OwnedPokemon>(ownedPokemon);
+        var dbResult = new DbGetOneResult<OwnedPokemon?>(ownedPokemon);
 
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()))
+            .Setup(x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()))
             .ReturnsAsync(dbResult);
 
         _mockGameAndPokeApiResourceManagerService
@@ -176,7 +176,7 @@ public sealed class GetOwnedPokemonByIdCommandTests
         Assert.NotNull(result.CommandResult.Pokemon);
 
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()),
+            x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()),
             Times.Once
         );
         _mockGameAndPokeApiResourceManagerService.Verify(
@@ -206,8 +206,8 @@ public sealed class GetOwnedPokemonByIdCommandTests
         var input = (DeepVersion: false, OwnedPokemonId: ownedPokemonId, CurrentUser: user);
 
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()))
-            .ReturnsAsync((DbGetOneResult<OwnedPokemon>)null!);
+            .Setup(x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()))
+            .ReturnsAsync((DbGetOneResult<OwnedPokemon?>)null!);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiServerException>(
@@ -216,7 +216,7 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         Assert.Equal("Failed to fetch owned pokemon", exception.Message);
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()),
+            x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()),
             Times.Once
         );
     }
@@ -237,10 +237,10 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var input = (DeepVersion: false, OwnedPokemonId: ownedPokemonId, CurrentUser: user);
 
-        var dbResult = new DbGetOneResult<OwnedPokemon>(null!) { IsSuccessful = true };
+        var dbResult = new DbGetOneResult<OwnedPokemon?>(null!) { IsSuccessful = true };
 
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()))
+            .Setup(x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()))
             .ReturnsAsync(dbResult);
 
         // Act & Assert
@@ -251,7 +251,7 @@ public sealed class GetOwnedPokemonByIdCommandTests
         Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
         Assert.Equal("Failed to fetch owned pokemon with that id", exception.Message);
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()),
+            x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()),
             Times.Once
         );
     }
@@ -291,10 +291,10 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var input = (DeepVersion: false, OwnedPokemonId: ownedPokemonId, CurrentUser: user);
 
-        var dbResult = new DbGetOneResult<OwnedPokemon>(ownedPokemon) { IsSuccessful = false };
+        var dbResult = new DbGetOneResult<OwnedPokemon?>(ownedPokemon) { IsSuccessful = false };
 
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()))
+            .Setup(x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()))
             .ReturnsAsync(dbResult);
 
         // Act & Assert
@@ -305,7 +305,7 @@ public sealed class GetOwnedPokemonByIdCommandTests
         Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
         Assert.Equal("Failed to fetch owned pokemon with that id", exception.Message);
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()),
+            x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()),
             Times.Once
         );
     }
@@ -346,10 +346,10 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var input = (DeepVersion: false, OwnedPokemonId: ownedPokemonId, CurrentUser: user);
 
-        var dbResult = new DbGetOneResult<OwnedPokemon>(ownedPokemon);
+        var dbResult = new DbGetOneResult<OwnedPokemon?>(ownedPokemon);
 
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()))
+            .Setup(x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()))
             .ReturnsAsync(dbResult);
 
         // Act & Assert
@@ -360,7 +360,7 @@ public sealed class GetOwnedPokemonByIdCommandTests
         Assert.Equal(HttpStatusCode.Unauthorized, exception.StatusCode);
         Assert.Equal("User does not have permission to get owned pokemon", exception.Message);
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()),
+            x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()),
             Times.Once
         );
     }
@@ -395,10 +395,10 @@ public sealed class GetOwnedPokemonByIdCommandTests
 
         var input = (DeepVersion: false, OwnedPokemonId: ownedPokemonId, CurrentUser: user);
 
-        var dbResult = new DbGetOneResult<OwnedPokemon>(ownedPokemon);
+        var dbResult = new DbGetOneResult<OwnedPokemon?>(ownedPokemon);
 
         _mockOwnedPokemonRepository
-            .Setup(x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()))
+            .Setup(x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()))
             .ReturnsAsync(dbResult);
 
         // Act & Assert
@@ -409,7 +409,7 @@ public sealed class GetOwnedPokemonByIdCommandTests
         Assert.Equal(HttpStatusCode.Unauthorized, exception.StatusCode);
         Assert.Equal("User does not have permission to get owned pokemon", exception.Message);
         _mockOwnedPokemonRepository.Verify(
-            x => x.GetOne(ownedPokemonId, It.IsAny<string[]>()),
+            x => x.GetOneAsync(ownedPokemonId, CancellationToken.None,It.IsAny<string[]>()),
             Times.Once
         );
     }

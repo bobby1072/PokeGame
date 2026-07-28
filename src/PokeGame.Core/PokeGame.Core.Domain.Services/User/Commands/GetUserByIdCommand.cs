@@ -34,8 +34,10 @@ internal sealed class GetUserByIdCommand
         _logger.LogInformation("About to attempt to get user with id: {Email}", input);
 
         var foundUser =
-            await EntityFrameworkUtils.TryDbOperation(() => _userRepository.GetOne(input), _logger)
-            ?? throw new PokeGameApiServerException("Failed to retrieve user");
+            await EntityFrameworkUtils.TryDbOperation(
+                () => _userRepository.GetOneAsync(input),
+                _logger
+            ) ?? throw new PokeGameApiServerException("Failed to retrieve user");
 
         if (foundUser.Data is null)
         {

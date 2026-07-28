@@ -48,7 +48,7 @@ public sealed class CreateNewGameCommandTests
 
         _mockGameSaveRepository
             .Setup(x =>
-                x.GetCount(
+                x.GetCountAsync(
                     It.IsAny<System.Linq.Expressions.Expression<
                         Func<PokeGame.Core.Persistence.Entities.GameSaveEntity, bool>
                     >>()
@@ -134,7 +134,7 @@ public sealed class CreateNewGameCommandTests
 
         _mockGameSaveRepository
             .Setup(x =>
-                x.GetCount(
+                x.GetCountAsync(
                     It.IsAny<System.Linq.Expressions.Expression<
                         Func<PokeGame.Core.Persistence.Entities.GameSaveEntity, bool>
                     >>()
@@ -177,7 +177,7 @@ public sealed class CreateNewGameCommandTests
 
         _mockGameSaveRepository
             .Setup(x =>
-                x.GetCount(
+                x.GetCountAsync(
                     It.IsAny<System.Linq.Expressions.Expression<
                         Func<PokeGame.Core.Persistence.Entities.GameSaveEntity, bool>
                     >>()

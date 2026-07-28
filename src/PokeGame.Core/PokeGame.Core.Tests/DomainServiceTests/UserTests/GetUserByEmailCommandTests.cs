@@ -1,3 +1,4 @@
+using System.Net;
 using AutoFixture;
 using BT.Common.Persistence.Shared.Models;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -7,7 +8,6 @@ using PokeGame.Core.Domain.Services.Models;
 using PokeGame.Core.Domain.Services.User.Commands;
 using PokeGame.Core.Persistence.Repositories.Abstract;
 using PokeGame.Core.Schemas.Game;
-using System.Net;
 
 namespace PokeGame.Core.Tests.DomainServiceTests.UserTests;
 
@@ -33,9 +33,7 @@ public sealed class GetUserByEmailCommandTests
         var expectedUser = _fixture.Create<User>();
         var dbResult = new DbGetOneResult<User>(expectedUser);
 
-        _mockUserRepository
-            .Setup(x => x.GetOne(email, "Email"))
-            .ReturnsAsync(dbResult);
+        _mockUserRepository.Setup(x => x.GetOneAsync(email, "Email")).ReturnsAsync(dbResult);
 
         // Act
         var result = await _command.ExecuteAsync(email);
@@ -43,7 +41,7 @@ public sealed class GetUserByEmailCommandTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(expectedUser, result.CommandResult);
-        _mockUserRepository.Verify(x => x.GetOne(email, "Email"), Times.Once);
+        _mockUserRepository.Verify(x => x.GetOneAsync(email, "Email"), Times.Once);
     }
 
     [Theory]
@@ -51,7 +49,9 @@ public sealed class GetUserByEmailCommandTests
     [InlineData("test@")]
     [InlineData("@example.com")]
     [InlineData("")]
-    public async Task ExecuteAsync_Should_Throw_PokeGameApiUserException_When_Invalid_Email(string invalidEmail)
+    public async Task ExecuteAsync_Should_Throw_PokeGameApiUserException_When_Invalid_Email(
+        string invalidEmail
+    )
     {
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(
@@ -60,7 +60,10 @@ public sealed class GetUserByEmailCommandTests
 
         Assert.Equal("Invalid email", exception.Message);
         Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
-        _mockUserRepository.Verify(x => x.GetOne(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _mockUserRepository.Verify(
+            x => x.GetOneAsync(It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [Fact]
@@ -70,7 +73,7 @@ public sealed class GetUserByEmailCommandTests
         var email = "test@example.com";
 
         _mockUserRepository
-            .Setup(x => x.GetOne(email, "Email"))
+            .Setup(x => x.GetOneAsync(email, "Email"))
             .ReturnsAsync((DbGetOneResult<User>)null!);
 
         // Act & Assert
@@ -79,7 +82,7 @@ public sealed class GetUserByEmailCommandTests
         );
 
         Assert.Equal("Failed to retrieve user", exception.Message);
-        _mockUserRepository.Verify(x => x.GetOne(email, "Email"), Times.Once);
+        _mockUserRepository.Verify(x => x.GetOneAsync(email, "Email"), Times.Once);
     }
 
     [Fact]
@@ -89,9 +92,7 @@ public sealed class GetUserByEmailCommandTests
         var email = "test@example.com";
         var dbResult = new DbGetOneResult<User>(null!);
 
-        _mockUserRepository
-            .Setup(x => x.GetOne(email, "Email"))
-            .ReturnsAsync(dbResult);
+        _mockUserRepository.Setup(x => x.GetOneAsync(email, "Email")).ReturnsAsync(dbResult);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<PokeGameApiUserException>(
@@ -100,7 +101,7 @@ public sealed class GetUserByEmailCommandTests
 
         Assert.Equal("User not found", exception.Message);
         Assert.Equal(HttpStatusCode.NotFound, exception.StatusCode);
-        _mockUserRepository.Verify(x => x.GetOne(email, "Email"), Times.Once);
+        _mockUserRepository.Verify(x => x.GetOneAsync(email, "Email"), Times.Once);
     }
 
     [Fact]

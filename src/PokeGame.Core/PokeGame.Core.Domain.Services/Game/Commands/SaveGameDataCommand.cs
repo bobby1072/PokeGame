@@ -66,10 +66,11 @@ internal sealed class SaveGameDataCommand
         await ValidateNewGameSaveDataAgainstOld(
             input.GameData,
             foundExistingGameData,
-            input.CurrentUser
+            input.CurrentUser,
+            cancellationToken
         );
 
-        var updatedGameSave = await UpdateGameSave(input.GameData);
+        var updatedGameSave = await UpdateGameSave(input.GameData, cancellationToken);
 
         _logger.LogInformation("Game save data has been successfully updated");
         
@@ -79,7 +80,8 @@ internal sealed class SaveGameDataCommand
     private async Task ValidateNewGameSaveDataAgainstOld(
         GameSaveData newGameSaveData,
         GameSaveData oldGameSaveData,
-        Schemas.Game.User currentUser
+        Schemas.Game.User currentUser,
+        CancellationToken cancellationToken
     )
     {
         var oldPokemonOwnedIds = oldGameSaveData.GameData.DeckPokemon.FastArraySelect(x =>
@@ -96,12 +98,13 @@ internal sealed class SaveGameDataCommand
             var foundOwnedPokemon =
                 await EntityFrameworkUtils.TryDbOperation(
                     () =>
-                        _ownedPokemonRepository.GetMany(
+                        _ownedPokemonRepository.GetManyAsync(
                             newPokemon
                                 .FastArraySelect<GameSaveDataActualDeckPokemon, Guid?>(x =>
                                     x.OwnedPokemonId
                                 )
                                 .ToArray(),
+                            cancellationToken,
                             relations: nameof(OwnedPokemonEntity.GameSave)
                         )
                 ) ?? throw new PokeGameApiServerException("Failed to fetch owned pokemon");
@@ -174,11 +177,11 @@ internal sealed class SaveGameDataCommand
         return (foundGameSession.Data, foundGameSession.Data.GameSave.GameSaveData);
     }
 
-    private async Task<GameSaveData> UpdateGameSave(GameSaveData newGameData)
+    private async Task<GameSaveData> UpdateGameSave(GameSaveData newGameData, CancellationToken cancellationToken)
     {
         var updatedGameSave =
             await EntityFrameworkUtils.TryDbOperation(
-                () => _gameSaveDataRepository.Update(newGameData),
+                () => _gameSaveDataRepository.UpdateAsync(newGameData, cancellationToken),
                 _logger
             ) ?? throw new PokeGameApiServerException("Failed to save game data");
 

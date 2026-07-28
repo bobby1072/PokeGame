@@ -193,8 +193,9 @@ internal sealed class GameAndPokeApiResourceManagerService : IGameAndPokeApiReso
             var foundPokemonFromDb =
                 await EntityFrameworkUtils.TryDbOperation(
                     () =>
-                        _ownedPokemonRepository.GetMany(
-                            ownedPokemonId.FastArraySelect(x => (Guid?)x).ToArray()
+                        _ownedPokemonRepository.GetManyAsync(
+                            ownedPokemonId.FastArraySelect(x => (Guid?)x).ToArray(),
+                            cancellationToken
                         ),
                     _logger
                 )
