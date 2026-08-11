@@ -41,7 +41,7 @@
         "@vitejs/plugin-react": "5.2.0",
         "cross-fetch": "4.1.0",
         "globals": "17.8.0",
-        "jsdom": "29.1.1",
+        "jsdom": "30.0.1",
         "msw": "2.15.0",
         "phaser3spectorjs": "0.0.8",
         "terser": "5.49.0",
