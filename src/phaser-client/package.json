@@ -42,7 +42,7 @@
         "cross-fetch": "4.1.0",
         "globals": "17.13.0",
         "jsdom": "30.1.2",
-        "msw": "2.15.0",
+        "msw": "3.0.2",
         "phaser3spectorjs": "0.0.8",
         "terser": "5.51.2",
         "typescript": "5.9.3",
